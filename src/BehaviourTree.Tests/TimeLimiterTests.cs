@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace BehaviourTree.Tests
 {
     [TestFixture]
-    internal sealed class TimeLimitTests
+    internal sealed class TimeLimiterTests
     {
         [TestCase(BehaviourStatus.Succeeded)]
         [TestCase(BehaviourStatus.Failed)]
@@ -13,7 +13,7 @@ namespace BehaviourTree.Tests
         public void WhileTimeLimitHasNotExpired_ReturnChildStatus(BehaviourStatus status)
         {
             var child = new MockBehaviour { ReturnStatus = status };
-            var sut = new TimeLimit<MockContext>(child, 1000);
+            var sut = new TimeLimiter<MockContext>(child, 1000);
 
             var behaviourStatus = sut.Tick(new MockContext());
 
@@ -26,7 +26,7 @@ namespace BehaviourTree.Tests
         public void WhenTimeLimitHasExpired_ReturnFailureAndResetChild(BehaviourStatus status)
         {
             var child = new MockBehaviour { ReturnStatus = BehaviourStatus.Running };
-            var sut = new TimeLimit<MockContext>(child, 1000);
+            var sut = new TimeLimiter<MockContext>(child, 1000);
             var context = new MockContext();
 
             sut.Tick(context);
@@ -56,7 +56,7 @@ namespace BehaviourTree.Tests
 
             var context = new MockContext();
 
-            var sut = new TimeLimit<MockContext>(child, 1000);
+            var sut = new TimeLimiter<MockContext>(child, 1000);
 
             sut.Tick(context);
 

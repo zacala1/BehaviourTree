@@ -2,34 +2,34 @@
 
 namespace BehaviourTree.Decorators
 {
-    public sealed class Repeat<TContext> : DecoratorBehaviour<TContext>
+    public sealed class Retry<TContext> : DecoratorBehaviour<TContext>
     {
-        public readonly int RepeatCount;
+        public readonly int RetryCount;
         public int Counter { get; private set; }
 
-        public Repeat(IBehaviour<TContext> child, int repeatCount) : this("Repeat", child, repeatCount)
+        public Retry(IBehaviour<TContext> child, int repeatCount) : this("Retry", child, repeatCount)
         {
         }
 
-        public Repeat(string name, IBehaviour<TContext> child, int repeatCount) : base(name, child)
+        public Retry(string name, IBehaviour<TContext> child, int retryCount) : base(name, child)
         {
-            if (repeatCount < 1)
+            if (retryCount < 1)
             {
-                throw new ArgumentException("repeatCount must be at least one", nameof(repeatCount));
+                throw new ArgumentException("retryCount must be at least one", nameof(retryCount));
             }
 
-            RepeatCount = repeatCount;
+            RetryCount = retryCount;
         }
 
         protected override BehaviourStatus Update(TContext context)
         {
             var childStatus = Child.Tick(context);
 
-            if (childStatus == BehaviourStatus.Succeeded)
+            if (childStatus == BehaviourStatus.Failed)
             {
                 Counter++;
 
-                if (Counter < RepeatCount)
+                if (Counter < RetryCount)
                 {
                     return BehaviourStatus.Running;
                 }

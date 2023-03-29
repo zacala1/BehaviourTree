@@ -64,7 +64,7 @@ namespace BehaviourTree.Tests.FluentBuilder
                 GetExpression(obj.Child, ++depth);
         }
 
-        private static string GetExpression(Repeat<TContext> obj, int depth)
+        private static string GetExpression(Repeater<TContext> obj, int depth)
         {
             return
                 InternalGetExpression(obj, depth, obj.RepeatCount) +
@@ -78,7 +78,7 @@ namespace BehaviourTree.Tests.FluentBuilder
                 GetExpression(obj.Child, ++depth);
         }
 
-        private static string GetExpression(TimeLimit<TContext> obj, int depth)
+        private static string GetExpression(TimeLimiter<TContext> obj, int depth)
         {
             return
                 InternalGetExpression(obj, depth, obj.TimeLimitInMilliseconds) +

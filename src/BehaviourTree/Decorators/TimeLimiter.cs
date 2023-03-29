@@ -1,15 +1,15 @@
 ﻿namespace BehaviourTree.Decorators
 {
-    public sealed class TimeLimit<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
+    public sealed class TimeLimiter<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
     {
         private long? _initialTimestamp;
         public readonly long TimeLimitInMilliseconds;
 
-        public TimeLimit(IBehaviour<TContext> child, int timeLimitInMilliseconds) : this("TimeLimit", child, timeLimitInMilliseconds)
+        public TimeLimiter(IBehaviour<TContext> child, int timeLimitInMilliseconds) : this("TimeLimiter", child, timeLimitInMilliseconds)
         {
         }
 
-        public TimeLimit(string name, IBehaviour<TContext> child, int timeLimitInMilliseconds) : base(name, child)
+        public TimeLimiter(string name, IBehaviour<TContext> child, int timeLimitInMilliseconds) : base(name, child)
         {
             TimeLimitInMilliseconds = timeLimitInMilliseconds;
         }

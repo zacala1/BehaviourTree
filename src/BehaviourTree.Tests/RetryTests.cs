@@ -5,14 +5,14 @@ using NUnit.Framework;
 namespace BehaviourTree.Tests
 {
     [TestFixture]
-    internal sealed class RepeatTests
+    internal sealed class RetryTests
     {
         [Test]
-        public void WhileRepeatCountNotReached_ReturnRunning()
+        public void WhileRetryCountNotReached_ReturnRunning()
         {
-            var child = new MockBehaviour { ReturnStatus = BehaviourStatus.Succeeded };
+            var child = new MockBehaviour { ReturnStatus = BehaviourStatus.Failed };
 
-            var sut = new Repeater<MockContext>(child, 10);
+            var sut = new Retry<MockContext>(child, 10);
 
             for (var i = 0; i < 9; i++)
             {
@@ -25,11 +25,11 @@ namespace BehaviourTree.Tests
         }
 
         [Test]
-        public void WhenRepeatCountIsReached_ReturnSuccessAndResetCounter()
+        public void WhenRetryCountIsReached_ReturnFailAndResetCounter()
         {
-            var child = new MockBehaviour { ReturnStatus = BehaviourStatus.Succeeded };
+            var child = new MockBehaviour { ReturnStatus = BehaviourStatus.Failed };
 
-            var sut = new Repeater<MockContext>(child, 10);
+            var sut = new Retry<MockContext>(child, 10);
 
             var behaviourStatus = BehaviourStatus.Ready;
 
@@ -38,7 +38,7 @@ namespace BehaviourTree.Tests
                 behaviourStatus = sut.Tick(new MockContext());
             }
 
-            Assert.That(behaviourStatus, Is.EqualTo(BehaviourStatus.Succeeded));
+            Assert.That(behaviourStatus, Is.EqualTo(BehaviourStatus.Failed));
             Assert.That(sut.Counter, Is.EqualTo(0));
 
             behaviourStatus = sut.Tick(new MockContext());
@@ -48,19 +48,19 @@ namespace BehaviourTree.Tests
         }
 
         [Test]
-        public void WhenChildReturnFailure_ReturnFailureAndResetCounter()
+        public void WhenChildReturnSuccess_ReturnSuccessAndResetCounter()
         {
-            var child = new MockBehaviour { ReturnStatus = BehaviourStatus.Succeeded };
+            var child = new MockBehaviour { ReturnStatus = BehaviourStatus.Failed };
 
-            var sut = new Repeater<MockContext>(child, 10);
+            var sut = new Retry<MockContext>(child, 10);
 
             sut.Tick(new MockContext());
 
-            child.ReturnStatus = BehaviourStatus.Failed;
+            child.ReturnStatus = BehaviourStatus.Succeeded;
 
             var behaviourStatus = sut.Tick(new MockContext());
 
-            Assert.That(behaviourStatus, Is.EqualTo(BehaviourStatus.Failed));
+            Assert.That(behaviourStatus, Is.EqualTo(BehaviourStatus.Succeeded));
             Assert.That(sut.Counter, Is.EqualTo(0));
         }
 
@@ -69,7 +69,7 @@ namespace BehaviourTree.Tests
         {
             var child = new MockBehaviour { ReturnStatus = BehaviourStatus.Running };
 
-            var sut = new Repeater<MockContext>(child, 10);
+            var sut = new Retry<MockContext>(child, 10);
 
             for (var i = 0; i < 10; i++)
             {
@@ -89,7 +89,7 @@ namespace BehaviourTree.Tests
                 ReturnStatus = BehaviourStatus.Running
             };
 
-            var sut = new Repeater<MockContext>(child, 15);
+            var sut = new Retry<MockContext>(child, 15);
 
             sut.Tick(new MockContext());
             sut.Tick(new MockContext());
