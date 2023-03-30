@@ -1,15 +1,12 @@
 ﻿using System;
+using System.Threading;
 
 namespace BehaviourTree
 {
-    public abstract class BaseBehaviour<TContext> : IBehaviour<TContext>
+    public abstract class BaseBehaviour<TContext> : BaseBehaviour, IBehaviour<TContext>
     {
-        public string Name { get; }
-        public BehaviourStatus Status { get; private set; } = BehaviourStatus.Ready;
-
-        protected BaseBehaviour(string name)
+        protected BaseBehaviour(string name) : base (name)
         {
-            Name = name;
         }
 
         [System.Diagnostics.DebuggerStepThrough]
@@ -64,9 +61,8 @@ namespace BehaviourTree
         protected virtual void DoReset(BehaviourStatus status)
         {
         }
+    }
 
-<<<<<<< Updated upstream
-=======
     public abstract class BaseBehaviour
     {
         private static int counter;
@@ -97,7 +93,6 @@ namespace BehaviourTree
         #region IDisposable
         
         private bool disposed;
->>>>>>> Stashed changes
         protected virtual void Dispose(bool disposing)
         {
             if (!disposed)
