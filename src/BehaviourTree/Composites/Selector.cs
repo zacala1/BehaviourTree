@@ -12,11 +12,13 @@
         {
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected virtual IBehaviour<TContext> GetChild(int index)
         {
             return Children[index];
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
             do
@@ -33,6 +35,7 @@
             return BehaviourStatus.Failed;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {
             _currentChildIndex = 0;

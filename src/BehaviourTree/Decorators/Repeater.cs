@@ -5,7 +5,9 @@ namespace BehaviourTree.Decorators
     public sealed class Repeater<TContext> : DecoratorBehaviour<TContext>
     {
         public readonly int RepeatCount;
-        public int Counter { get; private set; }
+        private int _counter;
+        
+        public int Counter => _counter;
 
         public Repeater(IBehaviour<TContext> child, int repeatCount) : this("Repeater", child, repeatCount)
         {
@@ -21,15 +23,16 @@ namespace BehaviourTree.Decorators
             RepeatCount = repeatCount;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
             var childStatus = Child.Tick(context);
 
             if (childStatus == BehaviourStatus.Succeeded)
             {
-                Counter++;
+                _counter++;
 
-                if (Counter < RepeatCount)
+                if (_counter < RepeatCount)
                 {
                     return BehaviourStatus.Running;
                 }
@@ -38,14 +41,16 @@ namespace BehaviourTree.Decorators
             return childStatus;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
-            Counter = 0;
+            _counter = 0;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {
-            Counter = 0;
+            _counter = 0;
             base.DoReset(status);
         }
     }

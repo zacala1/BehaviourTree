@@ -4,8 +4,9 @@
     {
         public readonly long CooldownTimeInMilliseconds;
         private long _cooldownStartedTimestamp;
+        private bool _onCooldown;
 
-        public bool OnCooldown { get; private set; }
+        public bool OnCooldown => _onCooldown;
 
         public Cooldown(IBehaviour<TContext> child, int cooldownTimeInMilliseconds) : this("Cooldown", child, cooldownTimeInMilliseconds)
         {
@@ -16,11 +17,13 @@
             CooldownTimeInMilliseconds = cooldownTimeInMilliseconds;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
             return OnCooldown ? CooldownBehaviour(context) : RegularBehaviour(context);
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         private BehaviourStatus RegularBehaviour(TContext context)
         {
             var childStatus = Child.Tick(context);
@@ -33,6 +36,7 @@
             return childStatus;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         private BehaviourStatus CooldownBehaviour(TContext context)
         {
             var currentTimeStamp = context.GetTimeStampInMilliseconds();
@@ -49,15 +53,17 @@
             return BehaviourStatus.Failed;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         private void ExitCooldown()
         {
-            OnCooldown = false;
+            _onCooldown = false;
             _cooldownStartedTimestamp = 0;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         private void EnterCooldown(TContext context)
         {
-            OnCooldown = true;
+            _onCooldown = true;
             _cooldownStartedTimestamp = context.GetTimeStampInMilliseconds();
         }
     }

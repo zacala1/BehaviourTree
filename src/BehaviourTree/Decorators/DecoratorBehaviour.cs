@@ -17,6 +17,7 @@
             }
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {
             Child.Reset();

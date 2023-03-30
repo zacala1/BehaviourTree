@@ -7,7 +7,6 @@
 
         public Wait(int waitTimeInMilliseconds) : this("Wait", waitTimeInMilliseconds)
         {
-
         }
 
         public Wait(string name, int waitTimeInMilliseconds) : base(name)
@@ -15,6 +14,7 @@
             WaitTimeInMilliseconds = waitTimeInMilliseconds;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
             var currentTimeStamp = context.GetTimeStampInMilliseconds();
@@ -34,11 +34,13 @@
             return BehaviourStatus.Running;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
             DoReset(status);
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {
             _initialTimestamp = null;

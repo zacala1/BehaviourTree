@@ -24,6 +24,7 @@ namespace BehaviourTree.Composites
             _behave = policy == SimpleParallelPolicy.BothMustSucceed ? (Func<TContext, BehaviourStatus>)BothMustSucceedBehaviour : OnlyOneMustSucceedBehaviour;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         private BehaviourStatus OnlyOneMustSucceedBehaviour(TContext context)
         {
             if (_firstStatus == BehaviourStatus.Succeeded || _secondStatus == BehaviourStatus.Succeeded)
@@ -39,6 +40,7 @@ namespace BehaviourTree.Composites
             return BehaviourStatus.Running;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         private BehaviourStatus BothMustSucceedBehaviour(TContext context)
         {
             if (_firstStatus == BehaviourStatus.Succeeded && _secondStatus == BehaviourStatus.Succeeded)
@@ -54,6 +56,7 @@ namespace BehaviourTree.Composites
             return BehaviourStatus.Running;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
             if (Status != BehaviourStatus.Running)
@@ -76,7 +79,8 @@ namespace BehaviourTree.Composites
 
             return _behave(context);
         }
-
+        
+        [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {
             _firstStatus = BehaviourStatus.Ready;

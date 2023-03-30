@@ -4,9 +4,11 @@ namespace BehaviourTree.Decorators
 {
     public sealed class TimeLimiterRenew<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
     {
-        private long? _initialTimestamp;
-        public long TimeLimitInMilliseconds { get; private set; }
         private readonly Func<TContext, int> _getTimeLimitInMilliseconds;
+        private long? _initialTimestamp;
+        private long _timeLimitInMilliseconds;
+
+        public long TimeLimitInMilliseconds => _timeLimitInMilliseconds;
 
         public TimeLimiterRenew(IBehaviour<TContext> child, Func<TContext, int> getTimeLimitInMilliseconds)
             : this("TimeLimiter", child, getTimeLimitInMilliseconds)
@@ -20,6 +22,7 @@ namespace BehaviourTree.Decorators
             _getTimeLimitInMilliseconds = getTimeLimitInMilliseconds;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
             var currentTimeStamp = context.GetTimeStampInMilliseconds();
@@ -27,12 +30,12 @@ namespace BehaviourTree.Decorators
             if (_initialTimestamp == null)
             {
                 _initialTimestamp = currentTimeStamp;
-                TimeLimitInMilliseconds = _getTimeLimitInMilliseconds?.Invoke(context) ?? 1000;
+                _timeLimitInMilliseconds = _getTimeLimitInMilliseconds?.Invoke(context) ?? 1000;
             }
 
             var elapsedMilliseconds = currentTimeStamp - _initialTimestamp;
 
-            if (elapsedMilliseconds >= TimeLimitInMilliseconds)
+            if (elapsedMilliseconds >= _timeLimitInMilliseconds)
             {
                 return BehaviourStatus.Failed;
             }
@@ -40,11 +43,13 @@ namespace BehaviourTree.Decorators
             return Child.Tick(context);
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
             _initialTimestamp = null;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {
             _initialTimestamp = null;

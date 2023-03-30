@@ -4,11 +4,13 @@ namespace BehaviourTree.Decorators
 {
     public sealed class CooldownRenew<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
     {
-        public long CooldownTimeInMilliseconds { get; private set; }
         private readonly Func<TContext, int> _getCooldownTimeInMilliseconds;
+        private long _cooldownTimeInMilliseconds;
         private long _cooldownStartedTimestamp;
+        private bool _onCooldown;
 
-        public bool OnCooldown { get; private set; }
+        public bool OnCooldown => _onCooldown;
+        public long CooldownTimeInMilliseconds => _cooldownTimeInMilliseconds;
 
         public CooldownRenew(IBehaviour<TContext> child, Func<TContext, int> getCooldownTimeInMilliseconds)
             : this("Cooldown", child, getCooldownTimeInMilliseconds)
@@ -22,11 +24,13 @@ namespace BehaviourTree.Decorators
             _getCooldownTimeInMilliseconds = getCooldownTimeInMilliseconds;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
-            return OnCooldown ? CooldownBehaviour(context) : RegularBehaviour(context);
+            return _onCooldown ? CooldownBehaviour(context) : RegularBehaviour(context);
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         private BehaviourStatus RegularBehaviour(TContext context)
         {
             var childStatus = Child.Tick(context);
@@ -39,13 +43,14 @@ namespace BehaviourTree.Decorators
             return childStatus;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         private BehaviourStatus CooldownBehaviour(TContext context)
         {
             var currentTimeStamp = context.GetTimeStampInMilliseconds();
 
             var elapsedMilliseconds = currentTimeStamp - _cooldownStartedTimestamp;
 
-            if (elapsedMilliseconds >= CooldownTimeInMilliseconds)
+            if (elapsedMilliseconds >= _cooldownTimeInMilliseconds)
             {
                 ExitCooldown();
 
@@ -55,17 +60,19 @@ namespace BehaviourTree.Decorators
             return BehaviourStatus.Failed;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         private void ExitCooldown()
         {
-            OnCooldown = false;
+            _onCooldown = false;
             _cooldownStartedTimestamp = 0;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         private void EnterCooldown(TContext context)
         {
-            OnCooldown = true;
+            _onCooldown = true;
             _cooldownStartedTimestamp = context.GetTimeStampInMilliseconds();
-            CooldownTimeInMilliseconds = _getCooldownTimeInMilliseconds?.Invoke(context) ?? 0;
+            _cooldownTimeInMilliseconds = _getCooldownTimeInMilliseconds?.Invoke(context) ?? 0;
         }
     }
 }
