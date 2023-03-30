@@ -1,26 +1,33 @@
-﻿namespace BehaviourTree.Decorators
+﻿using System;
+
+namespace BehaviourTree.Decorators
 {
-    public sealed class Cooldown<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
+    public sealed class CooldownRenew<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
     {
-        public readonly long CooldownTimeInMilliseconds;
+        private readonly Func<TContext, int> _getCooldownTimeInMilliseconds;
+        private long _cooldownTimeInMilliseconds;
         private long _cooldownStartedTimestamp;
         private bool _onCooldown;
 
         public bool OnCooldown => _onCooldown;
+        public long CooldownTimeInMilliseconds => _cooldownTimeInMilliseconds;
 
-        public Cooldown(IBehaviour<TContext> child, int cooldownTimeInMilliseconds) : this("Cooldown", child, cooldownTimeInMilliseconds)
+        public CooldownRenew(IBehaviour<TContext> child, Func<TContext, int> getCooldownTimeInMilliseconds)
+            : this("Cooldown", child, getCooldownTimeInMilliseconds)
         {
         }
 
-        public Cooldown(string name, IBehaviour<TContext> child, int cooldownTimeInMilliseconds) : base(name, child)
+        public CooldownRenew(string name, IBehaviour<TContext> child, Func<TContext, int> getCooldownTimeInMilliseconds)
+            : base(name, child)
         {
-            CooldownTimeInMilliseconds = cooldownTimeInMilliseconds;
+            if (getCooldownTimeInMilliseconds == null) throw new ArgumentNullException(nameof(getCooldownTimeInMilliseconds));
+            _getCooldownTimeInMilliseconds = getCooldownTimeInMilliseconds;
         }
 
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
-            return OnCooldown ? CooldownBehaviour(context) : RegularBehaviour(context);
+            return _onCooldown ? CooldownBehaviour(context) : RegularBehaviour(context);
         }
 
         [System.Diagnostics.DebuggerStepThrough]
@@ -43,7 +50,7 @@
 
             var elapsedMilliseconds = currentTimeStamp - _cooldownStartedTimestamp;
 
-            if (elapsedMilliseconds >= CooldownTimeInMilliseconds)
+            if (elapsedMilliseconds >= _cooldownTimeInMilliseconds)
             {
                 ExitCooldown();
 
@@ -65,6 +72,7 @@
         {
             _onCooldown = true;
             _cooldownStartedTimestamp = context.GetTimeStampInMilliseconds();
+            _cooldownTimeInMilliseconds = _getCooldownTimeInMilliseconds?.Invoke(context) ?? 0;
         }
     }
 }

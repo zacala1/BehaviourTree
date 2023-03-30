@@ -11,6 +11,7 @@ namespace BehaviourTree.Behaviours
             _action = action;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
             return _action(context);

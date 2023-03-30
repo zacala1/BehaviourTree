@@ -16,6 +16,7 @@ namespace BehaviourTree.Behaviours
             _predicate = predicate;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
             return _predicate(context) ? BehaviourStatus.Succeeded : BehaviourStatus.Failed;

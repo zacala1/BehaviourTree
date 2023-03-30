@@ -10,6 +10,7 @@
         {
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
             for (var i = 0; i < Children.Length; i++)

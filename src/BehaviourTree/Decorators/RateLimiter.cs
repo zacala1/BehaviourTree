@@ -15,6 +15,7 @@
             IntervalInMilliseconds = intervalInMilliseconds;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
             var currentTimeStamp = context.GetTimeStampInMilliseconds();

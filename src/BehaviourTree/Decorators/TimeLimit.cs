@@ -14,6 +14,7 @@
             TimeLimitInMilliseconds = timeLimitInMilliseconds;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
             var currentTimeStamp = context.GetTimeStampInMilliseconds();
@@ -33,11 +34,13 @@
             return Child.Tick(context);
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
             _initialTimestamp = null;
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {
             _initialTimestamp = null;

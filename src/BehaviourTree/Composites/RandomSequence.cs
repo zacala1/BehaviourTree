@@ -17,11 +17,13 @@
 
         private IBehaviour<TContext>[] _shuffledChildren;
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override IBehaviour<TContext> GetChild(int index)
         {
             return _shuffledChildren[index];
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {
             _shuffledChildren = Children.Shuffle(_randomProvider);

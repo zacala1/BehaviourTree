@@ -2,37 +2,43 @@
 
 namespace BehaviourTree.Decorators
 {
-    public sealed class Repeat<TContext> : DecoratorBehaviour<TContext>
+    public sealed class RepeaterRenew<TContext> : DecoratorBehaviour<TContext>
     {
-        public readonly int RepeatCount;
+        private readonly Func<TContext, int> _getRepeatCount;
+        private int _repeatCount;
         private int _counter;
-        
+
+        public int RepeatCount => _repeatCount;
         public int Counter => _counter;
 
-        public Repeat(IBehaviour<TContext> child, int repeatCount) : this("Repeat", child, repeatCount)
+        public RepeaterRenew(IBehaviour<TContext> child, Func<TContext, int> getRepeatCount)
+            : this("Repeater", child, getRepeatCount)
         {
         }
 
-        public Repeat(string name, IBehaviour<TContext> child, int repeatCount) : base(name, child)
+        public RepeaterRenew(string name, IBehaviour<TContext> child, Func<TContext, int> getRepeatCount)
+            : base(name, child)
         {
-            if (repeatCount < 1)
-            {
-                throw new ArgumentException("repeatCount must be at least one", nameof(repeatCount));
-            }
-
-            RepeatCount = repeatCount;
+            if (getRepeatCount == null) throw new ArgumentNullException(nameof(getRepeatCount));
+            _getRepeatCount = getRepeatCount;
         }
 
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
+            if (Status == BehaviourStatus.Ready)
+            {
+                _repeatCount = _getRepeatCount?.Invoke(context) ?? 0;
+                _repeatCount = (_repeatCount <= 0) ? 1 : _repeatCount;
+            }
+
             var childStatus = Child.Tick(context);
 
             if (childStatus == BehaviourStatus.Succeeded)
             {
                 _counter++;
 
-                if (_counter < RepeatCount)
+                if (_counter < _repeatCount)
                 {
                     return BehaviourStatus.Running;
                 }

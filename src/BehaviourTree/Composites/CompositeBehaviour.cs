@@ -5,7 +5,7 @@ namespace BehaviourTree.Composites
 {
     public abstract class CompositeBehaviour<TContext> : BaseBehaviour<TContext>
     {
-        public IBehaviour<TContext>[] Children { get; }
+        public readonly IBehaviour<TContext>[] Children;
 
         protected CompositeBehaviour(string name, IBehaviour<TContext>[] children) : base(name)
         {
@@ -40,16 +40,19 @@ namespace BehaviourTree.Composites
             }
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
             DoReset(status);
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {
             ResetChildren();
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         private void ResetChildren()
         {
             foreach (var child in Children)

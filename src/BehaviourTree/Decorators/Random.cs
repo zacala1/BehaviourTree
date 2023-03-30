@@ -5,6 +5,9 @@ namespace BehaviourTree.Decorators
     public sealed class Random<TContext> : DecoratorBehaviour<TContext>
     {
         private readonly IRandomProvider _randomProvider;
+        private double _threshold;
+
+        public double Threshold => _threshold;
 
         public Random(IBehaviour<TContext> child, double threshold, IRandomProvider randomProvider = null)
             : this("Random", child, threshold, randomProvider)
@@ -22,16 +25,17 @@ namespace BehaviourTree.Decorators
 
             _randomProvider = randomProvider ?? RandomProvider.Default;
 
-            Threshold = threshold;
+            _threshold = threshold;
         }
 
-        public double Threshold { get; }
+        
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
             var randomValue = _randomProvider.NextRandomDouble();
 
-            if (randomValue >= Threshold)
+            if (randomValue >= _threshold)
             {
                 return Child.Tick(context);
             }

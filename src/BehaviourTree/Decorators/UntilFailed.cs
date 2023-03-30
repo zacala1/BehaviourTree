@@ -10,6 +10,7 @@
         {
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
             var childStatus = Child.Tick(context);

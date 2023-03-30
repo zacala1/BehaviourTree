@@ -10,11 +10,13 @@
         {
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
             return Child.Tick(context);
         }
 
+        [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
             Child.Reset();

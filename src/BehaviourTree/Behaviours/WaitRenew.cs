@@ -1,17 +1,25 @@
-﻿namespace BehaviourTree.Behaviours
+﻿using System;
+
+namespace BehaviourTree.Behaviours
 {
-    public sealed class Wait<TContext> : BaseBehaviour<TContext> where TContext : IClock
+    public sealed class WaitRenew<TContext> : BaseBehaviour<TContext> where TContext : IClock
     {
-        public readonly long WaitTimeInMilliseconds;
+        private readonly Func<TContext, int> _getWaitTimeInMilliseconds;
+        private long _waitTimeInMilliseconds;
         private long? _initialTimestamp;
 
-        public Wait(int waitTimeInMilliseconds) : this("Wait", waitTimeInMilliseconds)
+        public long WaitTimeInMilliseconds => _waitTimeInMilliseconds;
+        
+        public WaitRenew(Func<TContext, int> getWaitTimeInMilliseconds)
+            : this("Wait", getWaitTimeInMilliseconds)
         {
         }
 
-        public Wait(string name, int waitTimeInMilliseconds) : base(name)
+        public WaitRenew(string name, Func<TContext, int> getWaitTimeInMilliseconds)
+            : base(name)
         {
-            WaitTimeInMilliseconds = waitTimeInMilliseconds;
+            if (getWaitTimeInMilliseconds == null) throw new ArgumentNullException(nameof(getWaitTimeInMilliseconds));
+            _getWaitTimeInMilliseconds = getWaitTimeInMilliseconds;
         }
 
         [System.Diagnostics.DebuggerStepThrough]
@@ -21,12 +29,13 @@
 
             if (_initialTimestamp == null)
             {
+                _waitTimeInMilliseconds = _getWaitTimeInMilliseconds?.Invoke(context) ?? 0;
                 _initialTimestamp = currentTimeStamp;
             }
 
             var elapsedMilliseconds = currentTimeStamp - _initialTimestamp;
 
-            if (elapsedMilliseconds >= WaitTimeInMilliseconds)
+            if (elapsedMilliseconds >= _waitTimeInMilliseconds)
             {
                 return BehaviourStatus.Succeeded;
             }
