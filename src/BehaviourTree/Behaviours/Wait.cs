@@ -1,5 +1,4 @@
-﻿
-namespace BehaviourTree.Behaviours
+﻿namespace BehaviourTree.Behaviours
 {
     public sealed class Wait<TContext> : BaseBehaviour<TContext> where TContext : IClock
     {
@@ -7,10 +6,9 @@ namespace BehaviourTree.Behaviours
         private long? _initialTimestamp;
 
         public long WaitTimeInMilliseconds => _waitTimeInMilliseconds;
-        
+
         public Wait(int waitTimeInMilliseconds) : this("Wait", waitTimeInMilliseconds)
         {
-
         }
 
         public Wait(string name, int waitTimeInMilliseconds) : base(name)

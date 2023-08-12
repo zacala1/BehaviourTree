@@ -1,6 +1,6 @@
 ﻿using BehaviourTree.Behaviours;
-using BehaviourTree.Decorators;
 using BehaviourTree.Composites;
+using BehaviourTree.Decorators;
 using System;
 using System.Linq;
 using System.Text;
@@ -71,27 +71,38 @@ namespace BehaviourTree.Graph
             {
                 case RandomSelector<TContext> _:
                     return "[?r]";
+
                 case PrioritySelector<TContext> _:
                     return "[?p]";
+
                 case Selector<TContext> _:
                     return "[?]";
+
                 case RandomSequence<TContext> _:
                     return "[->r]";
+
                 case PrioritySequence<TContext> _:
                     return "[->p]";
+
                 case Sequence<TContext> _:
                     return "[->]";
+
                 case SimpleParallel<TContext> _:
                     return "[=]";
+
                 case Condition<TContext> _:
                     return "(?)";
+
                 case ActionBehaviour<TContext> _:
                     return "(!)";
+
                 case Wait<TContext> _:
                 case WaitRenew<TContext> _:
                     return "(~)";
+
                 case DecoratorBehaviour<TContext> _:
                     return $"<{obj.GetType().Name}>";
+
                 default:
                     throw new NotSupportedException($"Node Type {obj.GetType().FullName} NotSupportedException");
             }

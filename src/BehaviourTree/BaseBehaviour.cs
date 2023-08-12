@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace BehaviourTree
 {
-    public abstract class  BaseBehaviour<TContext> : BaseBehaviour, IBehaviour<TContext>
+    public abstract class BaseBehaviour<TContext> : BaseBehaviour, IBehaviour<TContext>
     {
         protected BaseBehaviour(string name) : base(name)
         {
@@ -41,7 +41,7 @@ namespace BehaviourTree
                 OnTerminate(Status);
                 SendBehaviourInfoEvent(this, BehaviourTreeNodeInfoEventType.Terminate, Status);
             }
-            
+
             return Status;
         }
 
@@ -62,19 +62,23 @@ namespace BehaviourTree
         protected abstract BehaviourStatus Update(TContext context);
 
         [System.Diagnostics.DebuggerStepThrough]
-        protected virtual void OnTerminate(BehaviourStatus status) { }
+        protected virtual void OnTerminate(BehaviourStatus status)
+        { }
 
         [System.Diagnostics.DebuggerStepThrough]
-        protected virtual void OnInitialize(TContext context) { }
+        protected virtual void OnInitialize(TContext context)
+        { }
 
         [System.Diagnostics.DebuggerStepThrough]
-        protected virtual void DoReset(BehaviourStatus status) { }
+        protected virtual void DoReset(BehaviourStatus status)
+        { }
     }
 
     [System.Diagnostics.DebuggerDisplay("Node: Id = {Id}, Name = {Name}, Status = {Status}")]
     public abstract class BaseBehaviour : IDisposable
     {
         private static long BehaviorCounter = 0;
+
         public static event EventHandler<BehaviourTreeEventArgs> StatusChangeEvent;
 
         public int Id
@@ -96,7 +100,7 @@ namespace BehaviourTree
             [System.Diagnostics.DebuggerStepThrough]
             protected set;
         }
-        
+
         protected BaseBehaviour(string name)
         {
             if (name is null) throw new ArgumentNullException(nameof(name));
@@ -115,6 +119,7 @@ namespace BehaviourTree
         #region IDisposable
 
         private bool disposed;
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposed)
@@ -135,7 +140,7 @@ namespace BehaviourTree
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        
-#endregion
+
+        #endregion IDisposable
     }
 }

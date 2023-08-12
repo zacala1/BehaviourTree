@@ -16,8 +16,10 @@ namespace BehaviourTree.Graph
             {
                 case FormatOptions.Plantuml:
                     return BehaviourTreeGraphPlantuml.Format(bt);
+
                 case FormatOptions.DanAbad:
                     return BehaviourTreeGraphDanAbad.Format(bt);
+
                 default:
                     return null;
             }
@@ -31,6 +33,7 @@ namespace BehaviourTree.Graph
                     Directory.CreateDirectory(directoryPath);
                     File.WriteAllText(Path.Combine(directoryPath, fileName + ".puml"), Format(bt, option));
                     break;
+
                 case FormatOptions.DanAbad:
                     Directory.CreateDirectory(directoryPath);
                     File.WriteAllText(Path.Combine(directoryPath, fileName + ".tree"), Format(bt, option));

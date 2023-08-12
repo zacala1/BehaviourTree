@@ -13,10 +13,9 @@ namespace BehaviourTree.Composites
 
         public SimpleParallel(SimpleParallelPolicy policy, IBehaviour<TContext> first, IBehaviour<TContext> second) : this("SimpleParallel", policy, first, second)
         {
-
         }
 
-        public SimpleParallel(string name, SimpleParallelPolicy policy, IBehaviour<TContext> first, IBehaviour<TContext> second) : base(name, new[]{first, second})
+        public SimpleParallel(string name, SimpleParallelPolicy policy, IBehaviour<TContext> first, IBehaviour<TContext> second) : base(name, new[] { first, second })
         {
             Policy = policy;
             _first = first;
@@ -79,7 +78,7 @@ namespace BehaviourTree.Composites
 
             return _behave(context);
         }
-        
+
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {

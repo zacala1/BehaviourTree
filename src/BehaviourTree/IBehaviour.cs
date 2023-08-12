@@ -7,7 +7,9 @@ namespace BehaviourTree
         int Id { get; }
         string Name { get; }
         BehaviourStatus Status { get; }
+
         BehaviourStatus Tick(TContext context);
+
         void Reset();
     }
 }

@@ -11,7 +11,7 @@ namespace BehaviourTree.Events
             Status = status;
             EventType = eventType;
         }
-        
+
         public int Id { get; }
         public BehaviourStatus Status { get; }
         public BehaviourTreeNodeInfoEventType EventType { get; }

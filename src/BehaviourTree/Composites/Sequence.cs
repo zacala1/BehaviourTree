@@ -29,7 +29,6 @@
                 {
                     return childStatus;
                 }
-
             } while (++_currentChildIndex < Children.Length);
 
             return BehaviourStatus.Succeeded;

@@ -19,7 +19,7 @@
 
                 if (childStatus != BehaviourStatus.Failed)
                 {
-                    for (var j = i+1; j < Children.Length; j++)
+                    for (var j = i + 1; j < Children.Length; j++)
                     {
                         Children[j].Reset();
                     }

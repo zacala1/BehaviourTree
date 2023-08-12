@@ -1,7 +1,7 @@
-﻿using System;
-using BehaviourTree.Behaviours;
+﻿using BehaviourTree.Behaviours;
 using BehaviourTree.Composites;
 using BehaviourTree.Decorators;
+using System;
 
 namespace BehaviourTree.Reflection
 {
@@ -27,16 +27,19 @@ namespace BehaviourTree.Reflection
                 case SimpleParallel<TContext> _:
                     nodeType = TreeNodeType.Composite_Parallel;
                     break;
+
                 case PrioritySelector<TContext> _:
                 case RandomSelector<TContext> _:
                 case Selector<TContext> _:
                     nodeType = TreeNodeType.Composite_Selector;
                     break;
+
                 case PrioritySequence<TContext> _:
                 case RandomSequence<TContext> _:
                 case Sequence<TContext> _:
                     nodeType = TreeNodeType.Composite_Sequence;
                     break;
+
                 default:
                     nodeType = TreeNodeType.Composite;
                     break;
@@ -85,12 +88,15 @@ namespace BehaviourTree.Reflection
                 case Wait<TContext> _:
                     nodeType = TreeNodeType.Leaf_Wait;
                     break;
+
                 case Condition<TContext> _:
                     nodeType = TreeNodeType.Leaf_Condition;
                     break;
+
                 case ActionBehaviour<TContext> _:
                     nodeType = TreeNodeType.Leaf_Action;
                     break;
+
                 default:
                     nodeType = TreeNodeType.Leaf;
                     break;
@@ -150,6 +156,7 @@ namespace BehaviourTree.Reflection
                         if (found) return foundValue;
                     }
                     break;
+
                 case DecoratorBehaviour<TContext> decorate:
                     return decorate.Child.TryGetFirst(predicate, out found);
             }

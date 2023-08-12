@@ -17,7 +17,6 @@ namespace BehaviourTree.FluentBuilder
         private readonly Stack<BehaviourBuilder<TContext>> _parentNodeStack = new Stack<BehaviourBuilder<TContext>>();
         private BehaviourBuilder<TContext> _currentBehaviourBuilder;
 
-
         public FluentBuilder<TContext> End()
         {
             _currentBehaviourBuilder = _parentNodeStack.Pop();
@@ -80,9 +79,11 @@ namespace BehaviourTree.FluentBuilder
                 case CompositeBehaviourBuilder<TContext> composite:
                     composite.Children.Add(child);
                     break;
+
                 case DecorateBehaviourBuilder<TContext> decorate:
                     decorate.Child = child;
                     break;
+
                 default:
                     throw new InvalidCastException("Parent must be a composite or decorate node");
             }

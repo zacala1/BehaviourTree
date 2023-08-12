@@ -44,7 +44,7 @@ namespace BehaviourTree.Decorators
         private BehaviourStatus RegularBehaviour(TContext context)
         {
             var childStatus = Child.Tick(context);
-            
+
             if (childStatus == BehaviourStatus.Succeeded)
             {
                 EnterCooldown(context);

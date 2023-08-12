@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace BehaviourTree.Behaviours
 {
     public sealed class WaitRenew<TContext> : BaseBehaviour<TContext> where TContext : IClock
@@ -10,7 +9,7 @@ namespace BehaviourTree.Behaviours
         private long? _initialTimestamp;
 
         public long WaitTimeInMilliseconds => _waitTimeInMilliseconds;
-        
+
         public WaitRenew(Func<TContext, long> getWaitTimeInMilliseconds) : this("Wait", getWaitTimeInMilliseconds)
         {
         }

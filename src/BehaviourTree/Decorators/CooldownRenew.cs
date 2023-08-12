@@ -8,7 +8,7 @@ namespace BehaviourTree.Decorators
         private long _cooldownTimeInMilliseconds;
         private long _cooldownStartedTimestamp;
         private bool _onCooldown;
-        
+
         public long CooldownTimeInMilliseconds => _cooldownTimeInMilliseconds;
 
         public bool OnCooldown => _onCooldown;

@@ -11,6 +11,7 @@ namespace BehaviourTree.FluentBuilder
         public CreateDecorateBehaviour<TContext> Factory { get; set; }
 
         private BehaviourBuilder<TContext> _child;
+
         public BehaviourBuilder<TContext> Child
         {
             get { return _child; }
