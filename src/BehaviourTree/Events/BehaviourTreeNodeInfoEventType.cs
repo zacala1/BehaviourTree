@@ -1,6 +1,6 @@
-﻿namespace BehaviourTree
+namespace BehaviourTree.Events
 {
-    public enum BehaviourTreeEventType
+    public enum BehaviourTreeNodeInfoEventType
     {
         Initialize,
         Update,

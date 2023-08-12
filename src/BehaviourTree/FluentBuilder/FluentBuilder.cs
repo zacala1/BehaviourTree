@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace BehaviourTree.FluentBuilder
 {
@@ -13,7 +14,7 @@ namespace BehaviourTree.FluentBuilder
 
     public sealed class FluentBuilder<TContext>
     {
-        private readonly Stack<CompositeBehaviourBuilder<TContext>> _parentNodeStack = new Stack<CompositeBehaviourBuilder<TContext>>();
+        private readonly Stack<BehaviourBuilder<TContext>> _parentNodeStack = new Stack<BehaviourBuilder<TContext>>();
         private BehaviourBuilder<TContext> _currentBehaviourBuilder;
 
 
@@ -33,7 +34,25 @@ namespace BehaviourTree.FluentBuilder
             if (_parentNodeStack.Count > 0)
             {
                 var parentNode = _parentNodeStack.Peek();
-                parentNode.Children.Add(newNode);
+                InternalAddChild(parentNode, newNode);
+            }
+
+            _parentNodeStack.Push(newNode);
+
+            return this;
+        }
+
+        public FluentBuilder<TContext> PushDecorate(CreateDecorateBehaviour<TContext> behaviourFactory)
+        {
+            var newNode = new DecorateBehaviourBuilder<TContext>
+            {
+                Factory = behaviourFactory
+            };
+
+            if (_parentNodeStack.Count > 0)
+            {
+                var parentNode = _parentNodeStack.Peek();
+                InternalAddChild(parentNode, newNode);
             }
 
             _parentNodeStack.Push(newNode);
@@ -43,10 +62,30 @@ namespace BehaviourTree.FluentBuilder
 
         public FluentBuilder<TContext> PushLeaf(CreateBehaviour<TContext> behaviourFactory)
         {
+            var newNode = new LeafBehaviourBuilder<TContext>
+            {
+                Factory = behaviourFactory
+            };
+
             var parentNode = _parentNodeStack.Peek();
-            parentNode.Children.Add(new LeafBehaviourBuilder<TContext>{Factory = behaviourFactory});
+            InternalAddChild(parentNode, newNode);
 
             return this;
+        }
+
+        private static void InternalAddChild(BehaviourBuilder<TContext> parent, BehaviourBuilder<TContext> child)
+        {
+            switch (parent)
+            {
+                case CompositeBehaviourBuilder<TContext> composite:
+                    composite.Children.Add(child);
+                    break;
+                case DecorateBehaviourBuilder<TContext> decorate:
+                    decorate.Child = child;
+                    break;
+                default:
+                    throw new InvalidCastException("Parent must be a composite or decorate node");
+            }
         }
 
         public IBehaviour<TContext> Build()
@@ -54,6 +93,11 @@ namespace BehaviourTree.FluentBuilder
             if (_currentBehaviourBuilder == null)
             {
                 throw new InvalidOperationException("Tree must contain at least one node");
+            }
+
+            if (_parentNodeStack.Count != 0)
+            {
+                throw new InvalidExpressionException("Node stack remains. Please, check fluent syntax end");
             }
 
             return _currentBehaviourBuilder.Build();

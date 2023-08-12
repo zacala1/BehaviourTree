@@ -43,9 +43,9 @@ namespace BehaviourTree.Tests.Utils
             ResetCount++;
         }
 
-        protected override void OnInitialize()
+        protected override void OnInitialize(MockContext context)
         {
-            base.OnInitialize();
+            base.OnInitialize(context);
             InitializeCallCount++;
         }
     }

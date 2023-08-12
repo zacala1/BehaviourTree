@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BehaviourTree.Behaviours;
+using BehaviourTree.Events;
 using BehaviourTree.Tests.Utils;
 using NUnit.Framework;
 
@@ -20,26 +21,26 @@ namespace BehaviourTree.Tests
                 queue.Enqueue(arg);
             };
             var mock1 = new Condition<MockContext>(c => true);
-            BaseBehaviour.StatusEvent += handler;
+            BaseBehaviour.StatusChangeEvent += handler;
             
             mock1.Tick(new MockContext());
             Assert.That(mock1.Id, Is.EqualTo(queue.Peek().Id));
-            Assert.That(BehaviourTreeEventType.Initialize, Is.EqualTo(queue.Peek().Type));
+            Assert.That(BehaviourTreeNodeInfoEventType.Initialize, Is.EqualTo(queue.Peek().EventType));
             queue.Dequeue();
             Assert.That(mock1.Id, Is.EqualTo(queue.Peek().Id));
-            Assert.That(BehaviourTreeEventType.Update, Is.EqualTo(queue.Peek().Type));
+            Assert.That(BehaviourTreeNodeInfoEventType.Update, Is.EqualTo(queue.Peek().EventType));
             queue.Dequeue();
             Assert.That(mock1.Id, Is.EqualTo(queue.Peek().Id));
-            Assert.That(BehaviourTreeEventType.Terminate, Is.EqualTo(queue.Peek().Type));
+            Assert.That(BehaviourTreeNodeInfoEventType.Terminate, Is.EqualTo(queue.Peek().EventType));
             queue.Dequeue();
             Assert.That(0, Is.EqualTo(queue.Count));
 
             mock1.Reset();
             Assert.That(mock1.Id, Is.EqualTo(queue.Peek().Id));
-            Assert.That(BehaviourTreeEventType.Reset, Is.EqualTo(queue.Peek().Type));
+            Assert.That(BehaviourTreeNodeInfoEventType.Reset, Is.EqualTo(queue.Peek().EventType));
             queue.Dequeue();
             
-            BaseBehaviour.StatusEvent -= handler;
+            BaseBehaviour.StatusChangeEvent -= handler;
             mock1.Tick(new MockContext());
             Assert.That(0, Is.EqualTo(queue.Count));
         }
@@ -56,33 +57,33 @@ namespace BehaviourTree.Tests
             };
             var mock1 = new Condition<MockContext>(c => true);
             var mock2 = new Condition<MockContext>(c => true);
-            BaseBehaviour.StatusEvent += handler;
+            BaseBehaviour.StatusChangeEvent += handler;
             
             mock1.Tick(new MockContext());
             Assert.That(mock1.Id, Is.EqualTo(queue.Peek().Id));
-            Assert.That(BehaviourTreeEventType.Initialize, Is.EqualTo(queue.Peek().Type));
+            Assert.That(BehaviourTreeNodeInfoEventType.Initialize, Is.EqualTo(queue.Peek().EventType));
             queue.Dequeue();
             Assert.That(mock1.Id, Is.EqualTo(queue.Peek().Id));
-            Assert.That(BehaviourTreeEventType.Update, Is.EqualTo(queue.Peek().Type));
+            Assert.That(BehaviourTreeNodeInfoEventType.Update, Is.EqualTo(queue.Peek().EventType));
             queue.Dequeue();
             Assert.That(mock1.Id, Is.EqualTo(queue.Peek().Id));
-            Assert.That(BehaviourTreeEventType.Terminate, Is.EqualTo(queue.Peek().Type));
+            Assert.That(BehaviourTreeNodeInfoEventType.Terminate, Is.EqualTo(queue.Peek().EventType));
             queue.Dequeue();
             Assert.That(0, Is.EqualTo(queue.Count));
             
             mock2.Tick(new MockContext());
             Assert.That(mock2.Id, Is.EqualTo(queue.Peek().Id));
-            Assert.That(BehaviourTreeEventType.Initialize, Is.EqualTo(queue.Peek().Type));
+            Assert.That(BehaviourTreeNodeInfoEventType.Initialize, Is.EqualTo(queue.Peek().EventType));
             queue.Dequeue();
             Assert.That(mock2.Id, Is.EqualTo(queue.Peek().Id));
-            Assert.That(BehaviourTreeEventType.Update, Is.EqualTo(queue.Peek().Type));
+            Assert.That(BehaviourTreeNodeInfoEventType.Update, Is.EqualTo(queue.Peek().EventType));
             queue.Dequeue();
             Assert.That(mock2.Id, Is.EqualTo(queue.Peek().Id));
-            Assert.That(BehaviourTreeEventType.Terminate, Is.EqualTo(queue.Peek().Type));
+            Assert.That(BehaviourTreeNodeInfoEventType.Terminate, Is.EqualTo(queue.Peek().EventType));
             queue.Dequeue();
             Assert.That(0, Is.EqualTo(queue.Count));
             
-            BaseBehaviour.StatusEvent -= handler;
+            BaseBehaviour.StatusChangeEvent -= handler;
             mock1.Tick(new MockContext());
             Assert.That(0, Is.EqualTo(queue.Count));
             mock2.Tick(new MockContext());

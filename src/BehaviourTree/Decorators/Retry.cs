@@ -4,23 +4,38 @@ namespace BehaviourTree.Decorators
 {
     public sealed class Retry<TContext> : DecoratorBehaviour<TContext>
     {
-        public readonly int RetryCount;
+        private readonly Func<TContext, int> _getRetryCount;
+        private int _retryCount;
         private int _counter;
-        
+
+        public int RetryCount => _retryCount;
         public int Counter => _counter;
 
-        public Retry(IBehaviour<TContext> child, int repeatCount) : this("Retry", child, repeatCount)
+        public Retry(IBehaviour<TContext> child, Func<TContext, int> getRetryCount)
+            : this("Retry", child, getRetryCount)
         {
         }
 
-        public Retry(string name, IBehaviour<TContext> child, int retryCount) : base(name, child)
+        public Retry(string name, IBehaviour<TContext> child, Func<TContext, int> getRetryCount)
+            : base(name, child)
+        {
+            _getRetryCount = getRetryCount ?? throw new ArgumentNullException(nameof(getRetryCount));
+        }
+
+        public Retry(IBehaviour<TContext> child, int retryCount)
+            : this("Retry", child, retryCount)
+        {
+        }
+
+        public Retry(string name, IBehaviour<TContext> child, int retryCount)
+            : base(name, child)
         {
             if (retryCount < 1)
             {
                 throw new ArgumentException("retryCount must be at least one", nameof(retryCount));
             }
 
-            RetryCount = retryCount;
+            _retryCount = retryCount;
         }
 
         [System.Diagnostics.DebuggerStepThrough]
@@ -32,13 +47,22 @@ namespace BehaviourTree.Decorators
             {
                 _counter++;
 
-                if (_counter < RetryCount)
+                if (_counter < _retryCount)
                 {
                     return BehaviourStatus.Running;
                 }
             }
 
             return childStatus;
+        }
+
+        [System.Diagnostics.DebuggerStepThrough]
+        protected override void OnInitialize(TContext context)
+        {
+            if (_getRetryCount != null)
+            {
+                _retryCount = _getRetryCount.Invoke(context);
+            }
         }
 
         [System.Diagnostics.DebuggerStepThrough]

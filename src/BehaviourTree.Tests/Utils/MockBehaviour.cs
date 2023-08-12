@@ -33,7 +33,7 @@
             ResetCount++;
         }
 
-        protected override void OnInitialize()
+        protected override void OnInitialize(MockContext context)
         {
             InitializeCallCount++;
         }

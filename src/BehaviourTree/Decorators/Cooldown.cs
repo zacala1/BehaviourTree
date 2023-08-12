@@ -1,33 +1,50 @@
-﻿namespace BehaviourTree.Decorators
+﻿using System;
+
+namespace BehaviourTree.Decorators
 {
     public sealed class Cooldown<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
     {
-        public readonly long CooldownTimeInMilliseconds;
+        private readonly Func<TContext, long> _getCooldownTimeInMilliseconds;
+        private long _cooldownTimeInMilliseconds;
         private long _cooldownStartedTimestamp;
         private bool _onCooldown;
 
+        public long CooldownTimeInMilliseconds => _cooldownTimeInMilliseconds;
         public bool OnCooldown => _onCooldown;
 
-        public Cooldown(IBehaviour<TContext> child, int cooldownTimeInMilliseconds) : this("Cooldown", child, cooldownTimeInMilliseconds)
+        public Cooldown(IBehaviour<TContext> child, Func<TContext, long> getCooldownTimeInMilliseconds)
+            : this("Cooldown", child, getCooldownTimeInMilliseconds)
         {
         }
 
-        public Cooldown(string name, IBehaviour<TContext> child, int cooldownTimeInMilliseconds) : base(name, child)
+        public Cooldown(string name, IBehaviour<TContext> child, Func<TContext, long> getCooldownTimeInMilliseconds)
+            : base(name, child)
         {
-            CooldownTimeInMilliseconds = cooldownTimeInMilliseconds;
+            _getCooldownTimeInMilliseconds = getCooldownTimeInMilliseconds ?? throw new ArgumentNullException(nameof(getCooldownTimeInMilliseconds));
+        }
+
+        public Cooldown(IBehaviour<TContext> child, int cooldownTimeInMilliseconds)
+            : this("Cooldown", child, cooldownTimeInMilliseconds)
+        {
+        }
+
+        public Cooldown(string name, IBehaviour<TContext> child, int cooldownTimeInMilliseconds)
+            : base(name, child)
+        {
+            _cooldownTimeInMilliseconds = cooldownTimeInMilliseconds;
         }
 
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
-            return OnCooldown ? CooldownBehaviour(context) : RegularBehaviour(context);
+            return _onCooldown ? CooldownBehaviour(context) : RegularBehaviour(context);
         }
 
         [System.Diagnostics.DebuggerStepThrough]
         private BehaviourStatus RegularBehaviour(TContext context)
         {
             var childStatus = Child.Tick(context);
-
+            
             if (childStatus == BehaviourStatus.Succeeded)
             {
                 EnterCooldown(context);
@@ -43,7 +60,7 @@
 
             var elapsedMilliseconds = currentTimeStamp - _cooldownStartedTimestamp;
 
-            if (elapsedMilliseconds >= CooldownTimeInMilliseconds)
+            if (elapsedMilliseconds >= _cooldownTimeInMilliseconds)
             {
                 ExitCooldown();
 
@@ -65,6 +82,15 @@
         {
             _onCooldown = true;
             _cooldownStartedTimestamp = context.GetTimeStampInMilliseconds();
+        }
+
+        [System.Diagnostics.DebuggerStepThrough]
+        protected override void OnInitialize(TContext context)
+        {
+            if (_getCooldownTimeInMilliseconds != null)
+            {
+                _cooldownTimeInMilliseconds = _getCooldownTimeInMilliseconds.Invoke(context);
+            }
         }
     }
 }

@@ -1,17 +1,21 @@
-﻿namespace BehaviourTree.Behaviours
+﻿
+namespace BehaviourTree.Behaviours
 {
     public sealed class Wait<TContext> : BaseBehaviour<TContext> where TContext : IClock
     {
-        public readonly long WaitTimeInMilliseconds;
+        private readonly long _waitTimeInMilliseconds;
         private long? _initialTimestamp;
 
+        public long WaitTimeInMilliseconds => _waitTimeInMilliseconds;
+        
         public Wait(int waitTimeInMilliseconds) : this("Wait", waitTimeInMilliseconds)
         {
+
         }
 
         public Wait(string name, int waitTimeInMilliseconds) : base(name)
         {
-            WaitTimeInMilliseconds = waitTimeInMilliseconds;
+            _waitTimeInMilliseconds = waitTimeInMilliseconds;
         }
 
         [System.Diagnostics.DebuggerStepThrough]
@@ -26,7 +30,7 @@
 
             var elapsedMilliseconds = currentTimeStamp - _initialTimestamp;
 
-            if (elapsedMilliseconds >= WaitTimeInMilliseconds)
+            if (elapsedMilliseconds >= _waitTimeInMilliseconds)
             {
                 return BehaviourStatus.Succeeded;
             }

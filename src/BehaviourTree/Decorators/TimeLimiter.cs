@@ -1,17 +1,34 @@
-﻿namespace BehaviourTree.Decorators
+﻿using System;
+
+namespace BehaviourTree.Decorators
 {
     public sealed class TimeLimiter<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
     {
+        private readonly Func<TContext, long> _getTimeLimitInMilliseconds;
+        private long _timeLimitInMilliseconds;
         private long? _initialTimestamp;
-        public readonly long TimeLimitInMilliseconds;
+        public long TimeLimitInMilliseconds => _timeLimitInMilliseconds;
 
-        public TimeLimiter(IBehaviour<TContext> child, int timeLimitInMilliseconds) : this("TimeLimiter", child, timeLimitInMilliseconds)
+        public TimeLimiter(IBehaviour<TContext> child, Func<TContext, long> getTimeLimitInMilliseconds)
+            : this("TimeLimiter", child, getTimeLimitInMilliseconds)
         {
         }
 
-        public TimeLimiter(string name, IBehaviour<TContext> child, int timeLimitInMilliseconds) : base(name, child)
+        public TimeLimiter(string name, IBehaviour<TContext> child, Func<TContext, long> getTimeLimitInMilliseconds)
+            : base(name, child)
         {
-            TimeLimitInMilliseconds = timeLimitInMilliseconds;
+            _getTimeLimitInMilliseconds = getTimeLimitInMilliseconds ?? throw new ArgumentNullException(nameof(getTimeLimitInMilliseconds));
+        }
+
+        public TimeLimiter(IBehaviour<TContext> child, int timeLimitInMilliseconds)
+            : this("TimeLimiter", child, timeLimitInMilliseconds)
+        {
+        }
+
+        public TimeLimiter(string name, IBehaviour<TContext> child, int timeLimitInMilliseconds)
+            : base(name, child)
+        {
+            _timeLimitInMilliseconds = timeLimitInMilliseconds;
         }
 
         [System.Diagnostics.DebuggerStepThrough]
@@ -35,9 +52,19 @@
         }
 
         [System.Diagnostics.DebuggerStepThrough]
+        protected override void OnInitialize(TContext context)
+        {
+            if (_getTimeLimitInMilliseconds != null)
+            {
+                _timeLimitInMilliseconds = _getTimeLimitInMilliseconds.Invoke(context);
+            }
+        }
+
+        [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
             _initialTimestamp = null;
+            base.OnTerminate(status);
         }
 
         [System.Diagnostics.DebuggerStepThrough]

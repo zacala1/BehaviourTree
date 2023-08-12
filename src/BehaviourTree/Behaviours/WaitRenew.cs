@@ -1,25 +1,23 @@
 ﻿using System;
 
+
 namespace BehaviourTree.Behaviours
 {
     public sealed class WaitRenew<TContext> : BaseBehaviour<TContext> where TContext : IClock
     {
-        private readonly Func<TContext, int> _getWaitTimeInMilliseconds;
+        private readonly Func<TContext, long> _getWaitTimeInMilliseconds;
         private long _waitTimeInMilliseconds;
         private long? _initialTimestamp;
 
         public long WaitTimeInMilliseconds => _waitTimeInMilliseconds;
         
-        public WaitRenew(Func<TContext, int> getWaitTimeInMilliseconds)
-            : this("Wait", getWaitTimeInMilliseconds)
+        public WaitRenew(Func<TContext, long> getWaitTimeInMilliseconds) : this("Wait", getWaitTimeInMilliseconds)
         {
         }
 
-        public WaitRenew(string name, Func<TContext, int> getWaitTimeInMilliseconds)
-            : base(name)
+        public WaitRenew(string name, Func<TContext, long> getWaitTimeInMilliseconds) : base(name)
         {
-            if (getWaitTimeInMilliseconds == null) throw new ArgumentNullException(nameof(getWaitTimeInMilliseconds));
-            _getWaitTimeInMilliseconds = getWaitTimeInMilliseconds;
+            _getWaitTimeInMilliseconds = getWaitTimeInMilliseconds ?? throw new ArgumentNullException(nameof(getWaitTimeInMilliseconds));
         }
 
         [System.Diagnostics.DebuggerStepThrough]
@@ -29,7 +27,6 @@ namespace BehaviourTree.Behaviours
 
             if (_initialTimestamp == null)
             {
-                _waitTimeInMilliseconds = _getWaitTimeInMilliseconds?.Invoke(context) ?? 0;
                 _initialTimestamp = currentTimeStamp;
             }
 
@@ -41,6 +38,12 @@ namespace BehaviourTree.Behaviours
             }
 
             return BehaviourStatus.Running;
+        }
+
+        [System.Diagnostics.DebuggerStepThrough]
+        protected override void OnInitialize(TContext context)
+        {
+            _waitTimeInMilliseconds = _getWaitTimeInMilliseconds.Invoke(context);
         }
 
         [System.Diagnostics.DebuggerStepThrough]
