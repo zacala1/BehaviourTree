@@ -61,7 +61,7 @@ namespace BehaviourTree.Demo.GameEngine
                 return;
             }
 
-            var node = (Node) Activator.CreateInstance(_nodeType);
+            var node = (Node)Activator.CreateInstance(_nodeType)!;
             node.Entity = entity;
 
             foreach (var componentType in _componentTypeToFieldInfoLookup.Keys)

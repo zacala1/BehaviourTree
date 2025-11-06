@@ -16,7 +16,7 @@
         /// </summary>
         /// <param name="id">The entity identifier.</param>
         /// <returns>The entity, or null if not found.</returns>
-        Entity GetEntityById(int id);
+        Entity? GetEntityById(int id);
 
         /// <summary>
         /// Removes an entity by its identifier.

@@ -34,7 +34,7 @@ namespace BehaviourTree.Demo.GameEngine
             return new ImmutableCollection<T>(family.GetNodes().Cast<T>());
         }
 
-        private void EntityManager_EntityAdded(object sender, Entity e)
+        private void EntityManager_EntityAdded(object? sender, Entity e)
         {
             e.ComponentAdded += Entity_ComponentAdded;
             e.ComponentRemoved += Entity_ComponentRemoved;
@@ -45,7 +45,7 @@ namespace BehaviourTree.Demo.GameEngine
             }
         }
 
-        private void EntityManager_EntityRemoved(object sender, Entity e)
+        private void EntityManager_EntityRemoved(object? sender, Entity e)
         {
             foreach (var family in _families.Values)
             {
@@ -56,7 +56,7 @@ namespace BehaviourTree.Demo.GameEngine
             e.ComponentRemoved -= Entity_ComponentRemoved;
         }
 
-        private void Entity_ComponentRemoved(object sender, IComponent e)
+        private void Entity_ComponentRemoved(object? sender, IComponent e)
         {
             foreach (var family in _families.Values)
             {
@@ -64,7 +64,7 @@ namespace BehaviourTree.Demo.GameEngine
             }
         }
 
-        private void Entity_ComponentAdded(object sender, IComponent e)
+        private void Entity_ComponentAdded(object? sender, IComponent e)
         {
             foreach (var family in _families.Values)
             {

@@ -48,7 +48,7 @@ namespace BehaviourTree
 #endif
                 ;
 
-            Stopwatch timer = null;
+            Stopwatch? timer = null;
             long elapsedMs = 0;
 
             if (needsTiming)
@@ -60,7 +60,7 @@ namespace BehaviourTree
 
             if (needsTiming)
             {
-                elapsedMs = timer.ElapsedMilliseconds;
+                elapsedMs = timer!.ElapsedMilliseconds;
                 timer.Stop();
             }
 

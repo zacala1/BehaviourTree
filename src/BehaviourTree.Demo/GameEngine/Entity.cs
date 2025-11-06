@@ -107,10 +107,10 @@ namespace BehaviourTree.Demo.GameEngine
         /// </summary>
         /// <typeparam name="T">The type of component to get.</typeparam>
         /// <returns>The component.</returns>
-        public T GetComponent<T>()
+        public T? GetComponent<T>()
         {
             _components.TryGetValue(typeof(T), out var component);
-            return (T) component;
+            return (T?) component;
         }
 
         /// <summary>

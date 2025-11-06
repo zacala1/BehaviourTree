@@ -20,7 +20,7 @@ namespace BehaviourTree.Demo
 
             // Initialize TimeProvider to use the game's time system
             // This allows behavior tree time-based nodes (Wait, Cooldown) to work without requiring IClock
-            var gameTimer = new Timer();
+            var gameTimer = new GameEngine.Timer();
             gameTimer.Start();
             BehaviourTree.TimeProvider.GetTimestampInMilliseconds = () => gameTimer.GetElapsedMilliseconds();
 

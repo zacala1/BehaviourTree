@@ -24,7 +24,7 @@ namespace BehaviourTree.Demo.GameEngine
             return _entityManager.NewEntity();
         }
 
-        public Entity GetEntityById(int id)
+        public Entity? GetEntityById(int id)
         {
             return _entityManager.GetEntityById(id);
         }
@@ -90,12 +90,12 @@ namespace BehaviourTree.Demo.GameEngine
             _eventManager.UnsubscribeFromEvent(eventListener);
         }
 
-        private void EntityManager_EntityRemoved(object sender, Entity e)
+        private void EntityManager_EntityRemoved(object? sender, Entity e)
         {
             _eventManager.PublishEvent(new EntityRemoved(e.Id));
         }
 
-        private void EntityManager_EntityAdded(object sender, Entity e)
+        private void EntityManager_EntityAdded(object? sender, Entity e)
         {
             _eventManager.PublishEvent(new EntityAdded(e.Id));
         }

@@ -7,7 +7,7 @@ namespace BehaviourTree.Behaviours
     /// Leaf node that executes an action and returns the resulting status.
     /// </summary>
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
-    public sealed class ActionBehaviour<TContext> : BaseBehaviour<TContext>
+    public class ActionBehaviour<TContext> : BaseBehaviour<TContext>
     {
         /// <summary>
         /// Threshold in milliseconds for logging slow action execution during debugging

@@ -55,7 +55,7 @@ namespace BehaviourTree.Reflection
             }
             var nodeInfo = new BehaviourTreeInfo(obj.Name, obj.Id, nodeType)
             {
-                NodeTypeSpecific = obj.GetType().FullName,
+                NodeTypeSpecific = obj.GetType().FullName ?? obj.GetType().Name,
                 Parent = treeInfo,
                 Status = obj.Status,
                 Depth = depth,
@@ -76,7 +76,7 @@ namespace BehaviourTree.Reflection
         {
             var nodeInfo = new BehaviourTreeInfo(obj.Name, obj.Id, TreeNodeType.Decorate)
             {
-                NodeTypeSpecific = obj.GetType().FullName,
+                NodeTypeSpecific = obj.GetType().FullName ?? obj.GetType().Name,
                 Parent = treeInfo,
                 Status = obj.Status,
                 Depth = depth,
@@ -112,7 +112,7 @@ namespace BehaviourTree.Reflection
             }
             var nodeInfo = new BehaviourTreeInfo(obj.Name, obj.Id, nodeType)
             {
-                NodeTypeSpecific = obj.GetType().FullName,
+                NodeTypeSpecific = obj.GetType().FullName ?? obj.GetType().Name,
                 Parent = treeInfo,
                 Status = obj.Status,
                 Depth = depth,

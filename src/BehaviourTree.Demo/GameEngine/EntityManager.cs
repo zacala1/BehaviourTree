@@ -26,7 +26,7 @@ namespace BehaviourTree.Demo.GameEngine
         /// </summary>
         /// <param name="id">The entity identifier.</param>
         /// <returns>The entity, or null if not found.</returns>
-        public Entity GetEntityById(int id)
+        public Entity? GetEntityById(int id)
         {
             _entities.TryGetValue(id, out var entity);
 

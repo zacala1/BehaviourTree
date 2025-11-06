@@ -10,14 +10,14 @@ namespace BehaviourTree.Demo.Ai.BT
     {
         public static BehaviourStatus EatFoodFromInventory(BtContext context)
         {
-            var inventoryComponent = context.Agent.GetComponent<InventoryComponent>();
+            var inventoryComponent = context.Agent.GetComponent<InventoryComponent>()!;
 
             if (!inventoryComponent.Has(ItemTypes.Food))
             {
                 return BehaviourStatus.Failed;
             }
 
-            var healthComponent = context.Agent.GetComponent<HealthComponent>();
+            var healthComponent = context.Agent.GetComponent<HealthComponent>()!;
 
             healthComponent.IncreaseBy(30);
 
@@ -29,12 +29,12 @@ namespace BehaviourTree.Demo.Ai.BT
 
         public static bool IsHealthLow(BtContext context)
         {
-            return context.Agent.GetComponent<HealthComponent>().Health < 50;
+            return context.Agent.GetComponent<HealthComponent>()!.Health < 50;
         }
 
         public static BehaviourStatus BuildHouse(BtContext context, int requiredStones, int requiredWood)
         {
-            var inventoryComponent = context.Agent.GetComponent<InventoryComponent>();
+            var inventoryComponent = context.Agent.GetComponent<InventoryComponent>()!;
 
             if (!inventoryComponent.Has(ItemTypes.Stone, requiredStones) ||
                 !inventoryComponent.Has(ItemTypes.Wood, requiredWood))
@@ -42,7 +42,7 @@ namespace BehaviourTree.Demo.Ai.BT
                 return BehaviourStatus.Failed;
             }
 
-            var position = context.Agent.GetComponent<PositionComponent>().Position;
+            var position = context.Agent.GetComponent<PositionComponent>()!.Position;
 
             context.Engine.NewEntity()
                 .AddComponent(new RenderComponent(new StaticImage(Assets.House)))
@@ -57,12 +57,12 @@ namespace BehaviourTree.Demo.Ai.BT
 
         public static bool HasItem(BtContext context, ItemTypes itemType, int quantity)
         {
-            return context.Agent.GetComponent<InventoryComponent>().Has(itemType, quantity);
+            return context.Agent.GetComponent<InventoryComponent>()!.Has(itemType, quantity);
         }
 
         public static BehaviourStatus SetItemAsTarget(BtContext context, ItemTypes itemType)
         {
-            var position = context.Agent.GetComponent<PositionComponent>();
+            var position = context.Agent.GetComponent<PositionComponent>()!;
 
             var lootableNode = context.Engine
                 .GetNodes<ItemNode>()
@@ -84,7 +84,7 @@ namespace BehaviourTree.Demo.Ai.BT
 
         public static BehaviourStatus MoveToTargetEntity(BtContext context)
         {
-            var movementComponent = context.Agent.GetComponent<MovementComponent>();
+            var movementComponent = context.Agent.GetComponent<MovementComponent>()!;
 
             if (!context.Agent.HasComponent<TargetEntityComponent>())
             {
@@ -92,8 +92,17 @@ namespace BehaviourTree.Demo.Ai.BT
                 return BehaviourStatus.Failed;
             }
 
-            var position = context.Agent.GetComponent<PositionComponent>().Position;
-            var targetId = context.Agent.GetComponent<TargetEntityComponent>().TargetId;
+            var positionComponent = context.Agent.GetComponent<PositionComponent>();
+            var targetEntityComponent = context.Agent.GetComponent<TargetEntityComponent>();
+
+            if (positionComponent == null || targetEntityComponent == null)
+            {
+                movementComponent.Velocity = Vector2.Zero;
+                return BehaviourStatus.Failed;
+            }
+
+            var position = positionComponent.Position;
+            var targetId = targetEntityComponent.TargetId;
 
             var target = context.Engine.GetEntityById(targetId);
 
@@ -104,6 +113,12 @@ namespace BehaviourTree.Demo.Ai.BT
             }
 
             var targetPosition = target.GetComponent<PositionComponent>();
+
+            if (targetPosition == null)
+            {
+                movementComponent.Velocity = Vector2.Zero;
+                return BehaviourStatus.Failed;
+            }
 
             var distance = Vector2.Distance(position, targetPosition.Position);
 
@@ -127,9 +142,20 @@ namespace BehaviourTree.Demo.Ai.BT
                 return BehaviourStatus.Failed;
             }
 
-            var targetId = context.Agent.GetComponent<TargetEntityComponent>().TargetId;
-            var lootableComponent = context.Engine.GetEntityById(targetId).GetComponent<LootableComponent>();
-            var itemComponent = context.Engine.GetEntityById(targetId).GetComponent<ItemComponent>();
+            var targetId = context.Agent.GetComponent<TargetEntityComponent>()?.TargetId;
+            if (targetId == null)
+            {
+                return BehaviourStatus.Failed;
+            }
+
+            var targetEntity = context.Engine.GetEntityById(targetId.Value);
+            if (targetEntity == null)
+            {
+                return BehaviourStatus.Failed;
+            }
+
+            var lootableComponent = targetEntity.GetComponent<LootableComponent>();
+            var itemComponent = targetEntity.GetComponent<ItemComponent>();
 
             if (lootableComponent == null || itemComponent == null)
             {
@@ -138,12 +164,12 @@ namespace BehaviourTree.Demo.Ai.BT
 
             var quantity = lootableComponent.LootAll();
 
-            var inventoryComponent = context.Agent.GetComponent<InventoryComponent>();
+            var inventoryComponent = context.Agent.GetComponent<InventoryComponent>()!;
             inventoryComponent.Add(itemComponent.ItemType, quantity);
 
             var staminaCost = GetStaminaCost(itemComponent.ItemType);
 
-            context.Agent.GetComponent<StaminaComponent>().ReduceBy(staminaCost);
+            context.Agent.GetComponent<StaminaComponent>()!.ReduceBy(staminaCost);
 
             return BehaviourStatus.Succeeded;
 
@@ -164,7 +190,7 @@ namespace BehaviourTree.Demo.Ai.BT
 
         public static bool IsStaminaLow(BtContext context)
         {
-            var staminaComponent = context.Agent.GetComponent<StaminaComponent>();
+            var staminaComponent = context.Agent.GetComponent<StaminaComponent>()!;
             return staminaComponent.Stamina < staminaComponent.MaxStamina / 3;
         }
     }
