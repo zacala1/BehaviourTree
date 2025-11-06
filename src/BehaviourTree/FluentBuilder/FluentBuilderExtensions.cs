@@ -898,5 +898,240 @@ namespace BehaviourTree.FluentBuilder
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             return builder.PushComposite(children => new Parallel<TContext>(name, successRequired, children));
         }
+
+        #region Lambda-based Builder Pattern (Auto-indentation support)
+
+        /// <summary>
+        /// Creates a <see cref="Composites.Sequence{TContext}"/> node with lambda-based syntax.
+        /// This pattern provides automatic indentation and eliminates the need for manual End() calls.
+        /// </summary>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="buildChildren">Action to build child nodes</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <example>
+        /// <code>
+        /// builder.Sequence("my-sequence", seq => {
+        ///     seq.Condition("check", ctx => true);
+        ///     seq.Do("action", ctx => BehaviourStatus.Succeeded);
+        /// });
+        /// </code>
+        /// </example>
+        public static FluentBuilder<TContext> Sequence<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name,
+            Action<FluentBuilder<TContext>> buildChildren)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (buildChildren == null) throw new ArgumentNullException(nameof(buildChildren));
+
+            builder.Sequence(name);
+            buildChildren(builder);
+            return builder.End();
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Composites.Selector{TContext}"/> node with lambda-based syntax.
+        /// This pattern provides automatic indentation and eliminates the need for manual End() calls.
+        /// </summary>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="buildChildren">Action to build child nodes</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <example>
+        /// <code>
+        /// builder.Selector("combat", sel => {
+        ///     sel.Do("attack", ctx => Attack(ctx));
+        ///     sel.Do("retreat", ctx => Retreat(ctx));
+        /// });
+        /// </code>
+        /// </example>
+        public static FluentBuilder<TContext> Selector<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name,
+            Action<FluentBuilder<TContext>> buildChildren)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (buildChildren == null) throw new ArgumentNullException(nameof(buildChildren));
+
+            builder.Selector(name);
+            buildChildren(builder);
+            return builder.End();
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Composites.ActiveSequence{TContext}"/> node with lambda-based syntax.
+        /// This pattern provides automatic indentation and eliminates the need for manual End() calls.
+        /// </summary>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="buildChildren">Action to build child nodes</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static FluentBuilder<TContext> ActiveSequence<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name,
+            Action<FluentBuilder<TContext>> buildChildren)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (buildChildren == null) throw new ArgumentNullException(nameof(buildChildren));
+
+            builder.ActiveSequence(name);
+            buildChildren(builder);
+            return builder.End();
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Composites.ActiveSelector{TContext}"/> node with lambda-based syntax.
+        /// This pattern provides automatic indentation and eliminates the need for manual End() calls.
+        /// </summary>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="buildChildren">Action to build child nodes</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static FluentBuilder<TContext> ActiveSelector<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name,
+            Action<FluentBuilder<TContext>> buildChildren)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (buildChildren == null) throw new ArgumentNullException(nameof(buildChildren));
+
+            builder.ActiveSelector(name);
+            buildChildren(builder);
+            return builder.End();
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Composites.Parallel{TContext}"/> node with lambda-based syntax.
+        /// This pattern provides automatic indentation and eliminates the need for manual End() calls.
+        /// </summary>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="policy">Parallel policy for success condition</param>
+        /// <param name="buildChildren">Action to build child nodes</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static FluentBuilder<TContext> Parallel<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name,
+            ParallelPolicy policy,
+            Action<FluentBuilder<TContext>> buildChildren)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (buildChildren == null) throw new ArgumentNullException(nameof(buildChildren));
+
+            builder.Parallel(name, policy);
+            buildChildren(builder);
+            return builder.End();
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Decorators.Retry{TContext}"/> decorator with lambda-based syntax.
+        /// This pattern provides automatic indentation and eliminates the need for manual End() calls.
+        /// </summary>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="retryCount">Number of retry attempts</param>
+        /// <param name="buildChild">Action to build the child node</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static FluentBuilder<TContext> Retry<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name,
+            int retryCount,
+            Action<FluentBuilder<TContext>> buildChild)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (buildChild == null) throw new ArgumentNullException(nameof(buildChild));
+
+            builder.Retry(name, retryCount);
+            buildChild(builder);
+            return builder.End();
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Decorators.Repeat{TContext}"/> decorator with lambda-based syntax.
+        /// This pattern provides automatic indentation and eliminates the need for manual End() calls.
+        /// </summary>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="repeatCount">Number of repetitions</param>
+        /// <param name="buildChild">Action to build the child node</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static FluentBuilder<TContext> Repeat<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name,
+            int repeatCount,
+            Action<FluentBuilder<TContext>> buildChild)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (buildChild == null) throw new ArgumentNullException(nameof(buildChild));
+
+            builder.Repeat(name, repeatCount);
+            buildChild(builder);
+            return builder.End();
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Decorators.Inverter{TContext}"/> decorator with lambda-based syntax.
+        /// This pattern provides automatic indentation and eliminates the need for manual End() calls.
+        /// </summary>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="buildChild">Action to build the child node</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static FluentBuilder<TContext> Invert<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name,
+            Action<FluentBuilder<TContext>> buildChild)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (buildChild == null) throw new ArgumentNullException(nameof(buildChild));
+
+            builder.Invert(name);
+            buildChild(builder);
+            return builder.End();
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Decorators.TimeLimit{TContext}"/> decorator with lambda-based syntax.
+        /// This pattern provides automatic indentation and eliminates the need for manual End() calls.
+        /// </summary>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="timeLimitInMilliseconds">Time limit in milliseconds</param>
+        /// <param name="buildChild">Action to build the child node</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static FluentBuilder<TContext> TimeLimit<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name,
+            int timeLimitInMilliseconds,
+            Action<FluentBuilder<TContext>> buildChild)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (buildChild == null) throw new ArgumentNullException(nameof(buildChild));
+
+            builder.TimeLimit(name, timeLimitInMilliseconds);
+            buildChild(builder);
+            return builder.End();
+        }
+
+        #endregion
     }
 }

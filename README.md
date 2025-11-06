@@ -62,6 +62,62 @@ var context = new AIContext();
 var status = behaviourTree.Tick(context);
 ```
 
+## Builder Patterns
+
+The fluent builder supports two syntax styles:
+
+### Traditional Chaining (Manual End)
+
+```csharp
+var tree = FluentBuilder.Create<AIContext>()
+    .Sequence("patrol-sequence")
+        .Condition("has-target", ctx => ctx.Target != null)
+        .Selector("combat")
+            .Do("attack", ctx => AttackTarget(ctx))
+            .Do("retreat", ctx => Retreat(ctx))
+        .End()
+    .End()
+    .Build();
+```
+
+### Lambda-Based (Auto-Indentation)
+
+The lambda-based syntax provides automatic indentation support in IDEs and eliminates manual `End()` calls:
+
+```csharp
+var tree = FluentBuilder.Create<AIContext>()
+    .Sequence("patrol-sequence", seq => {
+        seq.Condition("has-target", ctx => ctx.Target != null);
+        seq.Selector("combat", sel => {
+            sel.Do("attack", ctx => AttackTarget(ctx));
+            sel.Do("retreat", ctx => Retreat(ctx));
+        });
+    })
+    .Build();
+```
+
+**Lambda-based benefits**:
+- IDE automatically indents nested blocks
+- No need to manually call `End()`
+- Clearer visual hierarchy
+- Less error-prone (can't forget `End()`)
+
+**Supported nodes**: `Sequence`, `Selector`, `ActiveSequence`, `ActiveSelector`, `Parallel`, `Retry`, `Repeat`, `Invert`, `TimeLimit`
+
+Both styles can be mixed:
+
+```csharp
+.Sequence("root", seq => {
+    seq.Condition("check", ctx => true);
+
+    // Traditional syntax within lambda
+    seq.Selector("traditional")
+        .Do("action1", ctx => Status.Failed)
+        .Do("action2", ctx => Status.Succeeded)
+    .End();
+})
+```
+
 ## Core Concepts
 
 ### Behavior Status
@@ -454,6 +510,7 @@ All composite and decorator nodes have fluent builder extensions:
 - **Random**: Corrected error message (was 0-100, now 0.0-1.0)
 
 ### New Features
+- **Lambda-Based Builder Pattern**: Automatic IDE indentation and no manual `End()` calls
 - **Observer Pattern**: Instance-based event system replaces static events (no memory leaks)
 - **Enhanced Events**: `BehaviourTreeNodeEvent` includes elapsed time, node type, depth, parent ID
 - **TimeProvider**: Flexible global time source, no IClock constraint required
@@ -462,10 +519,13 @@ All composite and decorator nodes have fluent builder extensions:
 - **Comprehensive Tests**: Added 200+ tests for all node types and edge cases
 
 ### Performance Improvements
-- Thread-safe random number generation
-- Optimized nullable arithmetic in time-based decorators
-- Pattern matching in graph visualization (30-50% faster)
-- Reduced allocations in observer notifications
+- **Tick Performance**: Conditional Stopwatch creation (only when observers exist or in DEBUG)
+- **Type Name Caching**: Cached GetType().Name in constructors to avoid reflection overhead
+- **Observer Array Caching**: Lazy regeneration of observer arrays only when changed
+- **Composite Node Optimization**: Direct array access with cached length (5-10% improvement)
+- **Lock Optimization**: Observer notification outside locks to prevent deadlocks
+- **Thread-Safe Random**: Lock synchronization for System.Random
+- **Optimized Nullable Arithmetic**: Improved time-based decorator performance
 
 ### Documentation
 - All comments translated to English
