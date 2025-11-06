@@ -15,7 +15,7 @@ namespace BehaviourTree.Tests
     /// Ensures observers are cleared, children are disposed, and async resources are cleaned up.
     /// </summary>
     [TestFixture]
-    public class DisposalTests
+    internal sealed class DisposalTests
     {
         private class TestContext { }
 
@@ -33,34 +33,30 @@ namespace BehaviourTree.Tests
         }
 
         [Test]
-        public void BaseBehaviour_Dispose_ClearsObservers()
+        public void WhenBehaviourDisposed_ClearsObservers()
         {
-            // Arrange
-            var action = new ActionBehaviour<TestContext>("test", ctx => BehaviourStatus.Succeeded);
+            var sut = new ActionBehaviour<TestContext>("test", ctx => BehaviourStatus.Succeeded);
             var observer = new TestObserver();
-            action.AttachObserver(observer);
+            sut.AttachObserver(observer);
 
-            // Verify observer is attached
-            action.Tick(new TestContext());
-            Assert.AreEqual(1, observer.InitializeCount);
-            Assert.AreEqual(1, observer.UpdateCount);
+            sut.Tick(new TestContext());
+            var initialInitializeCount = observer.InitializeCount;
+            var initialUpdateCount = observer.UpdateCount;
 
-            // Act
-            action.Dispose();
+            sut.Dispose();
 
-            // Reset and tick again - observer should not be notified
-            action.Reset();
-            action.Tick(new TestContext());
+            sut.Reset();
+            sut.Tick(new TestContext());
 
-            // Assert - counts should not have changed after dispose
-            Assert.AreEqual(1, observer.InitializeCount, "Observer should not receive events after dispose");
-            Assert.AreEqual(1, observer.UpdateCount, "Observer should not receive events after dispose");
+            Assert.That(observer.InitializeCount, Is.EqualTo(initialInitializeCount),
+                "Observer should not receive events after dispose");
+            Assert.That(observer.UpdateCount, Is.EqualTo(initialUpdateCount),
+                "Observer should not receive events after dispose");
         }
 
         [Test]
-        public void CompositeBehaviour_Dispose_DisposesAllChildren()
+        public void WhenCompositeDisposed_DisposesAllChildren()
         {
-            // Arrange
             var child1Disposed = false;
             var child2Disposed = false;
             var child3Disposed = false;
@@ -77,64 +73,57 @@ namespace BehaviourTree.Tests
                 ctx => BehaviourStatus.Succeeded,
                 () => child3Disposed = true);
 
-            var sequence = new Sequence<TestContext>("sequence", child1, child2, child3);
+            var sut = new Sequence<TestContext>("sequence", child1, child2, child3);
             var observer = new TestObserver();
-            sequence.AttachObserver(observer);
+            sut.AttachObserver(observer);
 
-            // Act
-            sequence.Dispose();
+            sut.Dispose();
 
-            // Assert
-            Assert.IsTrue(child1Disposed, "Child 1 should be disposed");
-            Assert.IsTrue(child2Disposed, "Child 2 should be disposed");
-            Assert.IsTrue(child3Disposed, "Child 3 should be disposed");
+            Assert.That(child1Disposed, Is.True, "Child 1 should be disposed");
+            Assert.That(child2Disposed, Is.True, "Child 2 should be disposed");
+            Assert.That(child3Disposed, Is.True, "Child 3 should be disposed");
 
-            // Verify observers are also cleared
-            sequence.Reset();
-            sequence.Tick(new TestContext());
-            Assert.AreEqual(0, observer.InitializeCount, "Sequence observer should be cleared after dispose");
+            sut.Reset();
+            sut.Tick(new TestContext());
+            Assert.That(observer.InitializeCount, Is.EqualTo(0),
+                "Composite observer should be cleared after dispose");
         }
 
         [Test]
-        public void DecoratorBehaviour_Dispose_DisposesChild()
+        public void WhenDecoratorDisposed_DisposesChild()
         {
-            // Arrange
             var childDisposed = false;
             var child = new DisposableActionBehaviour<TestContext>("child",
                 ctx => BehaviourStatus.Succeeded,
                 () => childDisposed = true);
 
-            var inverter = new Inverter<TestContext>("inverter", child);
+            var sut = new Inverter<TestContext>("inverter", child);
             var observer = new TestObserver();
-            inverter.AttachObserver(observer);
+            sut.AttachObserver(observer);
 
-            // Act
-            inverter.Dispose();
+            sut.Dispose();
 
-            // Assert
-            Assert.IsTrue(childDisposed, "Child should be disposed");
+            Assert.That(childDisposed, Is.True, "Child should be disposed");
 
-            // Verify observers are also cleared
-            inverter.Reset();
-            inverter.Tick(new TestContext());
-            Assert.AreEqual(0, observer.InitializeCount, "Inverter observer should be cleared after dispose");
+            sut.Reset();
+            sut.Tick(new TestContext());
+            Assert.That(observer.InitializeCount, Is.EqualTo(0),
+                "Decorator observer should be cleared after dispose");
         }
 
         [Test]
-        public void AsyncAction_Dispose_CancelsAndDisposesTask()
+        public void WhenAsyncActionDisposed_CancelsAndDisposesTask()
         {
-            // Arrange
             var taskStarted = false;
             var taskCancelled = false;
-            var cts = new CancellationTokenSource();
 
-            var asyncAction = new AsyncAction<TestContext>("async-test",
+            var sut = new AsyncAction<TestContext>("async-test",
                 async (ctx, token) =>
                 {
                     taskStarted = true;
                     try
                     {
-                        await Task.Delay(5000, token); // Long delay
+                        await Task.Delay(5000, token);
                         return BehaviourStatus.Succeeded;
                     }
                     catch (OperationCanceledException)
@@ -144,95 +133,63 @@ namespace BehaviourTree.Tests
                     }
                 });
 
-            // Start the async action
-            var status = asyncAction.Tick(new TestContext());
-            Assert.AreEqual(BehaviourStatus.Running, status);
-            Assert.IsTrue(taskStarted);
+            var status = sut.Tick(new TestContext());
+            Assert.That(status, Is.EqualTo(BehaviourStatus.Running));
+            Assert.That(taskStarted, Is.True);
 
-            // Act - Dispose should cancel the task
-            asyncAction.Dispose();
+            sut.Dispose();
 
-            // Give a moment for cancellation to propagate
             Thread.Sleep(150);
 
-            // Assert
-            Assert.IsTrue(taskCancelled, "Task should be cancelled on dispose");
+            Assert.That(taskCancelled, Is.True, "Task should be cancelled on dispose");
         }
 
         [Test]
-        public void NestedTree_Dispose_DisposesAllNodesRecursively()
+        public void WhenNestedTreeDisposed_DisposesAllNodesRecursively()
         {
-            // Arrange
-            var disposedNodes = 0;
-
-            var tree = FluentBuilder.Create<TestContext>()
+            var sut = FluentBuilder.Create<TestContext>()
                 .Sequence("root", seq =>
                 {
-                    seq.Do("action1", ctx =>
-                    {
-                        disposedNodes++;
-                        return BehaviourStatus.Succeeded;
-                    });
+                    seq.Do("action1", ctx => BehaviourStatus.Succeeded);
 
                     seq.Selector("selector", sel =>
                     {
-                        sel.Do("action2", ctx =>
-                        {
-                            disposedNodes++;
-                            return BehaviourStatus.Failed;
-                        });
-
-                        sel.Do("action3", ctx =>
-                        {
-                            disposedNodes++;
-                            return BehaviourStatus.Succeeded;
-                        });
+                        sel.Do("action2", ctx => BehaviourStatus.Failed);
+                        sel.Do("action3", ctx => BehaviourStatus.Succeeded);
                     });
 
-                    seq.Do("action4", ctx =>
-                    {
-                        disposedNodes++;
-                        return BehaviourStatus.Succeeded;
-                    });
+                    seq.Do("action4", ctx => BehaviourStatus.Succeeded);
                 })
                 .Build();
 
             var observer = new TestObserver();
-            tree.AttachObserver(observer);
+            sut.AttachObserver(observer);
 
-            // Tick once to verify tree works
-            tree.Tick(new TestContext());
-            Assert.Greater(observer.UpdateCount, 0);
+            sut.Tick(new TestContext());
+            var updateCountBeforeDispose = observer.UpdateCount;
+            Assert.That(updateCountBeforeDispose, Is.GreaterThan(0));
 
-            // Act
-            tree.Dispose();
+            sut.Dispose();
 
-            // Assert - observer should not receive new events
-            tree.Reset();
-            tree.Tick(new TestContext());
+            sut.Reset();
+            sut.Tick(new TestContext());
 
-            // The observer counts should not increase after dispose
-            var previousUpdateCount = observer.UpdateCount;
-            tree.Reset();
-            tree.Tick(new TestContext());
-            Assert.AreEqual(previousUpdateCount, observer.UpdateCount,
+            Assert.That(observer.UpdateCount, Is.EqualTo(updateCountBeforeDispose),
                 "Observer should not receive events after tree disposal");
         }
 
         [Test]
-        public void Dispose_CalledMultipleTimes_IsSafe()
+        public void WhenDisposeCalledMultipleTimes_DoesNotThrow()
         {
-            // Arrange
-            var action = new ActionBehaviour<TestContext>("test", ctx => BehaviourStatus.Succeeded);
+            var sut = new ActionBehaviour<TestContext>("test", ctx => BehaviourStatus.Succeeded);
             var observer = new TestObserver();
-            action.AttachObserver(observer);
+            sut.AttachObserver(observer);
 
-            // Act & Assert - multiple dispose calls should not throw
             Assert.DoesNotThrow(() =>
             {
-                action.Dispose();
-                action.Dispose();
-                action.Dispose();
+                sut.Dispose();
+                sut.Dispose();
+                sut.Dispose();
             });
         }
 
