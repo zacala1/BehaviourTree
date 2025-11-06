@@ -7,16 +7,16 @@
     <!-- NuGet Package Metadata -->
     <PackageId>BehaviourTree</PackageId>
     <Version>2.0.0</Version>
-    <Authors>Eraclys;Contributors</Authors>
-    <Company>Eraclys</Company>
+    <Authors>zacala1</Authors>
+    <Company>zacala1</Company>
     <Product>BehaviourTree</Product>
-    <Copyright>Copyright © 2017-2025 Eraclys. Enhanced version with significant improvements.</Copyright>
+    <Copyright>Copyright © 2025 zacala1. Based on original work by milanm/BehaviourTree and Eraclys.</Copyright>
 
     <PackageTags>c#;csharp;behavior;behaviour;tree;behaviourtree;behaviortree;ai;bot;game;decision;fsm;state-machine;reactive;fluent;builder</PackageTags>
     <Description>A flexible, extensible C# behavior tree library with generic context support, fluent builder API, and comprehensive node types for AI and decision-making systems. Features include reactive nodes, parallel execution, observer pattern, async actions, and extensive test coverage.</Description>
 
-    <PackageProjectUrl>https://github.com/Eraclys/BehaviourTree</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Eraclys/BehaviourTree.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/zacala1/BehaviourTree</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/zacala1/BehaviourTree.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
