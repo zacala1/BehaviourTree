@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 
 namespace BehaviourTree.Behaviours
 {
     public sealed class ActionBehaviour<TContext> : BaseBehaviour<TContext>
     {
+        /// <summary>
+        /// Threshold in milliseconds for logging slow action execution during debugging
+        /// </summary>
+        private const int DEBUG_SLOW_ACTION_THRESHOLD_MS = 100;
+
         private readonly Func<TContext, BehaviourStatus> _action;
 
         public ActionBehaviour(string name, Func<TContext, BehaviourStatus> action) : base(name)
@@ -21,24 +25,10 @@ namespace BehaviourTree.Behaviours
 #endif
             var status = _action(context);
 #if DEBUG
-            if (timer.ElapsedMilliseconds >= 100)
+            if (timer.ElapsedMilliseconds >= DEBUG_SLOW_ACTION_THRESHOLD_MS)
             {
-                try
-                {
-                    // TODO 임시 테스트 로그
-                    var time = DateTime.Now;
-                    var filePath = $"D:\\kctech\\csp\\ControlEngine\\BT_log\\{time:yyyy-MM-dd-HH}.log";
-                    Directory.CreateDirectory(@"D:\kctech\csp\ControlEngine\BT_log");
-                    using (StreamWriter writer = File.AppendText(filePath))
-                    {
-                        writer.WriteLine(
-                            $"[{time:HH:mm:ss.ffff}] Behavior Node Time. id={Id}, name={Name}, context={typeof(TContext).Name}, status={status}, time={timer.ElapsedMilliseconds}ms");
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss.ffff}] Behavior Log Exception:{e.Message}");
-                }
+                Debug.WriteLine(
+                    $"[{DateTime.Now:HH:mm:ss.ffff}] Behavior Node Time. id={Id}, name={Name}, context={typeof(TContext).Name}, status={status}, time={timer.ElapsedMilliseconds}ms");
             }
             timer.Stop();
 #endif

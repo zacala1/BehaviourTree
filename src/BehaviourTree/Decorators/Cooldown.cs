@@ -2,7 +2,7 @@
 
 namespace BehaviourTree.Decorators
 {
-    public sealed class Cooldown<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
+    public sealed class Cooldown<TContext> : DecoratorBehaviour<TContext>
     {
         private readonly Func<TContext, long> _getCooldownTimeInMilliseconds;
         private long _cooldownTimeInMilliseconds;
@@ -56,7 +56,7 @@ namespace BehaviourTree.Decorators
         [System.Diagnostics.DebuggerStepThrough]
         private BehaviourStatus CooldownBehaviour(TContext context)
         {
-            var currentTimeStamp = context.GetTimeStampInMilliseconds();
+            var currentTimeStamp = GetCurrentTimestamp(context);
 
             var elapsedMilliseconds = currentTimeStamp - _cooldownStartedTimestamp;
 
@@ -71,6 +71,19 @@ namespace BehaviourTree.Decorators
         }
 
         [System.Diagnostics.DebuggerStepThrough]
+        private long GetCurrentTimestamp(TContext context)
+        {
+            // Try to get timestamp from context if it implements IClock (backward compatibility)
+            if (context is IClock clock)
+            {
+                return clock.GetTimeStampInMilliseconds();
+            }
+
+            // Otherwise use global TimeProvider
+            return TimeProvider.GetTimestampInMilliseconds();
+        }
+
+        [System.Diagnostics.DebuggerStepThrough]
         private void ExitCooldown()
         {
             _onCooldown = false;
@@ -81,7 +94,7 @@ namespace BehaviourTree.Decorators
         private void EnterCooldown(TContext context)
         {
             _onCooldown = true;
-            _cooldownStartedTimestamp = context.GetTimeStampInMilliseconds();
+            _cooldownStartedTimestamp = GetCurrentTimestamp(context);
         }
 
         [System.Diagnostics.DebuggerStepThrough]

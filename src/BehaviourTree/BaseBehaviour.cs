@@ -7,6 +7,11 @@ namespace BehaviourTree
 {
     public abstract class BaseBehaviour<TContext> : BaseBehaviour, IBehaviour<TContext>
     {
+        /// <summary>
+        /// Threshold in milliseconds for detecting slow behavior nodes during debugging
+        /// </summary>
+        private const int DEBUG_SLOW_NODE_THRESHOLD_MS = 80;
+
         protected BaseBehaviour(string name) : base(name)
         {
         }
@@ -25,7 +30,7 @@ namespace BehaviourTree
             Status = Update(context);
             SendBehaviourInfoEvent(this, BehaviourTreeNodeInfoEventType.Update, Status);
 #if DEBUG
-            if (timer.ElapsedMilliseconds >= 80)
+            if (timer.ElapsedMilliseconds >= DEBUG_SLOW_NODE_THRESHOLD_MS)
             {
                 Debug.WriteLine($"[{DateTime.Now.ToString("yyyy/MM/dd/HH:mm:ss.ffff")}] Behavior Node is hanging. id={Id}, name={Name}, status={Status}, time={timer.ElapsedMilliseconds}");
             }

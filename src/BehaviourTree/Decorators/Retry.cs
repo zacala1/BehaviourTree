@@ -49,6 +49,7 @@ namespace BehaviourTree.Decorators
 
                 if (_counter < _retryCount)
                 {
+                    Child.Reset();  // Reset child before retry
                     return BehaviourStatus.Running;
                 }
             }
