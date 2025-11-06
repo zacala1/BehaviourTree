@@ -9,7 +9,7 @@
         /// <summary>
         /// Gets or sets the factory function for creating the leaf behavior.
         /// </summary>
-        public CreateBehaviour<TContext> Factory { get; set; }
+        public CreateBehaviour<TContext> Factory { get; set; } = default!;
 
         /// <summary>
         /// Builds the leaf behavior using the factory.

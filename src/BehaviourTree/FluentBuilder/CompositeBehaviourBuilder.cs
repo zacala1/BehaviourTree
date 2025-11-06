@@ -20,7 +20,7 @@ namespace BehaviourTree.FluentBuilder
         /// <summary>
         /// Gets or sets the factory function for creating the composite behavior.
         /// </summary>
-        public CreateCompositeBehaviour<TContext> Factory { get; set; }
+        public CreateCompositeBehaviour<TContext> Factory { get; set; } = default!;
 
         /// <summary>
         /// Gets the list of child behavior builders.

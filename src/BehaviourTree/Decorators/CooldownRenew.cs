@@ -45,6 +45,7 @@ namespace BehaviourTree.Decorators
             _getCooldownTimeInMilliseconds = getCooldownTimeInMilliseconds ?? throw new ArgumentNullException(nameof(getCooldownTimeInMilliseconds));
         }
 
+        /// <summary>Core update logic for this node.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
@@ -108,6 +109,7 @@ namespace BehaviourTree.Decorators
             _cooldownStartedTimestamp = GetCurrentTimestamp(context);
         }
 
+        /// <summary>Called on first tick to initialize node state.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnInitialize(TContext context)
         {

@@ -18,9 +18,9 @@ namespace BehaviourTree.FluentBuilder
         /// <summary>
         /// Gets or sets the factory function for creating the decorator behavior.
         /// </summary>
-        public CreateDecorateBehaviour<TContext> Factory { get; set; }
+        public CreateDecorateBehaviour<TContext> Factory { get; set; } = default!;
 
-        private BehaviourBuilder<TContext> _child;
+        private BehaviourBuilder<TContext> _child = default!;
 
         /// <summary>
         /// Gets or sets the child behavior builder.
@@ -44,7 +44,7 @@ namespace BehaviourTree.FluentBuilder
         {
             var behaviours = Child?.Build();
 
-            return Factory(behaviours);
+            return Factory(behaviours!);
         }
     }
 }

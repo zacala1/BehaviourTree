@@ -695,7 +695,7 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// Creates a <see cref="Retry{TContext}"/> node.
+        /// Creates a <see cref="Retry{TContext}(FluentBuilder{TContext}, string, Func{TContext, int})"/> node.
         /// If the child node's result is failure, returns <see cref="BehaviourStatus.Running"/> repeatedly for <paramref name="getRetryCount"/> times.
         /// When the node is initialized, the retry count is renewed by <paramref name="getRetryCount"/>.
         /// </summary>

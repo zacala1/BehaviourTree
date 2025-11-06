@@ -46,7 +46,7 @@ namespace BehaviourTree.Reflection
         /// <summary>
         /// Exposes the specific type of the node
         /// </summary>
-        public string NodeTypeSpecific { get; internal set; }
+        public string NodeTypeSpecific { get; internal set; } = default!;
 
         /// <summary>
         /// Exposes the status of the behavior tree node
@@ -61,7 +61,7 @@ namespace BehaviourTree.Reflection
         /// <summary>
         /// Exposes the parent node of the behavior tree node
         /// </summary>
-        public BehaviourTreeInfo Parent { get; internal set; }
+        public BehaviourTreeInfo? Parent { get; internal set; }
 
         /// <summary>
         /// Exposes the children nodes of the behavior tree node

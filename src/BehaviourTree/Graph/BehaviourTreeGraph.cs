@@ -31,7 +31,7 @@ namespace BehaviourTree.Graph
         /// <param name="bt">Behavior tree to format</param>
         /// <param name="option">Output format option</param>
         /// <returns>Formatted string representation of the tree</returns>
-        public static string Format<TContext>(IBehaviour<TContext> bt, FormatOptions option)
+        public static string? Format<TContext>(IBehaviour<TContext> bt, FormatOptions option)
         {
             switch (option)
             {

@@ -24,12 +24,14 @@
         {
         }
 
+        /// <summary>Core update logic for this node.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
             return Child.Tick(context);
         }
 
+        /// <summary>Called when node completes execution.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {

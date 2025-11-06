@@ -18,17 +18,17 @@ namespace BehaviourTree.Reflection
         /// <returns>Hierarchical tree information structure</returns>
         public static BehaviourTreeInfo GetInfo<TContext>(this IBehaviour<TContext> behaviour)
         {
-            BehaviourTreeInfo treeInfo = null;
+            BehaviourTreeInfo? treeInfo = null;
             InternalGetInfos(ref treeInfo, 0, behaviour);
-            return treeInfo;
+            return treeInfo!;
         }
 
-        private static void InternalGetInfos<TContext>(ref BehaviourTreeInfo treeInfo, int depth, IBehaviour<TContext> child)
+        private static void InternalGetInfos<TContext>(ref BehaviourTreeInfo? treeInfo, int depth, IBehaviour<TContext> child)
         {
             InternalGetInfos(ref treeInfo, depth, (dynamic)child);
         }
 
-        private static void InternalGetInfos<TContext>(ref BehaviourTreeInfo treeInfo, int depth, CompositeBehaviour<TContext> obj)
+        private static void InternalGetInfos<TContext>(ref BehaviourTreeInfo? treeInfo, int depth, CompositeBehaviour<TContext> obj)
         {
             TreeNodeType nodeType;
             switch (obj)
@@ -72,7 +72,7 @@ namespace BehaviourTree.Reflection
             }
         }
 
-        private static void InternalGetInfos<TContext>(ref BehaviourTreeInfo treeInfo, int depth, DecoratorBehaviour<TContext> obj)
+        private static void InternalGetInfos<TContext>(ref BehaviourTreeInfo? treeInfo, int depth, DecoratorBehaviour<TContext> obj)
         {
             var nodeInfo = new BehaviourTreeInfo(obj.Name, obj.Id, TreeNodeType.Decorate)
             {
@@ -89,7 +89,7 @@ namespace BehaviourTree.Reflection
             InternalGetInfos(ref nodeInfo, ++depth, obj.Child);
         }
 
-        private static void InternalGetInfos<TContext>(ref BehaviourTreeInfo treeInfo, int depth, BaseBehaviour<TContext> obj) where TContext : IClock
+        private static void InternalGetInfos<TContext>(ref BehaviourTreeInfo? treeInfo, int depth, BaseBehaviour<TContext> obj) where TContext : IClock
         {
             TreeNodeType nodeType;
             switch (obj)
@@ -189,7 +189,7 @@ namespace BehaviourTree.Reflection
             }
 
             found = false;
-            return default;
+            return default!;
         }
     }
 }

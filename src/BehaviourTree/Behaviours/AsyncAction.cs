@@ -93,7 +93,7 @@ namespace BehaviourTree.Behaviours
 
             if (cancelCondition?.Invoke(context) ?? false)
             {
-                cts.Cancel();
+                cts?.Cancel();
                 return BehaviourStatus.Failed;
             }
 

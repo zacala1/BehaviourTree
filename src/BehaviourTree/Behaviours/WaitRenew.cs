@@ -37,6 +37,7 @@ namespace BehaviourTree.Behaviours
             _getWaitTimeInMilliseconds = getWaitTimeInMilliseconds ?? throw new ArgumentNullException(nameof(getWaitTimeInMilliseconds));
         }
 
+        /// <summary>Core update logic for this node.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
@@ -70,18 +71,21 @@ namespace BehaviourTree.Behaviours
             return TimeProvider.GetTimestampInMilliseconds();
         }
 
+        /// <summary>Called on first tick to initialize node state.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnInitialize(TContext context)
         {
             _waitTimeInMilliseconds = _getWaitTimeInMilliseconds.Invoke(context);
         }
 
+        /// <summary>Called when node completes execution.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
             DoReset(status);
         }
 
+        /// <summary>Resets node state for re-execution.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {

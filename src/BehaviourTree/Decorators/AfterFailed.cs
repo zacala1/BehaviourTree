@@ -34,6 +34,7 @@ namespace BehaviourTree.Decorators
             _action = action;
         }
 
+        /// <summary>Core update logic for this node.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
@@ -51,12 +52,14 @@ namespace BehaviourTree.Decorators
             return childStatus;
         }
 
+        /// <summary>Called when node completes execution.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
             childStatus = BehaviourStatus.Ready;
         }
 
+        /// <summary>Resets node state for re-execution.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {

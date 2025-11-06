@@ -12,6 +12,7 @@ namespace BehaviourTree.Behaviours
         private readonly long _waitTimeInMilliseconds;
         private long? _initialTimestamp;
 
+        /// <summary>Gets the configured wait duration in milliseconds.</summary>
         public long WaitTimeInMilliseconds => _waitTimeInMilliseconds;
 
         /// <summary>
