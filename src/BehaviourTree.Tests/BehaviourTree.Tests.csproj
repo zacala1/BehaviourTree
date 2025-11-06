@@ -42,13 +42,19 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActiveSelectorTests.cs" />
+    <Compile Include="ActiveSequenceTests.cs" />
+    <Compile Include="AfterFailedTests.cs" />
+    <Compile Include="AfterSuccessTests.cs" />
     <Compile Include="ArrayExtensions_ShuffleTests.cs" />
+    <Compile Include="AsyncActionTests.cs" />
     <Compile Include="AutoResetTests.cs" />
     <Compile Include="BaseBehaviourTests.cs" />
     <Compile Include="CompositeBehaviourTests.cs" />
     <Compile Include="DecoratorBehaviourTests.cs" />
     <Compile Include="FluentBuilder\BehaviourTreeBuilderTests.cs" />
     <Compile Include="FluentBuilder\BehaviourTreeExpressionPrinter.cs" />
+    <Compile Include="FluentBuilder\LambdaBuilderSyntaxTests.cs" />
     <Compile Include="PrioritySelectorTests.cs" />
     <Compile Include="PrioritySequenceTests.cs" />
     <Compile Include="RandomTests.cs" />
@@ -57,6 +63,7 @@
     <Compile Include="CooldownTests.cs" />
     <Compile Include="FailerTests.cs" />
     <Compile Include="InverterTests.cs" />
+    <Compile Include="ParallelTests.cs" />
     <Compile Include="RepeatTests.cs" />
     <Compile Include="RetryTests.cs" />
     <Compile Include="SelectorTests.cs" />

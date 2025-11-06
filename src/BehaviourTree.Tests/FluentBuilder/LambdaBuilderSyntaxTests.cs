@@ -2,10 +2,11 @@ using BehaviourTree.Behaviours;
 using BehaviourTree.Composites;
 using BehaviourTree.Decorators;
 using BehaviourTree.FluentBuilder;
-using Xunit;
+using NUnit.Framework;
 
 namespace BehaviourTree.Tests.FluentBuilder
 {
+    [TestFixture]
     public class LambdaBuilderSyntaxTests
     {
         private class TestContext
@@ -14,7 +15,7 @@ namespace BehaviourTree.Tests.FluentBuilder
             public int ActionCallCount { get; set; }
         }
 
-        [Fact]
+        [Test]
         public void LambdaSequence_BuildsCorrectly_WithNestedChildren()
         {
             // Arrange & Act
@@ -28,15 +29,15 @@ namespace BehaviourTree.Tests.FluentBuilder
                 .Build();
 
             // Assert
-            Assert.NotNull(tree);
-            Assert.IsType<Sequence<TestContext>>(tree);
+            Assert.IsNotNull(tree);
+            Assert.IsInstanceOf<Sequence<TestContext>>(tree);
 
             var sequence = tree as Sequence<TestContext>;
-            Assert.Equal(3, sequence.Children.Length);
-            Assert.Equal("root", sequence.Name);
+            Assert.AreEqual(3, sequence.Children.Length);
+            Assert.AreEqual("root", sequence.Name);
         }
 
-        [Fact]
+        [Test]
         public void LambdaSelector_BuildsCorrectly_WithNestedChildren()
         {
             // Arrange & Act
@@ -50,15 +51,15 @@ namespace BehaviourTree.Tests.FluentBuilder
                 .Build();
 
             // Assert
-            Assert.NotNull(tree);
-            Assert.IsType<Selector<TestContext>>(tree);
+            Assert.IsNotNull(tree);
+            Assert.IsInstanceOf<Selector<TestContext>>(tree);
 
             var selector = tree as Selector<TestContext>;
-            Assert.Equal(3, selector.Children.Length);
-            Assert.Equal("root", selector.Name);
+            Assert.AreEqual(3, selector.Children.Length);
+            Assert.AreEqual("root", selector.Name);
         }
 
-        [Fact]
+        [Test]
         public void LambdaNestedComposites_BuildsHierarchyCorrectly()
         {
             // Arrange & Act
@@ -76,19 +77,19 @@ namespace BehaviourTree.Tests.FluentBuilder
                 .Build();
 
             // Assert
-            Assert.NotNull(tree);
+            Assert.IsNotNull(tree);
             var rootSequence = tree as Sequence<TestContext>;
-            Assert.NotNull(rootSequence);
-            Assert.Equal(3, rootSequence.Children.Length);
+            Assert.IsNotNull(rootSequence);
+            Assert.AreEqual(3, rootSequence.Children.Length);
 
             // Check nested selector
             var selector = rootSequence.Children[1] as Selector<TestContext>;
-            Assert.NotNull(selector);
-            Assert.Equal("combat", selector.Name);
-            Assert.Equal(2, selector.Children.Length);
+            Assert.IsNotNull(selector);
+            Assert.AreEqual("combat", selector.Name);
+            Assert.AreEqual(2, selector.Children.Length);
         }
 
-        [Fact]
+        [Test]
         public void LambdaActiveSequence_BuildsCorrectly()
         {
             // Arrange & Act
@@ -101,14 +102,14 @@ namespace BehaviourTree.Tests.FluentBuilder
                 .Build();
 
             // Assert
-            Assert.NotNull(tree);
-            Assert.IsType<ActiveSequence<TestContext>>(tree);
+            Assert.IsNotNull(tree);
+            Assert.IsInstanceOf<ActiveSequence<TestContext>>(tree);
 
             var activeSeq = tree as ActiveSequence<TestContext>;
-            Assert.Equal(2, activeSeq.Children.Length);
+            Assert.AreEqual(2, activeSeq.Children.Length);
         }
 
-        [Fact]
+        [Test]
         public void LambdaActiveSelector_BuildsCorrectly()
         {
             // Arrange & Act
@@ -121,14 +122,14 @@ namespace BehaviourTree.Tests.FluentBuilder
                 .Build();
 
             // Assert
-            Assert.NotNull(tree);
-            Assert.IsType<ActiveSelector<TestContext>>(tree);
+            Assert.IsNotNull(tree);
+            Assert.IsInstanceOf<ActiveSelector<TestContext>>(tree);
 
             var activeSel = tree as ActiveSelector<TestContext>;
-            Assert.Equal(2, activeSel.Children.Length);
+            Assert.AreEqual(2, activeSel.Children.Length);
         }
 
-        [Fact]
+        [Test]
         public void LambdaParallel_BuildsCorrectly()
         {
             // Arrange & Act
@@ -142,15 +143,15 @@ namespace BehaviourTree.Tests.FluentBuilder
                 .Build();
 
             // Assert
-            Assert.NotNull(tree);
-            Assert.IsType<Parallel<TestContext>>(tree);
+            Assert.IsNotNull(tree);
+            Assert.IsInstanceOf<Parallel<TestContext>>(tree);
 
             var parallel = tree as Parallel<TestContext>;
-            Assert.Equal(3, parallel.Children.Length);
-            Assert.Equal(ParallelPolicy.RequireAll, parallel.Policy);
+            Assert.AreEqual(3, parallel.Children.Length);
+            Assert.AreEqual(ParallelPolicy.RequireAll, parallel.Policy);
         }
 
-        [Fact]
+        [Test]
         public void LambdaRetry_BuildsCorrectly()
         {
             // Arrange & Act
@@ -162,15 +163,15 @@ namespace BehaviourTree.Tests.FluentBuilder
                 .Build();
 
             // Assert
-            Assert.NotNull(tree);
-            Assert.IsType<Retry<TestContext>>(tree);
+            Assert.IsNotNull(tree);
+            Assert.IsInstanceOf<Retry<TestContext>>(tree);
 
             var retryNode = tree as Retry<TestContext>;
-            Assert.Equal(3, retryNode.RetryCount);
-            Assert.NotNull(retryNode.Child);
+            Assert.AreEqual(3, retryNode.RetryCount);
+            Assert.IsNotNull(retryNode.Child);
         }
 
-        [Fact]
+        [Test]
         public void LambdaRepeat_BuildsCorrectly()
         {
             // Arrange & Act
@@ -182,15 +183,15 @@ namespace BehaviourTree.Tests.FluentBuilder
                 .Build();
 
             // Assert
-            Assert.NotNull(tree);
-            Assert.IsType<Repeat<TestContext>>(tree);
+            Assert.IsNotNull(tree);
+            Assert.IsInstanceOf<Repeat<TestContext>>(tree);
 
             var repeatNode = tree as Repeat<TestContext>;
-            Assert.Equal(5, repeatNode.RepeatCount);
-            Assert.NotNull(repeatNode.Child);
+            Assert.AreEqual(5, repeatNode.RepeatCount);
+            Assert.IsNotNull(repeatNode.Child);
         }
 
-        [Fact]
+        [Test]
         public void LambdaInvert_BuildsCorrectly()
         {
             // Arrange & Act
@@ -202,14 +203,14 @@ namespace BehaviourTree.Tests.FluentBuilder
                 .Build();
 
             // Assert
-            Assert.NotNull(tree);
-            Assert.IsType<Inverter<TestContext>>(tree);
+            Assert.IsNotNull(tree);
+            Assert.IsInstanceOf<Inverter<TestContext>>(tree);
 
             var inverter = tree as Inverter<TestContext>;
-            Assert.NotNull(inverter.Child);
+            Assert.IsNotNull(inverter.Child);
         }
 
-        [Fact]
+        [Test]
         public void LambdaTimeLimit_BuildsCorrectly()
         {
             // Arrange & Act
@@ -221,15 +222,15 @@ namespace BehaviourTree.Tests.FluentBuilder
                 .Build();
 
             // Assert
-            Assert.NotNull(tree);
-            Assert.IsType<TimeLimit<TestContext>>(tree);
+            Assert.IsNotNull(tree);
+            Assert.IsInstanceOf<TimeLimit<TestContext>>(tree);
 
             var timeLimit = tree as TimeLimit<TestContext>;
-            Assert.Equal(1000, timeLimit.TimeLimitInMilliseconds);
-            Assert.NotNull(timeLimit.Child);
+            Assert.AreEqual(1000, timeLimit.TimeLimitInMilliseconds);
+            Assert.IsNotNull(timeLimit.Child);
         }
 
-        [Fact]
+        [Test]
         public void LambdaSyntax_ExecutesCorrectly()
         {
             // Arrange
@@ -251,11 +252,11 @@ namespace BehaviourTree.Tests.FluentBuilder
             var status = tree.Tick(context);
 
             // Assert
-            Assert.Equal(BehaviourStatus.Succeeded, status);
-            Assert.Equal(1, context.ActionCallCount);
+            Assert.AreEqual(BehaviourStatus.Succeeded, status);
+            Assert.AreEqual(1, context.ActionCallCount);
         }
 
-        [Fact]
+        [Test]
         public void LambdaSyntax_CanMixWithTraditionalSyntax()
         {
             // Arrange & Act
@@ -275,16 +276,16 @@ namespace BehaviourTree.Tests.FluentBuilder
                 .Build();
 
             // Assert
-            Assert.NotNull(tree);
+            Assert.IsNotNull(tree);
             var rootSeq = tree as Sequence<TestContext>;
-            Assert.Equal(3, rootSeq.Children.Length);
+            Assert.AreEqual(3, rootSeq.Children.Length);
 
             var selector = rootSeq.Children[1] as Selector<TestContext>;
-            Assert.NotNull(selector);
-            Assert.Equal(2, selector.Children.Length);
+            Assert.IsNotNull(selector);
+            Assert.AreEqual(2, selector.Children.Length);
         }
 
-        [Fact]
+        [Test]
         public void LambdaSyntax_DeepNesting_BuildsCorrectly()
         {
             // Arrange & Act
@@ -302,16 +303,16 @@ namespace BehaviourTree.Tests.FluentBuilder
                 .Build();
 
             // Assert
-            Assert.NotNull(tree);
+            Assert.IsNotNull(tree);
             var level1 = tree as Sequence<TestContext>;
-            Assert.NotNull(level1);
+            Assert.IsNotNull(level1);
 
             var level2 = level1.Children[0] as Selector<TestContext>;
-            Assert.NotNull(level2);
+            Assert.IsNotNull(level2);
 
             var level3 = level2.Children[0] as Sequence<TestContext>;
-            Assert.NotNull(level3);
-            Assert.Single(level3.Children);
+            Assert.IsNotNull(level3);
+            Assert.AreEqual(1, level3.Children.Length);
         }
     }
 }
