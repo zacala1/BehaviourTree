@@ -4,12 +4,12 @@
     {
         private readonly IRandomProvider _randomProvider;
 
-        public RandomSequence(IBehaviour<TContext>[] children, IRandomProvider randomProvider = null)
+        public RandomSequence(IBehaviour<TContext>[] children, IRandomProvider? randomProvider = null)
             : this("RandomSequence", children, randomProvider)
         {
         }
 
-        public RandomSequence(string name, IBehaviour<TContext>[] children, IRandomProvider randomProvider = null) : base(name, children)
+        public RandomSequence(string name, IBehaviour<TContext>[] children, IRandomProvider? randomProvider = null) : base(name, children)
         {
             _randomProvider = randomProvider ?? RandomProvider.Default;
             _shuffledChildren = Children.Shuffle(_randomProvider);

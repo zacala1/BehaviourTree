@@ -1,6 +1,6 @@
 ﻿namespace BehaviourTree.Composites
 {
-    public sealed class PrioritySelector<TContext> : CompositeBehaviour<TContext>
+    public class PrioritySelector<TContext> : CompositeBehaviour<TContext>
     {
         public PrioritySelector(IBehaviour<TContext>[] children) : this("PrioritySelector", children)
         {

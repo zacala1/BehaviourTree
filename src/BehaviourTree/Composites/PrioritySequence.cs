@@ -5,7 +5,7 @@
     /// Allows higher priority children to interrupt lower priority ones.
     /// OPTIMIZED: Cached array access for high-frequency tick operations.
     /// </summary>
-    public sealed class PrioritySequence<TContext> : CompositeBehaviour<TContext>
+    public class PrioritySequence<TContext> : CompositeBehaviour<TContext>
     {
         public PrioritySequence(IBehaviour<TContext>[] children) : this("PrioritySequence", children)
         {

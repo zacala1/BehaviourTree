@@ -4,30 +4,30 @@ namespace BehaviourTree.Decorators
 {
     public sealed class UntilSuccessWithinTimeout<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
     {
-        private readonly Func<TContext, long> _getTimeoutInMilliseconds;
-        private readonly Action<TContext> _timeoutAction;
+        private readonly Func<TContext, long>? _getTimeoutInMilliseconds;
+        private readonly Action<TContext>? _timeoutAction;
         private long _timeoutInMilliseconds;
         private long? _initialTimestamp;
         public long TimeoutInMilliseconds => _timeoutInMilliseconds;
 
-        public UntilSuccessWithinTimeout(IBehaviour<TContext> child, Func<TContext, long> getTimeoutInMilliseconds, Action<TContext> timeoutAction = null)
+        public UntilSuccessWithinTimeout(IBehaviour<TContext> child, Func<TContext, long> getTimeoutInMilliseconds, Action<TContext>? timeoutAction = null)
             : this("UntilSuccessWithinTimeout", child, getTimeoutInMilliseconds, timeoutAction)
         {
         }
 
-        public UntilSuccessWithinTimeout(string name, IBehaviour<TContext> child, Func<TContext, long> getTimeoutInMilliseconds, Action<TContext> timeoutAction = null)
+        public UntilSuccessWithinTimeout(string name, IBehaviour<TContext> child, Func<TContext, long> getTimeoutInMilliseconds, Action<TContext>? timeoutAction = null)
             : base(name, child)
         {
             _getTimeoutInMilliseconds = getTimeoutInMilliseconds ?? throw new ArgumentNullException(nameof(getTimeoutInMilliseconds));
             _timeoutAction = timeoutAction;
         }
 
-        public UntilSuccessWithinTimeout(IBehaviour<TContext> child, long timeoutInMilliseconds = default, Action<TContext> timeoutAction = null)
+        public UntilSuccessWithinTimeout(IBehaviour<TContext> child, long timeoutInMilliseconds = default, Action<TContext>? timeoutAction = null)
             : this("UntilSuccessWithinTimeout", child, timeoutInMilliseconds, timeoutAction)
         {
         }
 
-        public UntilSuccessWithinTimeout(string name, IBehaviour<TContext> child, long timeoutInMilliseconds = default, Action<TContext> timeoutAction = null)
+        public UntilSuccessWithinTimeout(string name, IBehaviour<TContext> child, long timeoutInMilliseconds = default, Action<TContext>? timeoutAction = null)
             : base(name, child)
         {
             _timeoutInMilliseconds = timeoutInMilliseconds;

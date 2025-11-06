@@ -6,12 +6,12 @@ namespace BehaviourTree.Decorators
     {
         private readonly IRandomProvider _randomProvider;
 
-        public Random(IBehaviour<TContext> child, double threshold, IRandomProvider randomProvider = null)
+        public Random(IBehaviour<TContext> child, double threshold, IRandomProvider? randomProvider = null)
             : this("Random", child, threshold, randomProvider)
         {
         }
 
-        public Random(string name, IBehaviour<TContext> child, double threshold, IRandomProvider randomProvider = null) : base(name, child)
+        public Random(string name, IBehaviour<TContext> child, double threshold, IRandomProvider? randomProvider = null) : base(name, child)
         {
             if (threshold <= 0 || threshold > 1)
             {

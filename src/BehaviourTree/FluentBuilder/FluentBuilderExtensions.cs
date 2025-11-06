@@ -190,7 +190,7 @@ namespace BehaviourTree.FluentBuilder
         public static FluentBuilder<TContext> RandomSequence<TContext>(
             this FluentBuilder<TContext> builder,
             string name,
-            IRandomProvider randomProvider = null)
+            IRandomProvider? randomProvider = null)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             return builder.PushComposite(children => new RandomSequence<TContext>(name, children, randomProvider));
@@ -214,7 +214,7 @@ namespace BehaviourTree.FluentBuilder
         public static FluentBuilder<TContext> RandomSelector<TContext>(
             this FluentBuilder<TContext> builder,
             string name,
-            IRandomProvider randomProvider = null)
+            IRandomProvider? randomProvider = null)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             return builder.PushComposite(children => new RandomSelector<TContext>(name, children, randomProvider));
@@ -504,7 +504,7 @@ namespace BehaviourTree.FluentBuilder
         public static FluentBuilder<TContext> UntilSuccessWithinTimeout<TContext>(
             this FluentBuilder<TContext> builder,
             string name, long timeoutInMilliseconds = default,
-            Action<TContext> timeoutAction = null)
+            Action<TContext>? timeoutAction = null)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             return builder.PushDecorate(child => new UntilSuccessWithinTimeout<TContext>(name, child, timeoutInMilliseconds, timeoutAction));
@@ -530,7 +530,7 @@ namespace BehaviourTree.FluentBuilder
             this FluentBuilder<TContext> builder,
             string name,
             double threshold,
-            IRandomProvider randomProvider = null)
+            IRandomProvider? randomProvider = null)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             return builder.PushDecorate(child => new Random<TContext>(name, child, threshold, randomProvider));
@@ -801,7 +801,7 @@ namespace BehaviourTree.FluentBuilder
             this FluentBuilder<TContext> builder,
             string name,
             Func<TContext, long> getTimeoutInMilliseconds,
-            Action<TContext> timeoutAction = null)
+            Action<TContext>? timeoutAction = null)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (name is null) throw new ArgumentNullException(nameof(name));
