@@ -70,6 +70,9 @@ namespace BehaviourTree.Decorators
             _timeoutAction = timeoutAction;
         }
 
+        /// <summary>
+        /// Core update logic for this node.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
@@ -93,6 +96,9 @@ namespace BehaviourTree.Decorators
             return (childStatus == BehaviourStatus.Succeeded) ? BehaviourStatus.Succeeded : BehaviourStatus.Running;
         }
 
+        /// <summary>
+        /// Called when node terminates.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
@@ -100,6 +106,9 @@ namespace BehaviourTree.Decorators
             base.OnTerminate(status);
         }
 
+        /// <summary>
+        /// Called when node is reset.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {

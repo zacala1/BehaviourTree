@@ -8,7 +8,7 @@ namespace BehaviourTree.Decorators
     /// <typeparam name="TContext">The context type.</typeparam>
     public sealed class Repeater<TContext> : DecoratorBehaviour<TContext>
     {
-        private readonly Func<TContext, int> _getRepeatCount;
+        private readonly Func<TContext, int>? _getRepeatCount;
         private int _repeatCount;
         private int _counter;
 
@@ -71,6 +71,9 @@ namespace BehaviourTree.Decorators
             _repeatCount = repeatCount;
         }
 
+        /// <summary>
+        /// Core update logic for this node.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
@@ -89,6 +92,9 @@ namespace BehaviourTree.Decorators
             return childStatus;
         }
 
+        /// <summary>
+        /// Called on first tick.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnInitialize(TContext context)
         {
@@ -98,12 +104,18 @@ namespace BehaviourTree.Decorators
             }
         }
 
+        /// <summary>
+        /// Called when node terminates.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
             _counter = 0;
         }
 
+        /// <summary>
+        /// Called when node is reset.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {

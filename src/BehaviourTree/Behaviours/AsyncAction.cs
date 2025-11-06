@@ -13,7 +13,7 @@ namespace BehaviourTree.Behaviours
     {
         private readonly Func<TContext, CancellationToken, Task<BehaviourStatus>> action;
         private readonly TimeSpan timeout;
-        private readonly Func<TContext, bool> cancelCondition;
+        private readonly Func<TContext, bool>? cancelCondition;
         private Task<BehaviourStatus>? task;
         private CancellationTokenSource? cts;
 
@@ -48,7 +48,7 @@ namespace BehaviourTree.Behaviours
         /// <exception cref="ArgumentNullException">Thrown when action is null</exception>
         public AsyncAction(string name,
             Func<TContext, CancellationToken, Task<BehaviourStatus>> action,
-            Func<TContext, bool> cancelCondition,
+            Func<TContext, bool>? cancelCondition,
             TimeSpan timeout = default) : base(name)
         {
             if (action is null)
@@ -59,6 +59,9 @@ namespace BehaviourTree.Behaviours
             this.timeout = timeout;
         }
 
+        /// <summary>
+        /// Core update logic for this node.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
@@ -97,6 +100,9 @@ namespace BehaviourTree.Behaviours
             return BehaviourStatus.Running;
         }
 
+        /// <summary>
+        /// Called when node terminates.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
@@ -104,6 +110,9 @@ namespace BehaviourTree.Behaviours
             base.OnTerminate(status);
         }
 
+        /// <summary>
+        /// Called when node is reset.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {

@@ -8,7 +8,7 @@ namespace BehaviourTree.Decorators
     /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
     public sealed class Retry<TContext> : DecoratorBehaviour<TContext>
     {
-        private readonly Func<TContext, int> _getRetryCount;
+        private readonly Func<TContext, int>? _getRetryCount;
         private int _retryCount;
         private int _counter;
 
@@ -73,6 +73,9 @@ namespace BehaviourTree.Decorators
             _retryCount = retryCount;
         }
 
+        /// <summary>
+        /// Core update logic for this node.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
@@ -92,6 +95,9 @@ namespace BehaviourTree.Decorators
             return childStatus;
         }
 
+        /// <summary>
+        /// Called on first tick.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnInitialize(TContext context)
         {
@@ -101,12 +107,18 @@ namespace BehaviourTree.Decorators
             }
         }
 
+        /// <summary>
+        /// Called when node terminates.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
             _counter = 0;
         }
 
+        /// <summary>
+        /// Called when node is reset.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {

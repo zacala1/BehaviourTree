@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace BehaviourTree.FluentBuilder
 {
+    /// <summary>
+    /// Extension methods for fluent behavior tree building.
+    /// </summary>
     public static class FluentBuilderExtensions
     {
         /// <summary>
@@ -422,7 +425,7 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// Creates a <see cref="Repeater{TContext}"/> node.
+        /// Creates a <see cref="TimeLimiter{TContext}"/> node.
         /// Returns <see cref="BehaviourStatus.Failed"/> if the child node does not succeed within <paramref name="timeLimitInMilliseconds"/>.
         /// </summary>
         /// <param name="builder">Behavior tree builder</param>
@@ -490,12 +493,13 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// Creates a <see cref="Decorators.UntilSuccess{TContext}"/> node.
-        /// Retries the child node until it succeeds. On failure, retries <paramref name="countdown"/> times.
+        /// Creates a <see cref="Decorators.UntilSuccessWithinTimeout{TContext}"/> node.
+        /// Retries the child node until it succeeds or timeout is reached.
         /// </summary>
         /// <param name="builder">Behavior tree builder</param>
         /// <param name="name">The display name of the node</param>
-        /// <param name="countdown">Number of retries on failure</param>
+        /// <param name="timeoutInMilliseconds">Timeout duration in milliseconds</param>
+        /// <param name="timeoutAction">Optional action to execute on timeout</param>
         /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
         /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
@@ -514,7 +518,7 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// Creates a <see cref="CSP.Foundation.BehaviourTree.Decorators.Random{TContext}"/> node.
+        /// Creates a <see cref="Random{TContext}"/> node.
         /// Probabilistically executes the child node or returns <see cref="BehaviourStatus.Failed"/>.
         /// Executes the child node only when the generated random number is greater than the <paramref name="threshold"/> value.
         /// </summary>
@@ -586,7 +590,7 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// Creates a <see cref="TimeLimiterRenew{TContext}"/> node.
+        /// Creates a <see cref="TimeLimiter{TContext}"/> node.
         /// When the node is initialized, the time limit is renewed by <paramref name="getTimeLimitInMilliseconds"/>.
         /// Returns <see cref="BehaviourStatus.Failed"/> if the child node does not succeed within the time limit.
         /// </summary>
@@ -637,7 +641,7 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// Creates a <see cref="RateLimiterRenew{TContext}"/> node.
+        /// Creates a <see cref="RateLimiter{TContext}"/> node.
         /// Executes the child node after the delay time. When the node is initialized, the delay time is renewed by <paramref name="getIntervalInMilliseconds"/>.
         /// Returns <see cref="BehaviourStatus.Running"/> during the delay time,
         /// and returns the child node's result afterwards.
@@ -665,7 +669,7 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// Creates a <see cref="RepeaterRenew{TContext}"/> node.
+        /// Creates a <see cref="Repeater{TContext}"/> node.
         /// Returns <see cref="BehaviourStatus.Succeeded"/> when the child node's result succeeds the specified number of times.
         /// When the node is initialized, the repeat count is renewed by <paramref name="getRepeatCount"/>.
         /// </summary>
@@ -691,7 +695,7 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// Creates a <see cref="CSP.Foundation.BehaviourTree.Decorators.RetryRenew{TContext}"/> node.
+        /// Creates a <see cref="Retry{TContext}"/> node.
         /// If the child node's result is failure, returns <see cref="BehaviourStatus.Running"/> repeatedly for <paramref name="getRetryCount"/> times.
         /// When the node is initialized, the retry count is renewed by <paramref name="getRetryCount"/>.
         /// </summary>
@@ -766,6 +770,19 @@ namespace BehaviourTree.FluentBuilder
             return builder.PushDecorate(child => new UntilFailed<TContext>(name, child, getCountdown));
         }
 
+        /// <summary>
+        /// Creates an <see cref="AfterFailed{TContext}"/> decorator that executes an action after the child node fails.
+        /// </summary>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="actionAfterFailed">Action to execute after child fails</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
+        /// <remarks>
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> AfterFailed<TContext>(
             this FluentBuilder<TContext> builder,
             string name,
@@ -777,6 +794,19 @@ namespace BehaviourTree.FluentBuilder
             return builder.PushDecorate(child => new AfterFailed<TContext>(name, child, actionAfterFailed));
         }
 
+        /// <summary>
+        /// Creates an <see cref="AfterSuccess{TContext}"/> decorator that executes an action after the child node succeeds.
+        /// </summary>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="actionAfterSuccess">Action to execute after child succeeds</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
+        /// <remarks>
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> AfterSuccess<TContext>(
             this FluentBuilder<TContext> builder,
             string name,
@@ -790,11 +820,12 @@ namespace BehaviourTree.FluentBuilder
 
         /// <summary>
         /// Creates a <see cref="Decorators.UntilSuccessWithinTimeout{TContext}"/> node.
-        /// Retries the child node until it succeeds. On failure, retries <paramref name="getTimeoutInMilliseconds"/> times.
+        /// Retries the child node until it succeeds or timeout is reached.
         /// </summary>
         /// <param name="builder">Behavior tree builder</param>
         /// <param name="name">The display name of the node</param>
-        /// <param name="getTimeoutInMilliseconds">Number of retries on failure</param>
+        /// <param name="getTimeoutInMilliseconds">Function to get timeout duration in milliseconds</param>
+        /// <param name="timeoutAction">Optional action to execute on timeout</param>
         /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
         /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
@@ -1066,7 +1097,7 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// Creates a <see cref="Decorators.Repeat{TContext}"/> decorator with lambda-based syntax.
+        /// Creates a <see cref="Decorators.Repeater{TContext}"/> decorator with lambda-based syntax.
         /// This pattern provides automatic indentation and eliminates the need for manual End() calls.
         /// </summary>
         /// <param name="builder">Behavior tree builder</param>
@@ -1114,7 +1145,7 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// Creates a <see cref="Decorators.TimeLimit{TContext}"/> decorator with lambda-based syntax.
+        /// Creates a <see cref="Decorators.TimeLimiter{TContext}"/> decorator with lambda-based syntax.
         /// This pattern provides automatic indentation and eliminates the need for manual End() calls.
         /// </summary>
         /// <param name="builder">Behavior tree builder</param>

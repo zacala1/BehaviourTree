@@ -48,6 +48,17 @@ namespace BehaviourTree.Events
         /// </summary>
         public int Depth { get; }
 
+        /// <summary>
+        /// Creates a new behavior tree node event with the specified information.
+        /// </summary>
+        /// <param name="nodeId">Unique identifier for the node</param>
+        /// <param name="nodeName">Human-readable name of the node</param>
+        /// <param name="nodeType">Type name of the node</param>
+        /// <param name="status">Current status of the node</param>
+        /// <param name="eventType">Type of lifecycle event</param>
+        /// <param name="elapsedMilliseconds">Time elapsed during execution</param>
+        /// <param name="parentId">Parent node ID if applicable</param>
+        /// <param name="depth">Depth of this node in the tree hierarchy</param>
         public BehaviourTreeNodeEvent(
             int nodeId,
             string nodeName,
@@ -68,6 +79,9 @@ namespace BehaviourTree.Events
             Depth = depth;
         }
 
+        /// <summary>
+        /// Returns a string representation of this event for debugging and logging.
+        /// </summary>
         public override string ToString()
         {
             return $"[{EventType}] {NodeType}(id={NodeId}, name={NodeName}, status={Status}, elapsed={ElapsedMilliseconds}ms)";

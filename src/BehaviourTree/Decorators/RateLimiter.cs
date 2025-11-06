@@ -9,7 +9,7 @@ namespace BehaviourTree.Decorators
     /// <typeparam name="TContext">Context type that implements IClock for time tracking</typeparam>
     public sealed class RateLimiter<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
     {
-        private readonly Func<TContext, long> _getIntervalInMilliseconds;
+        private readonly Func<TContext, long>? _getIntervalInMilliseconds;
         private long? _previousTimestamp;
         private BehaviourStatus _previousChildStatus;
         private long _intervalInMilliseconds;
@@ -87,6 +87,9 @@ namespace BehaviourTree.Decorators
             return _previousChildStatus;
         }
 
+        /// <summary>
+        /// Called on first tick.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnInitialize(TContext context)
         {

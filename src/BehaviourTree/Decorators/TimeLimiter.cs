@@ -8,7 +8,7 @@ namespace BehaviourTree.Decorators
     /// <typeparam name="TContext">Context type that implements IClock for time tracking</typeparam>
     public sealed class TimeLimiter<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
     {
-        private readonly Func<TContext, long> _getTimeLimitInMilliseconds;
+        private readonly Func<TContext, long>? _getTimeLimitInMilliseconds;
         private long _timeLimitInMilliseconds;
         private long? _initialTimestamp;
 
@@ -62,6 +62,9 @@ namespace BehaviourTree.Decorators
             _timeLimitInMilliseconds = timeLimitInMilliseconds;
         }
 
+        /// <summary>
+        /// Core update logic for this node.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
@@ -82,6 +85,9 @@ namespace BehaviourTree.Decorators
             return Child.Tick(context);
         }
 
+        /// <summary>
+        /// Called on first tick.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnInitialize(TContext context)
         {
@@ -91,6 +97,9 @@ namespace BehaviourTree.Decorators
             }
         }
 
+        /// <summary>
+        /// Called when node terminates.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
@@ -98,6 +107,9 @@ namespace BehaviourTree.Decorators
             base.OnTerminate(status);
         }
 
+        /// <summary>
+        /// Called when node is reset.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {

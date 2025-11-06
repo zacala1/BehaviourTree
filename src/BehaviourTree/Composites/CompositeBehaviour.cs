@@ -61,12 +61,18 @@ namespace BehaviourTree.Composites
             base.Dispose(disposing);
         }
 
+        /// <summary>
+        /// Called when this composite node completes execution. Resets all children.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
             DoReset(status);
         }
 
+        /// <summary>
+        /// Called when this composite node is reset. Resets all children to Ready status.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {

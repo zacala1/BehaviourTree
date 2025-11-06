@@ -18,6 +18,10 @@ namespace BehaviourTree
         /// </summary>
         private const int DEBUG_SLOW_NODE_THRESHOLD_MS = 80;
 
+        /// <summary>
+        /// Initializes a new behavior node with the specified name.
+        /// </summary>
+        /// <param name="name">Human-readable name for this node</param>
         protected BaseBehaviour(string name) : base(name)
         {
         }
@@ -147,7 +151,7 @@ namespace BehaviourTree
         private readonly string _cachedTypeName;
 
         // OPTIMIZATION: Cache observer array to avoid ToArray() allocations on every notification
-        private IBehaviourTreeObserver[] _cachedObserverArray;
+        private IBehaviourTreeObserver[]? _cachedObserverArray;
         private bool _observerArrayDirty = false;
 
         /// <summary>
@@ -179,6 +183,10 @@ namespace BehaviourTree
             protected set;
         }
 
+        /// <summary>
+        /// Initializes a new behavior node with the specified name.
+        /// </summary>
+        /// <param name="name">Human-readable name for this node</param>
         protected BaseBehaviour(string name)
         {
             if (name is null) throw new ArgumentNullException(nameof(name));

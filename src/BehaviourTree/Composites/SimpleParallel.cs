@@ -77,6 +77,9 @@ namespace BehaviourTree.Composites
             return BehaviourStatus.Running;
         }
 
+        /// <summary>
+        /// Executes both children and evaluates the result based on the policy.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
@@ -101,6 +104,9 @@ namespace BehaviourTree.Composites
             return _behave(context);
         }
 
+        /// <summary>
+        /// Resets both child status tracking when the node is reset.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {

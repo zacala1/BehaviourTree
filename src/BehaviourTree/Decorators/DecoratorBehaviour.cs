@@ -38,6 +38,9 @@
             base.Dispose(disposing);
         }
 
+        /// <summary>
+        /// Called when this decorator node is reset. Resets the child node.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {

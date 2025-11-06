@@ -27,7 +27,7 @@ namespace BehaviourTree.Behaviours
         /// <param name="name">Node name for debugging</param>
         /// <param name="predicate">Condition predicate to evaluate</param>
         /// <exception cref="ArgumentNullException">Thrown when predicate is null</exception>
-        public Condition(string name, Func<TContext, bool> predicate) : base(name ?? "Condition")
+        public Condition(string? name, Func<TContext, bool> predicate) : base(name ?? "Condition")
         {
             _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
         }

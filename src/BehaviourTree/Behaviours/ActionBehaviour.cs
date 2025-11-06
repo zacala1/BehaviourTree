@@ -27,6 +27,9 @@ namespace BehaviourTree.Behaviours
             _action = action ?? throw new ArgumentNullException(nameof(action));
         }
 
+        /// <summary>
+        /// Core update logic for this node.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {

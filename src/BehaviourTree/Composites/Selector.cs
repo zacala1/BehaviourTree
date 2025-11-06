@@ -60,6 +60,9 @@
             return BehaviourStatus.Failed;
         }
 
+        /// <summary>
+        /// Resets the current child index when the node is reset.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {

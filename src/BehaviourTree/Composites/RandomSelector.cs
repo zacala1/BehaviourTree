@@ -33,12 +33,18 @@
 
         private IBehaviour<TContext>[] _shuffledChildren;
 
+        /// <summary>
+        /// Returns the child at the specified index from the shuffled children array.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override IBehaviour<TContext> GetChild(int index)
         {
             return _shuffledChildren[index];
         }
 
+        /// <summary>
+        /// Re-shuffles the children when the node is reset.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {

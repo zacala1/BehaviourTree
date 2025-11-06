@@ -13,7 +13,14 @@ namespace BehaviourTree.Composites
         private readonly int _successRequired;
         private BehaviourStatus[] _childStatuses;
 
+        /// <summary>
+        /// Gets the policy used to determine success/failure of this parallel node.
+        /// </summary>
         public ParallelPolicy Policy => _policy;
+
+        /// <summary>
+        /// Gets the number of children required to succeed for this node to succeed.
+        /// </summary>
         public int SuccessRequired => _successRequired;
 
         /// <summary>
@@ -130,6 +137,9 @@ namespace BehaviourTree.Composites
             return BehaviourStatus.Running;
         }
 
+        /// <summary>
+        /// Resets child status tracking when the node is reset.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {

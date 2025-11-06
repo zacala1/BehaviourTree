@@ -27,7 +27,7 @@ namespace BehaviourTree.FluentBuilder
     public sealed class FluentBuilder<TContext>
     {
         private readonly Stack<BehaviourBuilder<TContext>> _parentNodeStack = new Stack<BehaviourBuilder<TContext>>();
-        private BehaviourBuilder<TContext> _currentBehaviourBuilder;
+        private BehaviourBuilder<TContext>? _currentBehaviourBuilder;
 
         /// <summary>
         /// Ends the current composite or decorator node and returns to its parent.

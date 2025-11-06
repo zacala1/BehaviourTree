@@ -9,7 +9,7 @@ namespace BehaviourTree.Decorators
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
     public sealed class Cooldown<TContext> : DecoratorBehaviour<TContext>
     {
-        private readonly Func<TContext, long> _getCooldownTimeInMilliseconds;
+        private readonly Func<TContext, long>? _getCooldownTimeInMilliseconds;
         private long _cooldownTimeInMilliseconds;
         private long _cooldownStartedTimestamp;
         private bool _onCooldown;
@@ -69,6 +69,9 @@ namespace BehaviourTree.Decorators
             _cooldownTimeInMilliseconds = cooldownTimeInMilliseconds;
         }
 
+        /// <summary>
+        /// Core update logic for this node.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
@@ -132,6 +135,9 @@ namespace BehaviourTree.Decorators
             _cooldownStartedTimestamp = GetCurrentTimestamp(context);
         }
 
+        /// <summary>
+        /// Called on first tick.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnInitialize(TContext context)
         {

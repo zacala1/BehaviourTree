@@ -40,6 +40,9 @@ namespace BehaviourTree.Behaviours
             _waitTimeInMilliseconds = waitTimeInMilliseconds;
         }
 
+        /// <summary>
+        /// Core update logic for this node.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
@@ -73,12 +76,18 @@ namespace BehaviourTree.Behaviours
             return TimeProvider.GetTimestampInMilliseconds();
         }
 
+        /// <summary>
+        /// Called when node terminates.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
             DoReset(status);
         }
 
+        /// <summary>
+        /// Called when node is reset.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {

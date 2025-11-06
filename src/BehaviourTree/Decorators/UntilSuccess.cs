@@ -8,7 +8,7 @@ namespace BehaviourTree.Decorators
     /// <typeparam name="TContext">The context type.</typeparam>
     public sealed class UntilSuccess<TContext> : DecoratorBehaviour<TContext>
     {
-        private readonly Func<TContext, int> _getCountdown;
+        private readonly Func<TContext, int>? _getCountdown;
         private int _countdown;
         private int _counter;
 
@@ -22,11 +22,22 @@ namespace BehaviourTree.Decorators
         /// </summary>
         public int Counter => _counter;
 
+        /// <summary>
+        /// Creates an UntilSuccess decorator with dynamic countdown from context.
+        /// </summary>
+        /// <param name="child">Child node to repeat</param>
+        /// <param name="getCountdown">Function to get countdown value from context</param>
         public UntilSuccess(IBehaviour<TContext> child, Func<TContext, int> getCountdown)
             : this("UntilSuccess", child, getCountdown)
         {
         }
 
+        /// <summary>
+        /// Creates an UntilSuccess decorator with dynamic countdown from context and custom name.
+        /// </summary>
+        /// <param name="name">Node name for debugging</param>
+        /// <param name="child">Child node to repeat</param>
+        /// <param name="getCountdown">Function to get countdown value from context</param>
         public UntilSuccess(string name, IBehaviour<TContext> child, Func<TContext, int> getCountdown)
             : base(name, child)
         {
@@ -34,11 +45,22 @@ namespace BehaviourTree.Decorators
             _counter = 0;
         }
 
+        /// <summary>
+        /// Creates an UntilSuccess decorator with static countdown.
+        /// </summary>
+        /// <param name="child">Child node to repeat</param>
+        /// <param name="countdown">Number of times to retry on failure (0 for infinite)</param>
         public UntilSuccess(IBehaviour<TContext> child, int countdown = default)
             : this("UntilSuccess", child, countdown)
         {
         }
 
+        /// <summary>
+        /// Creates an UntilSuccess decorator with static countdown and custom name.
+        /// </summary>
+        /// <param name="name">Node name for debugging</param>
+        /// <param name="child">Child node to repeat</param>
+        /// <param name="countdown">Number of times to retry on failure (0 for infinite)</param>
         public UntilSuccess(string name, IBehaviour<TContext> child, int countdown = default)
             : base(name, child)
         {
@@ -46,6 +68,9 @@ namespace BehaviourTree.Decorators
             _counter = 0;
         }
 
+        /// <summary>
+        /// Core update logic for this node.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
@@ -62,6 +87,9 @@ namespace BehaviourTree.Decorators
             return childStatus == BehaviourStatus.Succeeded ? BehaviourStatus.Succeeded : BehaviourStatus.Running;
         }
 
+        /// <summary>
+        /// Called on first tick.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnInitialize(TContext context)
         {
@@ -72,6 +100,9 @@ namespace BehaviourTree.Decorators
             _counter = _countdown;
         }
 
+        /// <summary>
+        /// Called when node terminates.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
@@ -79,6 +110,9 @@ namespace BehaviourTree.Decorators
             base.OnTerminate(status);
         }
 
+        /// <summary>
+        /// Called when node is reset.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {
