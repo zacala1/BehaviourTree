@@ -113,6 +113,12 @@ namespace BehaviourTree.Graph
 
         private static string GetDecoratorInfo<TContext>(IBehaviour<TContext> obj)
         {
+            // Handle types with IClock constraint using runtime type checking
+            var typeName = obj.GetType().Name;
+            if (typeName.StartsWith("TimeLimiter")) return "TimeLimit";
+            if (typeName.StartsWith("RateLimiter")) return "RateLimit";
+            if (typeName.StartsWith("UntilSuccessWithinTimeout")) return "UntilSuccessWithinTimeout";
+
             return obj switch
             {
                 Retry<TContext> retry => $"Retry({retry.RetryCount})",
@@ -120,8 +126,6 @@ namespace BehaviourTree.Graph
                 Inverter<TContext> => "Invert",
                 Cooldown<TContext> cooldown => $"Cooldown({cooldown.CooldownTimeInMilliseconds}ms)",
                 CooldownRenew<TContext> => "Cooldown(dynamic)",
-                TimeLimiter<_> => "TimeLimit",
-                RateLimiter<_> => "RateLimit",
                 UntilSuccess<TContext> => "UntilSuccess",
                 UntilFailed<TContext> => "UntilFailed",
                 Succeeder<TContext> => "AlwaysSucceed",

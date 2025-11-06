@@ -1129,6 +1129,7 @@ namespace BehaviourTree.FluentBuilder
             string name,
             int timeLimitInMilliseconds,
             Action<FluentBuilder<TContext>> buildChild)
+            where TContext : IClock
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (buildChild == null) throw new ArgumentNullException(nameof(buildChild));

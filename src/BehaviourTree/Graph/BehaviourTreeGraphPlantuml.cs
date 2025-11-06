@@ -121,6 +121,12 @@ namespace BehaviourTree.Graph
 
         private static string GetDecoratorSymbol<TContext>(IBehaviour<TContext> obj)
         {
+            // Handle types with IClock constraint using runtime type checking
+            var typeName = obj.GetType().Name;
+            if (typeName.StartsWith("TimeLimiter")) return "TL";
+            if (typeName.StartsWith("RateLimiter")) return "RL";
+            if (typeName.StartsWith("UntilSuccessWithinTimeout")) return "UST";
+
             return obj switch
             {
                 // Retry/Repeat
@@ -135,13 +141,10 @@ namespace BehaviourTree.Graph
                 // Time-based decorators
                 Cooldown<TContext> cooldown => $"CD:{cooldown.CooldownTimeInMilliseconds}ms",
                 CooldownRenew<TContext> => "CD:R",
-                TimeLimiter<_> => "TL",
-                RateLimiter<_> => "RL",
 
                 // Until decorators
                 UntilSuccess<TContext> => "US",
                 UntilFailed<TContext> => "UF",
-                UntilSuccessWithinTimeout<_> => "UST",
 
                 // After decorators
                 AfterSuccess<TContext> => "→S",
