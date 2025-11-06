@@ -25,6 +25,7 @@ namespace BehaviourTree
         /// <summary>
         /// Executes one iteration of this behavior node's lifecycle.
         /// First tick calls Initialize, subsequent ticks call Update, and completion calls Terminate.
+        /// OPTIMIZED: Only measures elapsed time when observers are attached or in DEBUG mode.
         /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         public BehaviourStatus Tick(TContext context)
@@ -36,13 +37,28 @@ namespace BehaviourTree
                 NotifyObservers(BehaviourTreeNodeInfoEventType.Initialize, Status, 0);
             }
 
-            // Measure execution time for performance monitoring
-            var timer = Stopwatch.StartNew();
+            // OPTIMIZATION: Only create Stopwatch if observers exist or in DEBUG mode
+            bool needsTiming = HasObservers
+#if DEBUG
+                || true  // Always time in DEBUG for slow node detection
+#endif
+                ;
+
+            Stopwatch timer = null;
+            long elapsedMs = 0;
+
+            if (needsTiming)
+            {
+                timer = Stopwatch.StartNew();
+            }
 
             Status = Update(context);
 
-            long elapsedMs = timer.ElapsedMilliseconds;
-            timer.Stop();
+            if (needsTiming)
+            {
+                elapsedMs = timer.ElapsedMilliseconds;
+                timer.Stop();
+            }
 
             NotifyObservers(BehaviourTreeNodeInfoEventType.Update, Status, elapsedMs);
 
@@ -118,6 +134,7 @@ namespace BehaviourTree
     /// <summary>
     /// Non-generic base class for all behavior tree nodes.
     /// Provides core functionality including unique IDs, status tracking, and observer pattern support.
+    /// OPTIMIZED: Caches type name and observer array to minimize allocations during tick.
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("Node: Id = {Id}, Name = {Name}, Status = {Status}")]
     public abstract class BaseBehaviour : IDisposable
@@ -125,6 +142,13 @@ namespace BehaviourTree
         private static long BehaviorCounter = 0;
         private readonly System.Collections.Generic.List<IBehaviourTreeObserver> _observers = new System.Collections.Generic.List<IBehaviourTreeObserver>();
         private readonly object _observerLock = new object();
+
+        // OPTIMIZATION: Cache type name to avoid repeated reflection calls during NotifyObservers
+        private readonly string _cachedTypeName;
+
+        // OPTIMIZATION: Cache observer array to avoid ToArray() allocations on every notification
+        private IBehaviourTreeObserver[] _cachedObserverArray;
+        private bool _observerArrayDirty = false;
 
         /// <summary>
         /// Unique identifier for this behavior node, auto-incremented across all instances.
@@ -161,11 +185,24 @@ namespace BehaviourTree
             Id = (int)Interlocked.Increment(ref BehaviorCounter);
             Name = name;
             Status = BehaviourStatus.Ready;
+
+            // OPTIMIZATION: Cache type name once to avoid repeated GetType().Name calls
+            _cachedTypeName = GetType().Name;
+        }
+
+        /// <summary>
+        /// Returns true if there are any observers attached to this node.
+        /// Used for performance optimization to skip timing when not needed.
+        /// </summary>
+        protected bool HasObservers
+        {
+            get { return _observers.Count > 0; }
         }
 
         /// <summary>
         /// Attaches an observer to receive lifecycle event notifications from this behavior tree.
         /// Thread-safe operation that prevents duplicate observers.
+        /// OPTIMIZED: Marks observer array cache as dirty for lazy regeneration.
         /// </summary>
         /// <param name="observer">The observer to attach</param>
         public void AttachObserver(IBehaviourTreeObserver observer)
@@ -177,6 +214,7 @@ namespace BehaviourTree
                 if (!_observers.Contains(observer))
                 {
                     _observers.Add(observer);
+                    _observerArrayDirty = true;  // OPTIMIZATION: Mark cache as dirty
                 }
             }
         }
@@ -184,6 +222,7 @@ namespace BehaviourTree
         /// <summary>
         /// Detaches a previously attached observer.
         /// Thread-safe operation.
+        /// OPTIMIZED: Marks observer array cache as dirty for lazy regeneration.
         /// </summary>
         /// <param name="observer">The observer to detach</param>
         public void DetachObserver(IBehaviourTreeObserver observer)
@@ -192,24 +231,29 @@ namespace BehaviourTree
 
             lock (_observerLock)
             {
-                _observers.Remove(observer);
+                if (_observers.Remove(observer))
+                {
+                    _observerArrayDirty = true;  // OPTIMIZATION: Mark cache as dirty
+                }
             }
         }
 
         /// <summary>
         /// Notifies all attached observers of a lifecycle event.
         /// Exceptions in observers are caught and logged to prevent disrupting tree execution.
+        /// OPTIMIZED: Uses cached type name and cached observer array to minimize allocations.
         /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected void NotifyObservers(BehaviourTreeNodeInfoEventType eventType, BehaviourStatus status, long elapsedMs)
         {
-            // Early exit for performance when no observers
+            // OPTIMIZATION: Early exit for performance when no observers
             if (_observers.Count == 0) return;
 
+            // OPTIMIZATION: Use cached type name instead of GetType().Name
             var nodeEvent = new BehaviourTreeNodeEvent(
                 nodeId: Id,
                 nodeName: Name,
-                nodeType: GetType().Name,
+                nodeType: _cachedTypeName,
                 status: status,
                 eventType: eventType,
                 elapsedMilliseconds: elapsedMs,
@@ -217,36 +261,47 @@ namespace BehaviourTree
                 depth: 0 // Can be set during tree construction if needed
             );
 
+            IBehaviourTreeObserver[] observersCopy;
+
             lock (_observerLock)
             {
-                // Create a copy to avoid issues if observers are modified during notification
-                var observersCopy = _observers.ToArray();
-
-                foreach (var observer in observersCopy)
+                // OPTIMIZATION: Regenerate cached array only when observers changed
+                if (_observerArrayDirty || _cachedObserverArray == null)
                 {
-                    try
+                    _cachedObserverArray = _observers.ToArray();
+                    _observerArrayDirty = false;
+                }
+
+                // Use cached array (no allocation unless observers changed)
+                observersCopy = _cachedObserverArray;
+            }
+
+            // OPTIMIZATION: Notify outside of lock to prevent deadlocks and improve concurrency
+            for (int i = 0; i < observersCopy.Length; i++)
+            {
+                var observer = observersCopy[i];
+                try
+                {
+                    switch (eventType)
                     {
-                        switch (eventType)
-                        {
-                            case BehaviourTreeNodeInfoEventType.Initialize:
-                                observer.OnNodeInitialize(nodeEvent);
-                                break;
-                            case BehaviourTreeNodeInfoEventType.Update:
-                                observer.OnNodeUpdate(nodeEvent);
-                                break;
-                            case BehaviourTreeNodeInfoEventType.Terminate:
-                                observer.OnNodeTerminate(nodeEvent);
-                                break;
-                            case BehaviourTreeNodeInfoEventType.Reset:
-                                observer.OnNodeReset(nodeEvent);
-                                break;
-                        }
+                        case BehaviourTreeNodeInfoEventType.Initialize:
+                            observer.OnNodeInitialize(nodeEvent);
+                            break;
+                        case BehaviourTreeNodeInfoEventType.Update:
+                            observer.OnNodeUpdate(nodeEvent);
+                            break;
+                        case BehaviourTreeNodeInfoEventType.Terminate:
+                            observer.OnNodeTerminate(nodeEvent);
+                            break;
+                        case BehaviourTreeNodeInfoEventType.Reset:
+                            observer.OnNodeReset(nodeEvent);
+                            break;
                     }
-                    catch (Exception ex)
-                    {
-                        // Prevent observer exceptions from disrupting tree execution
-                        Debug.WriteLine($"Observer error in {observer.GetType().Name}: {ex.Message}");
-                    }
+                }
+                catch (Exception ex)
+                {
+                    // Prevent observer exceptions from disrupting tree execution
+                    Debug.WriteLine($"Observer error in {observer.GetType().Name}: {ex.Message}");
                 }
             }
         }

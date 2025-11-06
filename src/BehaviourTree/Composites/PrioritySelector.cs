@@ -10,14 +10,22 @@
         {
         }
 
+        /// <summary>
+        /// Re-evaluates children from the beginning each tick for reactive behavior.
+        /// OPTIMIZED: Uses cached array reference and count to minimize overhead.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
+            // OPTIMIZATION: Cache array reference and length for faster access
+            var children = Children;
+            var count = children.Length;
+
             // Priority nodes re-evaluate from the beginning every tick
             // This allows higher priority children to interrupt lower priority ones
-            for (var i = 0; i < Children.Length; i++)
+            for (var i = 0; i < count; i++)
             {
-                var child = Children[i];
+                var child = children[i];
 
                 // Reset children that are not currently running to ensure fresh evaluation
                 if (child.Status != BehaviourStatus.Running)
@@ -30,9 +38,9 @@
                 if (childStatus != BehaviourStatus.Failed)
                 {
                     // Reset all children after the current one since we're returning
-                    for (var j = i + 1; j < Children.Length; j++)
+                    for (var j = i + 1; j < count; j++)
                     {
-                        Children[j].Reset();
+                        children[j].Reset();
                     }
 
                     return childStatus;

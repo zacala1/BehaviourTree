@@ -75,34 +75,41 @@ namespace BehaviourTree.Composites
             _childStatuses = new BehaviourStatus[children.Length];
         }
 
+        /// <summary>
+        /// Executes all children in parallel and evaluates success policy.
+        /// OPTIMIZED: Cached array references and streamlined status counting.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
+            // OPTIMIZATION: Cache arrays and lengths
+            var children = Children;
+            var statuses = _childStatuses;
+            var count = children.Length;
+
             int succeededCount = 0;
             int failedCount = 0;
-            int runningCount = 0;
 
             // Execute all children and collect their statuses
-            for (var i = 0; i < Children.Length; i++)
+            for (var i = 0; i < count; i++)
             {
+                var currentStatus = statuses[i];
+
                 // Only tick children that are Ready or Running
-                if (_childStatuses[i] == BehaviourStatus.Ready || _childStatuses[i] == BehaviourStatus.Running)
+                if (currentStatus == BehaviourStatus.Ready || currentStatus == BehaviourStatus.Running)
                 {
-                    _childStatuses[i] = Children[i].Tick(context);
+                    statuses[i] = children[i].Tick(context);
+                    currentStatus = statuses[i];
                 }
 
-                // Count final statuses
-                switch (_childStatuses[i])
+                // Count final statuses (OPTIMIZATION: Skip running count as it's not used)
+                if (currentStatus == BehaviourStatus.Succeeded)
                 {
-                    case BehaviourStatus.Succeeded:
-                        succeededCount++;
-                        break;
-                    case BehaviourStatus.Failed:
-                        failedCount++;
-                        break;
-                    case BehaviourStatus.Running:
-                        runningCount++;
-                        break;
+                    succeededCount++;
+                }
+                else if (currentStatus == BehaviourStatus.Failed)
+                {
+                    failedCount++;
                 }
             }
 
@@ -113,8 +120,7 @@ namespace BehaviourTree.Composites
             }
 
             // Check if it's impossible to meet success condition
-            // (too many failures to ever reach the required successes)
-            int remainingChildren = Children.Length - failedCount - succeededCount;
+            int remainingChildren = count - failedCount - succeededCount;
             if (succeededCount + remainingChildren < _successRequired)
             {
                 return BehaviourStatus.Failed;
