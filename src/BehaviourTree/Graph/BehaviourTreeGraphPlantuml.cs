@@ -135,15 +135,13 @@ namespace BehaviourTree.Graph
                 // Time-based decorators
                 Cooldown<TContext> cooldown => $"CD:{cooldown.CooldownTimeInMilliseconds}ms",
                 CooldownRenew<TContext> => "CD:R",
-                TimeLimiter<TContext> => "TL",
-                TimeLimiterRenew<TContext> => "TL:R",
-                RateLimiter<TContext> => "RL",
-                RateLimiterRenew<TContext> => "RL:R",
+                TimeLimiter<_> => "TL",
+                RateLimiter<_> => "RL",
 
                 // Until decorators
                 UntilSuccess<TContext> => "US",
                 UntilFailed<TContext> => "UF",
-                UntilSuccessWithinTimeout<TContext> => "UST",
+                UntilSuccessWithinTimeout<_> => "UST",
 
                 // After decorators
                 AfterSuccess<TContext> => "→S",

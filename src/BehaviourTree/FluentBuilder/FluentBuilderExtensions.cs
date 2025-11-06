@@ -369,6 +369,7 @@ namespace BehaviourTree.FluentBuilder
             this FluentBuilder<TContext> builder,
             string name,
             int intervalInMilliseconds)
+            where TContext : IClock
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             return builder.PushDecorate(child => new RateLimiter<TContext>(name, child, intervalInMilliseconds));
@@ -438,6 +439,7 @@ namespace BehaviourTree.FluentBuilder
             this FluentBuilder<TContext> builder,
             string name,
             int timeLimitInMilliseconds)
+            where TContext : IClock
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             return builder.PushDecorate(child => new TimeLimiter<TContext>(name, child, timeLimitInMilliseconds));
@@ -505,6 +507,7 @@ namespace BehaviourTree.FluentBuilder
             this FluentBuilder<TContext> builder,
             string name, long timeoutInMilliseconds = default,
             Action<TContext>? timeoutAction = null)
+            where TContext : IClock
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             return builder.PushDecorate(child => new UntilSuccessWithinTimeout<TContext>(name, child, timeoutInMilliseconds, timeoutAction));
@@ -601,6 +604,7 @@ namespace BehaviourTree.FluentBuilder
             this FluentBuilder<TContext> builder,
             string name,
             Func<TContext, long> getTimeLimitInMilliseconds)
+            where TContext : IClock
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (name is null) throw new ArgumentNullException(nameof(name));
@@ -652,6 +656,7 @@ namespace BehaviourTree.FluentBuilder
             this FluentBuilder<TContext> builder,
             string name,
             Func<TContext, long> getIntervalInMilliseconds)
+            where TContext : IClock
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (name is null) throw new ArgumentNullException(nameof(name));
@@ -802,6 +807,7 @@ namespace BehaviourTree.FluentBuilder
             string name,
             Func<TContext, long> getTimeoutInMilliseconds,
             Action<TContext>? timeoutAction = null)
+            where TContext : IClock
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (name is null) throw new ArgumentNullException(nameof(name));
