@@ -5,9 +5,9 @@ namespace BehaviourTree.Demo.Nodes
 {
     public sealed class StaminaBarNode : Node
     {
-        public PositionComponent PositionComponent;
-        public RenderComponent RenderComponent;
-        public StaminaBarComponent StaminaBarComponent;
-        public StaminaComponent StaminaComponent;
+        public PositionComponent PositionComponent = null!;
+        public RenderComponent RenderComponent = null!;
+        public StaminaBarComponent StaminaBarComponent = null!;
+        public StaminaComponent StaminaComponent = null!;
     }
 }

@@ -13,7 +13,7 @@ namespace BehaviourTree
         private readonly int _intervalInMilliseconds;
         private readonly TContext _context;
         private readonly IBehaviour<TContext> _behaviourTree;
-        private CancellationTokenSource _tokenSource;
+        private CancellationTokenSource? _tokenSource;
         private readonly object _tokenLock = new object();
 
         public BehaviourTreeRunner(IBehaviour<TContext> behaviourTree, TContext context, int intervalInMilliseconds)

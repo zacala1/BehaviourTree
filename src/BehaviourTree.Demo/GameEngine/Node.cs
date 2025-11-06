@@ -2,6 +2,6 @@
 {
     public abstract class Node
     {
-        public Entity Entity;
+        public Entity Entity = null!;
     }
 }

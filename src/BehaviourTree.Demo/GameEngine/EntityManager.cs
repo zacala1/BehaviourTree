@@ -8,8 +8,8 @@ namespace BehaviourTree.Demo.GameEngine
         private int _maxId;
         private readonly Dictionary<int, Entity> _entities = new Dictionary<int, Entity>();
         
-        public event EventHandler<Entity> EntityAdded;
-        public event EventHandler<Entity> EntityRemoved;
+        public event EventHandler<Entity> EntityAdded = delegate { };
+        public event EventHandler<Entity> EntityRemoved = delegate { };
 
         public Entity GetEntityById(int id)
         {

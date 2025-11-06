@@ -5,6 +5,6 @@ namespace BehaviourTree.Demo.Nodes
 {
     public class HealthNode : Node
     {
-        public HealthComponent HealthComponent;
+        public HealthComponent HealthComponent = null!;
     }
 }

@@ -5,6 +5,6 @@ namespace BehaviourTree.Demo.Nodes
 {
     public sealed class LootableNode : Node
     {
-        public LootableComponent LootableComponent;
+        public LootableComponent LootableComponent = null!;
     }
 }

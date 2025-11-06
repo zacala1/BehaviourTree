@@ -5,6 +5,6 @@ namespace BehaviourTree.Demo.Nodes
 {
     public sealed class BtNode : Node
     {
-        public BTBehaviourComponent BehaviourComponent;
+        public BTBehaviourComponent BehaviourComponent = null!;
     }
 }

@@ -5,6 +5,6 @@ namespace BehaviourTree.Demo.Nodes
 {
     public class StaminaNode : Node
     {
-        public StaminaComponent StaminaComponent;
+        public StaminaComponent StaminaComponent = null!;
     }
 }

@@ -5,6 +5,6 @@ namespace BehaviourTree.Demo.Nodes
 {
     public class TargetNode : Node
     {
-        public TargetEntityComponent TargetEntityComponent;
+        public TargetEntityComponent TargetEntityComponent = null!;
     }
 }

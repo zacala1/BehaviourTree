@@ -13,8 +13,8 @@ namespace BehaviourTree.Demo.GameEngine
             Id = id;
         }
 
-        public event EventHandler<IComponent> ComponentAdded;
-        public event EventHandler<IComponent> ComponentRemoved;
+        public event EventHandler<IComponent> ComponentAdded = delegate { };
+        public event EventHandler<IComponent> ComponentRemoved = delegate { };
 
         public int Id { get; }
 

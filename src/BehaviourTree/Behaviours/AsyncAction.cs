@@ -9,8 +9,8 @@ namespace BehaviourTree.Behaviours
         private readonly Func<TContext, CancellationToken, Task<BehaviourStatus>> action;
         private readonly TimeSpan timeout;
         private readonly Func<TContext, bool> cancelCondition;
-        private Task<BehaviourStatus> task;
-        private CancellationTokenSource cts;
+        private Task<BehaviourStatus>? task;
+        private CancellationTokenSource? cts;
 
         public AsyncAction(Func<TContext, CancellationToken, Task<BehaviourStatus>> action,
             TimeSpan timeout = default) : this("ActionAsync", action, timeout)
