@@ -2,31 +2,64 @@
 
 namespace BehaviourTree.Decorators
 {
+    /// <summary>
+    /// Repeats the child behavior a specified number of times.
+    /// </summary>
+    /// <typeparam name="TContext">The context type.</typeparam>
     public sealed class Repeater<TContext> : DecoratorBehaviour<TContext>
     {
         private readonly Func<TContext, int> _getRepeatCount;
         private int _repeatCount;
         private int _counter;
 
+        /// <summary>
+        /// Gets the total number of repetitions.
+        /// </summary>
         public int RepeatCount => _repeatCount;
+
+        /// <summary>
+        /// Gets the current repetition counter.
+        /// </summary>
         public int Counter => _counter;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Repeater{TContext}"/> class with a dynamic repeat count.
+        /// </summary>
+        /// <param name="child">The child behavior.</param>
+        /// <param name="getRepeatCount">Function to get the repeat count from context.</param>
         public Repeater(IBehaviour<TContext> child, Func<TContext, int> getRepeatCount)
             : this("Repeater", child, getRepeatCount)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Repeater{TContext}"/> class with a dynamic repeat count.
+        /// </summary>
+        /// <param name="name">The name of the decorator.</param>
+        /// <param name="child">The child behavior.</param>
+        /// <param name="getRepeatCount">Function to get the repeat count from context.</param>
         public Repeater(string name, IBehaviour<TContext> child, Func<TContext, int> getRepeatCount)
             : base(name, child)
         {
             _getRepeatCount = getRepeatCount ?? throw new ArgumentNullException(nameof(getRepeatCount));
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Repeater{TContext}"/> class with a fixed repeat count.
+        /// </summary>
+        /// <param name="child">The child behavior.</param>
+        /// <param name="repeatCount">The number of times to repeat.</param>
         public Repeater(IBehaviour<TContext> child, int repeatCount)
             : this("Repeater", child, repeatCount)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Repeater{TContext}"/> class with a fixed repeat count.
+        /// </summary>
+        /// <param name="name">The name of the decorator.</param>
+        /// <param name="child">The child behavior.</param>
+        /// <param name="repeatCount">The number of times to repeat.</param>
         public Repeater(string name, IBehaviour<TContext> child, int repeatCount)
             : base(name, child)
         {

@@ -1,11 +1,24 @@
 ﻿namespace BehaviourTree.Decorators
 {
+    /// <summary>
+    /// Inverts the child's success and failure status.
+    /// </summary>
+    /// <typeparam name="TContext">The context type.</typeparam>
     public sealed class Inverter<TContext> : DecoratorBehaviour<TContext>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Inverter{TContext}"/> class.
+        /// </summary>
+        /// <param name="child">The child behavior.</param>
         public Inverter(IBehaviour<TContext> child) : this("Inverter", child)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Inverter{TContext}"/> class.
+        /// </summary>
+        /// <param name="name">The name of the decorator.</param>
+        /// <param name="child">The child behavior.</param>
         public Inverter(string name, IBehaviour<TContext> child) : base(name, child)
         {
         }
