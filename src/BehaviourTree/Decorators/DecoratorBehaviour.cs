@@ -9,12 +9,20 @@
             Child = child;
         }
 
+        /// <summary>
+        /// Disposes this decorator node and its child.
+        /// Ensures proper disposal chain by calling base.Dispose.
+        /// </summary>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                Child.Dispose();
+                // Dispose child first
+                Child?.Dispose();
             }
+
+            // IMPORTANT: Call base to clear observers
+            base.Dispose(disposing);
         }
 
         [System.Diagnostics.DebuggerStepThrough]

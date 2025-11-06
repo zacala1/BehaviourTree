@@ -52,6 +52,7 @@
     <Compile Include="BaseBehaviourTests.cs" />
     <Compile Include="CompositeBehaviourTests.cs" />
     <Compile Include="DecoratorBehaviourTests.cs" />
+    <Compile Include="DisposalTests.cs" />
     <Compile Include="FluentBuilder\BehaviourTreeBuilderTests.cs" />
     <Compile Include="FluentBuilder\BehaviourTreeExpressionPrinter.cs" />
     <Compile Include="FluentBuilder\LambdaBuilderSyntaxTests.cs" />

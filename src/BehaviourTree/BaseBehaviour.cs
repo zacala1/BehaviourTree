@@ -310,14 +310,33 @@ namespace BehaviourTree
 
         private bool disposed;
 
+        /// <summary>
+        /// Disposes resources held by this behavior node.
+        /// Clears all attached observers to prevent memory leaks.
+        /// </summary>
+        /// <param name="disposing">True if disposing managed resources</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposed)
             {
+                if (disposing)
+                {
+                    // Clear observers to prevent memory leaks
+                    lock (_observerLock)
+                    {
+                        _observers.Clear();
+                        _cachedObserverArray = null;
+                        _observerArrayDirty = false;
+                    }
+                }
+
                 disposed = true;
             }
         }
 
+        /// <summary>
+        /// Disposes this behavior node and releases all resources.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
