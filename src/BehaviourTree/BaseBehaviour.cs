@@ -314,13 +314,6 @@ namespace BehaviourTree
         {
             if (!disposed)
             {
-                if (disposing)
-                {
-                    // dispose managed state (managed objects)
-                }
-
-                // free unmanaged resources (unmanaged objects) and override finalizer
-                // set large fields to null
                 disposed = true;
             }
         }
