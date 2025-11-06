@@ -1,4 +1,4 @@
-﻿using BehaviourTree.Behaviours;
+using BehaviourTree.Behaviours;
 using BehaviourTree.Composites;
 using BehaviourTree.Decorators;
 using System;
@@ -10,52 +10,64 @@ namespace BehaviourTree.Graph
     public static class BehaviourTreeGraphPlantuml
     {
         /// <summary>
-        /// https://plantuml.com/mindmap-diagram
+        /// Generates a PlantUML mindmap diagram from a behavior tree.
+        /// See: https://plantuml.com/mindmap-diagram
         /// </summary>
-        /// <returns></returns>
-        public static string Format<TContext>(IBehaviour<TContext> behaviour) where TContext : IClock
+        public static string Format<TContext>(IBehaviour<TContext> behaviour)
         {
-            StringBuilder formated = new StringBuilder();
-            RenderBehaviourTree(formated, 0, behaviour);
-            formated.Insert(0, "@startmindmap\n");
-            formated.AppendLine("@endmindmap");
-            return formated.ToString();
+            StringBuilder formatted = new StringBuilder();
+            RenderBehaviourTree(formatted, 0, behaviour);
+            formatted.Insert(0, "@startmindmap\n");
+            formatted.AppendLine("@endmindmap");
+            return formatted.ToString();
         }
 
-        private static void RenderBehaviourTree<TContext>(StringBuilder text, int depth, IBehaviour<TContext> behaviour) where TContext : IClock
+        private static void RenderBehaviourTree<TContext>(StringBuilder text, int depth, IBehaviour<TContext> behaviour)
         {
-            RenderBehaviourTree(text, depth, (dynamic)behaviour);
+            // Use pattern matching instead of dynamic dispatch for better performance
+            switch (behaviour)
+            {
+                case CompositeBehaviour<TContext> composite:
+                    RenderComposite(text, depth, composite);
+                    break;
+
+                case DecoratorBehaviour<TContext> decorator:
+                    RenderDecorator(text, depth, decorator);
+                    break;
+
+                default:
+                    RenderLeaf(text, depth, behaviour);
+                    break;
+            }
         }
 
-        private static void RenderBehaviourTree<TContext>(StringBuilder text, int depth, CompositeBehaviour<TContext> obj) where TContext : IClock
+        private static void RenderComposite<TContext>(StringBuilder text, int depth, CompositeBehaviour<TContext> obj)
         {
             RenderInternal(text, depth, obj);
 
             var childDepth = depth + 1;
-
             foreach (var child in obj.Children)
             {
                 RenderBehaviourTree(text, childDepth, child);
             }
         }
 
-        private static void RenderBehaviourTree<TContext>(StringBuilder text, int depth, DecoratorBehaviour<TContext> obj) where TContext : IClock
+        private static void RenderDecorator<TContext>(StringBuilder text, int depth, DecoratorBehaviour<TContext> obj)
         {
             RenderInternal(text, depth, obj);
-            RenderBehaviourTree(text, ++depth, obj.Child);
+            RenderBehaviourTree(text, depth + 1, obj.Child);
         }
 
-        private static void RenderBehaviourTree<TContext>(StringBuilder text, int depth, BaseBehaviour<TContext> obj) where TContext : IClock
+        private static void RenderLeaf<TContext>(StringBuilder text, int depth, IBehaviour<TContext> obj)
         {
             RenderInternal(text, depth, obj);
         }
 
-        private static void RenderInternal<TContext>(StringBuilder text, int depth, IBehaviour<TContext> obj) where TContext : IClock
+        private static void RenderInternal<TContext>(StringBuilder text, int depth, IBehaviour<TContext> obj)
         {
             var indentation = GetIndentation(depth);
             var marksign = GetMarksign(obj);
             var name = GetName(obj);
-            //var color = GetColor(obj.Status);
             var nodeExpression = $"{indentation} **{marksign}** //{name}'{obj.Id}'//";
             text.AppendLine(nodeExpression);
         }
@@ -65,47 +77,85 @@ namespace BehaviourTree.Graph
             return string.Join(string.Empty, Enumerable.Repeat("*", depth + 1));
         }
 
-        private static string GetMarksign<TContext>(IBehaviour<TContext> obj) where TContext : IClock
+        private static string GetMarksign<TContext>(IBehaviour<TContext> obj)
         {
-            switch (obj)
+            // Use pattern matching with C# switch expression
+            return obj switch
             {
-                case RandomSelector<TContext> _:
-                    return "[?r]";
+                // Active (Reactive) nodes
+                ActiveSelector<TContext> => "[?A]",
+                ActiveSequence<TContext> => "[->A]",
 
-                case PrioritySelector<TContext> _:
-                    return "[?p]";
+                // Random nodes
+                RandomSelector<TContext> => "[?R]",
+                RandomSequence<TContext> => "[->R]",
 
-                case Selector<TContext> _:
-                    return "[?]";
+                // Priority nodes
+                PrioritySelector<TContext> => "[?P]",
+                PrioritySequence<TContext> => "[->P]",
 
-                case RandomSequence<TContext> _:
-                    return "[->r]";
+                // Standard composites
+                Selector<TContext> => "[?]",
+                Sequence<TContext> => "[->]",
 
-                case PrioritySequence<TContext> _:
-                    return "[->p]";
+                // Parallel nodes
+                Parallel<TContext> parallel => $"[={parallel.SuccessRequired}/{parallel.Children.Length}]",
+                SimpleParallel<TContext> => "[=2]",
 
-                case Sequence<TContext> _:
-                    return "[->]";
+                // Leaf nodes
+                Condition<TContext> => "(?)",
+                ActionBehaviour<TContext> => "(!)",
+                AsyncAction<TContext> => "(!A)",
 
-                case SimpleParallel<TContext> _:
-                    return "[=]";
+                // Wait nodes
+                Wait<TContext> => "(~)",
+                WaitRenew<TContext> => "(~R)",
 
-                case Condition<TContext> _:
-                    return "(?)";
+                // Decorator nodes - delegate to GetDecoratorSymbol
+                DecoratorBehaviour<TContext> => $"<{GetDecoratorSymbol(obj)}>",
 
-                case ActionBehaviour<TContext> _:
-                    return "(!)";
+                // Fallback for unknown types
+                _ => $"[{obj.GetType().Name}]"
+            };
+        }
 
-                case Wait<TContext> _:
-                case WaitRenew<TContext> _:
-                    return "(~)";
+        private static string GetDecoratorSymbol<TContext>(IBehaviour<TContext> obj)
+        {
+            return obj switch
+            {
+                // Retry/Repeat
+                Retry<TContext> retry => $"Retry:{retry.RetryCount}",
+                Repeater<TContext> repeater => $"Repeat:{repeater.RepeatCount}",
 
-                case DecoratorBehaviour<TContext> _:
-                    return $"<{obj.GetType().Name}>";
+                // Logic inverters/transformers
+                Inverter<TContext> => "!",
+                Succeeder<TContext> => "✓",
+                Failer<TContext> => "✗",
 
-                default:
-                    throw new NotSupportedException($"Node Type {obj.GetType().FullName} NotSupportedException");
-            }
+                // Time-based decorators
+                Cooldown<TContext> cooldown => $"CD:{cooldown.CooldownTimeInMilliseconds}ms",
+                CooldownRenew<TContext> => "CD:R",
+                TimeLimiter<TContext> => "TL",
+                TimeLimiterRenew<TContext> => "TL:R",
+                RateLimiter<TContext> => "RL",
+                RateLimiterRenew<TContext> => "RL:R",
+
+                // Until decorators
+                UntilSuccess<TContext> => "US",
+                UntilFailed<TContext> => "UF",
+                UntilSuccessWithinTimeout<TContext> => "UST",
+
+                // After decorators
+                AfterSuccess<TContext> => "→S",
+                AfterFailed<TContext> => "→F",
+
+                // Other decorators
+                AutoReset<TContext> => "AR",
+                Random<TContext> random => $"Rnd:{random.Threshold:F2}",
+
+                // Fallback
+                _ => obj.GetType().Name
+            };
         }
 
         private static string GetName<TContext>(IBehaviour<TContext> obj)
@@ -115,11 +165,7 @@ namespace BehaviourTree.Graph
                 return obj.Name;
             }
 
-            var type = obj.GetType();
-
-            // TODO: check for generic
-
-            return type.Name;
+            return obj.GetType().Name;
         }
     }
 }

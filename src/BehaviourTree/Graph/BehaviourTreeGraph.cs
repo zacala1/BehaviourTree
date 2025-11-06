@@ -10,7 +10,11 @@ namespace BehaviourTree.Graph
             DanAbad
         }
 
-        public static string Format<TContext>(IBehaviour<TContext> bt, FormatOptions option) where TContext : IClock
+        /// <summary>
+        /// Formats a behavior tree into a string representation.
+        /// Note: IClock constraint removed - graph generation doesn't require time information.
+        /// </summary>
+        public static string Format<TContext>(IBehaviour<TContext> bt, FormatOptions option)
         {
             switch (option)
             {
@@ -25,7 +29,11 @@ namespace BehaviourTree.Graph
             }
         }
 
-        public static void Save<TContext>(IBehaviour<TContext> bt, string directoryPath, string fileName, FormatOptions option) where TContext : IClock
+        /// <summary>
+        /// Saves a behavior tree graph to a file.
+        /// Note: IClock constraint removed - graph generation doesn't require time information.
+        /// </summary>
+        public static void Save<TContext>(IBehaviour<TContext> bt, string directoryPath, string fileName, FormatOptions option)
         {
             switch (option)
             {

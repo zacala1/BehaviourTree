@@ -84,6 +84,12 @@ namespace BehaviourTree
     {
         private static long BehaviorCounter = 0;
 
+        /// <summary>
+        /// Static event for monitoring behavior tree node status changes.
+        /// WARNING: This static event can cause memory leaks if not properly unsubscribed.
+        /// Multiple trees share the same event, preventing proper isolation.
+        /// </summary>
+        [Obsolete("Static events cause memory leaks and prevent tree isolation. Consider using instance-based observers instead.", false)]
         public static event EventHandler<BehaviourTreeEventArgs> StatusChangeEvent;
 
         public int Id

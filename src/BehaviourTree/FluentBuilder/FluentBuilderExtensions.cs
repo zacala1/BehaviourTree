@@ -78,7 +78,7 @@ namespace BehaviourTree.FluentBuilder
         public static FluentBuilder<TContext> Wait<TContext>(
             this FluentBuilder<TContext> builder,
             string name,
-            int waitTimeInMilliseconds) where TContext : IClock
+            int waitTimeInMilliseconds)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             return builder.PushLeaf(() => new Wait<TContext>(name, waitTimeInMilliseconds));
@@ -280,7 +280,7 @@ namespace BehaviourTree.FluentBuilder
         public static FluentBuilder<TContext> Cooldown<TContext>(
             this FluentBuilder<TContext> builder,
             string name,
-            int cooldownTimeInMilliseconds) where TContext : IClock
+            int cooldownTimeInMilliseconds)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             return builder.PushDecorate(child => new Cooldown<TContext>(name, child, cooldownTimeInMilliseconds));
@@ -368,7 +368,7 @@ namespace BehaviourTree.FluentBuilder
         public static FluentBuilder<TContext> LimitCallRate<TContext>(
             this FluentBuilder<TContext> builder,
             string name,
-            int intervalInMilliseconds) where TContext : IClock
+            int intervalInMilliseconds)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             return builder.PushDecorate(child => new RateLimiter<TContext>(name, child, intervalInMilliseconds));
@@ -438,7 +438,7 @@ namespace BehaviourTree.FluentBuilder
         public static FluentBuilder<TContext> TimeLimit<TContext>(
             this FluentBuilder<TContext> builder,
             string name,
-            int timeLimitInMilliseconds) where TContext : IClock
+            int timeLimitInMilliseconds)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             return builder.PushDecorate(child => new TimeLimiter<TContext>(name, child, timeLimitInMilliseconds));
@@ -505,7 +505,7 @@ namespace BehaviourTree.FluentBuilder
         public static FluentBuilder<TContext> UntilSuccessWithinTimeout<TContext>(
             this FluentBuilder<TContext> builder,
             string name, long timeoutInMilliseconds = default,
-            Action<TContext> timeoutAction = null) where TContext : IClock
+            Action<TContext> timeoutAction = null)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             return builder.PushDecorate(child => new UntilSuccessWithinTimeout<TContext>(name, child, timeoutInMilliseconds, timeoutAction));
@@ -575,7 +575,7 @@ namespace BehaviourTree.FluentBuilder
         public static FluentBuilder<TContext> Wait<TContext>(
             this FluentBuilder<TContext> builder,
             string name,
-            Func<TContext, long> getWaitTimeInMilliseconds) where TContext : IClock
+            Func<TContext, long> getWaitTimeInMilliseconds)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (name is null) throw new ArgumentNullException(nameof(name));
@@ -601,7 +601,7 @@ namespace BehaviourTree.FluentBuilder
         public static FluentBuilder<TContext> TimeLimit<TContext>(
             this FluentBuilder<TContext> builder,
             string name,
-            Func<TContext, long> getTimeLimitInMilliseconds) where TContext : IClock
+            Func<TContext, long> getTimeLimitInMilliseconds)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (name is null) throw new ArgumentNullException(nameof(name));
@@ -625,12 +625,12 @@ namespace BehaviourTree.FluentBuilder
         public static FluentBuilder<TContext> Cooldown<TContext>(
             this FluentBuilder<TContext> builder,
             string name,
-            Func<TContext, long> getCooldownTimeInMilliseconds) where TContext : IClock
+            Func<TContext, long> getCooldownTimeInMilliseconds)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (name is null) throw new ArgumentNullException(nameof(name));
             if (getCooldownTimeInMilliseconds is null) throw new ArgumentNullException(nameof(getCooldownTimeInMilliseconds));
-            return builder.PushDecorate(child => new Cooldown<TContext>(name, child, getCooldownTimeInMilliseconds));
+            return builder.PushDecorate(child => new CooldownRenew<TContext>(name, child, getCooldownTimeInMilliseconds));
         }
 
         /// <summary>
@@ -652,7 +652,7 @@ namespace BehaviourTree.FluentBuilder
         public static FluentBuilder<TContext> LimitCallRate<TContext>(
             this FluentBuilder<TContext> builder,
             string name,
-            Func<TContext, long> getIntervalInMilliseconds) where TContext : IClock
+            Func<TContext, long> getIntervalInMilliseconds)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (name is null) throw new ArgumentNullException(nameof(name));
@@ -802,12 +802,102 @@ namespace BehaviourTree.FluentBuilder
             this FluentBuilder<TContext> builder,
             string name,
             Func<TContext, long> getTimeoutInMilliseconds,
-            Action<TContext> timeoutAction = null) where TContext : IClock
+            Action<TContext> timeoutAction = null)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (name is null) throw new ArgumentNullException(nameof(name));
             if (getTimeoutInMilliseconds is null) throw new ArgumentNullException(nameof(getTimeoutInMilliseconds));
             return builder.PushDecorate(child => new UntilSuccessWithinTimeout<TContext>(name, child, getTimeoutInMilliseconds, timeoutAction));
+        }
+
+        /// <summary>
+        /// <see cref="Composites.ActiveSelector{TContext}"/> 노드를 생성한다.
+        /// PrioritySelector의 별칭으로, 동작시 항상 첫째 자식노드부터 시작하며 매 틱마다 재평가한다.
+        /// 자식 노드 중 하나가 성공하면 실행을 종료하고 <see cref="BehaviourStatus.Succeeded"/>를 반환한다.
+        /// </summary>
+        /// <param name="builder">행동트리 빌더</param>
+        /// <param name="name">노드의 표기할 이름</param>
+        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
+        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <remarks>
+        /// 위 노드의 타입은 Composite 노드이다.
+        /// Composite 노드는 여러 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static FluentBuilder<TContext> ActiveSelector<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            return builder.PushComposite(children => new ActiveSelector<TContext>(name, children));
+        }
+
+        /// <summary>
+        /// <see cref="Composites.ActiveSequence{TContext}"/> 노드를 생성한다.
+        /// PrioritySequence의 별칭으로, 동작시 항상 첫째 자식노드부터 시작하며 매 틱마다 재평가한다.
+        /// 자식 노드가 하나라도 실패하면 실행을 종료하고 <see cref="BehaviourStatus.Failed"/>를 반환한다.
+        /// </summary>
+        /// <param name="builder">행동트리 빌더</param>
+        /// <param name="name">노드의 표기할 이름</param>
+        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
+        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <remarks>
+        /// 위 노드의 타입은 Composite 노드이다.
+        /// Composite 노드는 여러 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static FluentBuilder<TContext> ActiveSequence<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            return builder.PushComposite(children => new ActiveSequence<TContext>(name, children));
+        }
+
+        /// <summary>
+        /// <see cref="Composites.Parallel{TContext}"/> 노드를 생성한다.
+        /// 모든 자식 노드를 병렬로 실행하며, 정책에 따라 종료 조건이 달라진다.
+        /// </summary>
+        /// <param name="builder">행동트리 빌더</param>
+        /// <param name="name">노드의 표기할 이름</param>
+        /// <param name="policy">병렬 노드 처리 정책</param>
+        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
+        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <remarks>
+        /// 위 노드의 타입은 Composite 노드이다.
+        /// Composite 노드는 여러 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static FluentBuilder<TContext> Parallel<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name,
+            ParallelPolicy policy = ParallelPolicy.RequireAll)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            return builder.PushComposite(children => new Parallel<TContext>(name, policy, children));
+        }
+
+        /// <summary>
+        /// <see cref="Composites.Parallel{TContext}"/> 노드를 생성한다.
+        /// 모든 자식 노드를 병렬로 실행하며, N개의 자식이 성공해야 성공한다.
+        /// </summary>
+        /// <param name="builder">행동트리 빌더</param>
+        /// <param name="name">노드의 표기할 이름</param>
+        /// <param name="successRequired">성공 필요한 자식 노드 개수</param>
+        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
+        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <remarks>
+        /// 위 노드의 타입은 Composite 노드이다.
+        /// Composite 노드는 여러 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static FluentBuilder<TContext> Parallel<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name,
+            int successRequired)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            return builder.PushComposite(children => new Parallel<TContext>(name, successRequired, children));
         }
     }
 }
