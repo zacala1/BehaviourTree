@@ -18,8 +18,8 @@ namespace BehaviourTree.Reflection
         public int Id { get; }
 
         /// <summary>
-        /// Exposes the name of the behavior tree node
-        /// Setter 추가 // 한태광 / 2022.03.17
+        /// Exposes the name of the behavior tree node.
+        /// Setter added // Han Tae-kwang / 2022.03.17
         /// </summary>
         public string Name { get; set; }
 
@@ -29,7 +29,7 @@ namespace BehaviourTree.Reflection
         public TreeNodeType NodeType { get; }
 
         /// <summary>
-        /// 노드 펼침 여부 (UI에서 사용) // 한태광 / 2022.03.17
+        /// Node expand/collapse status (used in UI) // Han Tae-kwang / 2022.03.17
         /// </summary>
         public bool IsExpanded { get; set; }
 

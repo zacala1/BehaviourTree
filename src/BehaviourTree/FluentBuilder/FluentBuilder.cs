@@ -61,6 +61,13 @@ namespace BehaviourTree.FluentBuilder
 
         public FluentBuilder<TContext> PushLeaf(CreateBehaviour<TContext> behaviourFactory)
         {
+            if (_parentNodeStack.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "Leaf nodes must have a parent composite or decorator. " +
+                    "Start with a composite node (e.g., Sequence, Selector) or decorator before adding leaf nodes.");
+            }
+
             var newNode = new LeafBehaviourBuilder<TContext>
             {
                 Factory = behaviourFactory

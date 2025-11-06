@@ -4,12 +4,17 @@ using System.Threading.Tasks;
 
 namespace BehaviourTree
 {
+    /// <summary>
+    /// Runs a behavior tree repeatedly at a specified interval until stopped or completed.
+    /// </summary>
+    /// <typeparam name="TContext">Type of context used during execution</typeparam>
     public sealed class BehaviourTreeRunner<TContext> : IDisposable where TContext : class
     {
         private readonly int _intervalInMilliseconds;
         private readonly TContext _context;
         private readonly IBehaviour<TContext> _behaviourTree;
         private CancellationTokenSource _tokenSource;
+        private readonly object _tokenLock = new object();
 
         public BehaviourTreeRunner(IBehaviour<TContext> behaviourTree, TContext context, int intervalInMilliseconds)
         {
@@ -34,7 +39,10 @@ namespace BehaviourTree
         {
             Stop();
 
-            _tokenSource = new CancellationTokenSource();
+            lock (_tokenLock)
+            {
+                _tokenSource = new CancellationTokenSource();
+            }
 
             var status = await ExecuteCycle(_tokenSource.Token).ConfigureAwait(false);
 
@@ -46,9 +54,20 @@ namespace BehaviourTree
             return status;
         }
 
+        /// <summary>
+        /// Stops the running behavior tree by canceling the current execution cycle.
+        /// </summary>
         public void Stop()
         {
-            _tokenSource?.Cancel();
+            lock (_tokenLock)
+            {
+                if (_tokenSource != null)
+                {
+                    _tokenSource.Cancel();
+                    _tokenSource.Dispose();
+                    _tokenSource = null;
+                }
+            }
         }
 
         private async Task<BehaviourStatus> ExecuteCycle(CancellationToken token)
@@ -60,8 +79,12 @@ namespace BehaviourTree
             return behaviourStatus;
         }
 
+        /// <summary>
+        /// Disposes the behavior tree runner and releases all resources.
+        /// </summary>
         public void Dispose()
         {
+            Stop(); // Ensure token source is disposed
             _behaviourTree.Dispose();
         }
     }

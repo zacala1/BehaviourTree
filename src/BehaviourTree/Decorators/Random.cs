@@ -16,7 +16,7 @@ namespace BehaviourTree.Decorators
             if (threshold <= 0 || threshold > 1)
             {
                 throw new ArgumentException(
-                    "Threshold value must be between 0 (exclusive) and 100 (inclusive)",
+                    "Threshold value must be between 0.0 (exclusive) and 1.0 (inclusive)",
                     nameof(threshold));
             }
 

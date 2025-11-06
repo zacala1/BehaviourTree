@@ -1,4 +1,4 @@
-﻿using BehaviourTree.Behaviours;
+using BehaviourTree.Behaviours;
 using BehaviourTree.Composites;
 using BehaviourTree.Decorators;
 using System;
@@ -10,12 +10,12 @@ namespace BehaviourTree.FluentBuilder
     public static class FluentBuilderExtensions
     {
         /// <summary>
-        /// 자식 노드로 하위 행동트리를 생성한다.
+        /// Creates a sub behavior tree as a child node.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="subBehaviour">하위 행동트리</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="subBehaviour">Sub behavior tree</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Subtree<TContext>(
             this FluentBuilder<TContext> builder,
@@ -26,15 +26,15 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Behaviours.Condition{TContext}"/> 노드를 생성한다.
-        /// Condition 노드는 조건의 결과가 참이면 <see cref="BehaviourStatus.Succeeded"/>,
-        /// 거짓이면 <see cref="BehaviourStatus.Failed"/>를 반환한다.
+        /// Creates a <see cref="Behaviours.Condition{TContext}"/> node.
+        /// The Condition node returns <see cref="BehaviourStatus.Succeeded"/> if the condition result is true,
+        /// and <see cref="BehaviourStatus.Failed"/> if false.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="condition">자식 노드에 작용할 조건 수식</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="condition">Condition expression to apply to the child node</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Condition<TContext>(
             this FluentBuilder<TContext> builder,
@@ -46,14 +46,14 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="ActionBehaviour{TContext}"/> 노드를 생성한다.
-        /// Do 노드는 action을 수행하여 그 결과를 반환한다.
+        /// Creates an <see cref="ActionBehaviour{TContext}"/> node.
+        /// The Do node executes an action and returns its result.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="action">자식 노드에서 실행할 액션</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="action">Action to execute in the child node</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Do<TContext>(
             this FluentBuilder<TContext> builder,
@@ -65,15 +65,15 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Behaviours.Wait{TContext}"/> 노드를 생성한다.
-        /// Wait 노드는 지정한 대기 시간만큼 대기한다.
-        /// 대기 중에는 <see cref="BehaviourStatus.Running"/>, 대기 종료 후 <see cref="BehaviourStatus.Succeeded"/>을 반환한다.
+        /// Creates a <see cref="Behaviours.Wait{TContext}"/> node.
+        /// The Wait node waits for the specified wait time.
+        /// Returns <see cref="BehaviourStatus.Running"/> while waiting and <see cref="BehaviourStatus.Succeeded"/> after the wait completes.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="waitTimeInMilliseconds">대기 시간 (milliseconds)</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="waitTimeInMilliseconds">Wait time (milliseconds)</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Wait<TContext>(
             this FluentBuilder<TContext> builder,
@@ -85,17 +85,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Composites.PrioritySelector{TContext}"/> 노드를 생성한다.
-        /// 동작시 항상 첫째 자식노드부터 시작하며,
-        /// 자식 노드 중 하나가 성공하면 실행을 종료하고 <see cref="BehaviourStatus.Succeeded"/>를 반환한다.
+        /// Creates a <see cref="Composites.PrioritySelector{TContext}"/> node.
+        /// Always starts from the first child node when executed,
+        /// and returns <see cref="BehaviourStatus.Succeeded"/> when one of the child nodes succeeds.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Composite 노드이다.
-        /// Composite 노드는 여러 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Composite node.
+        /// Composite nodes can have multiple children and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> PrioritySelector<TContext>(
@@ -107,17 +107,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Composites.PrioritySelector{TContext}"/> 노드를 생성한다.
-        /// 동작시 항상 첫째 자식노드부터 실행하며,
-        /// 자식 노드가 하나라도 실패하면 실행을 종료하고 <see cref="BehaviourStatus.Failed"/>를 반환한다.
+        /// Creates a <see cref="Composites.PrioritySelector{TContext}"/> node.
+        /// Always executes from the first child node when executed,
+        /// and returns <see cref="BehaviourStatus.Failed"/> when any child node fails.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Composite 노드이다.
-        /// Composite 노드는 여러 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Composite node.
+        /// Composite nodes can have multiple children and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> PrioritySequence<TContext>(
@@ -129,17 +129,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Composites.Selector{TContext}"/> 노드를 생성한다.
-        /// 자식 노드의 index를 기억하여 index부터 순서대로 실행한다.
-        /// 자식 노드 중 하나가 성공하면 실행을 종료하고 <see cref="BehaviourStatus.Succeeded"/>를 반환한다.
+        /// Creates a <see cref="Composites.Selector{TContext}"/> node.
+        /// Remembers the child node's index and executes sequentially starting from that index.
+        /// Returns <see cref="BehaviourStatus.Succeeded"/> when one of the child nodes succeeds.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Composite 노드이다.
-        /// Composite 노드는 여러 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Composite node.
+        /// Composite nodes can have multiple children and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Selector<TContext>(
@@ -151,17 +151,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Composites.Sequence{TContext}"/> 노드를 생성한다.
-        /// 자식 노드의 index를 기억하여 index부터 순서대로 실행한다.
-        /// 자식 노드가 하나라도 실패하면 실행을 종료하고 <see cref="BehaviourStatus.Failed"/>를 반환한다.
+        /// Creates a <see cref="Composites.Sequence{TContext}"/> node.
+        /// Remembers the child node's index and executes sequentially starting from that index.
+        /// Returns <see cref="BehaviourStatus.Failed"/> when any child node fails.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Composite 노드이다.
-        /// Composite 노드는 여러 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Composite node.
+        /// Composite nodes can have multiple children and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Sequence<TContext>(
@@ -173,18 +173,18 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Composites.RandomSequence{TContext}"/> 노드를 생성한다.
-        /// 자식 노드를 무작위로 실행한다.
-        /// 자식 노드가 하나라도 실패하면 실행을 종료하고 <see cref="BehaviourStatus.Failed"/>를 반환한다.
+        /// Creates a <see cref="Composites.RandomSequence{TContext}"/> node.
+        /// Executes child nodes in random order.
+        /// Returns <see cref="BehaviourStatus.Failed"/> when any child node fails.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="randomProvider">난수 생성기</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="randomProvider">Random number generator</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Composite 노드이다.
-        /// Composite 노드는 여러 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Composite node.
+        /// Composite nodes can have multiple children and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> RandomSequence<TContext>(
@@ -197,18 +197,18 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Composites.RandomSequence{TContext}"/> 노드를 생성한다.
-        /// 자식 노드를 무작위로 실행한다.
-        /// 자식 노드 중 하나가 성공하면 실행을 종료하고 <see cref="BehaviourStatus.Succeeded"/>를 반환한다.
+        /// Creates a <see cref="Composites.RandomSequence{TContext}"/> node.
+        /// Executes child nodes in random order.
+        /// Returns <see cref="BehaviourStatus.Succeeded"/> when one of the child nodes succeeds.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="randomProvider">난수 생성기</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="randomProvider">Random number generator</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Composite 노드이다.
-        /// Composite 노드는 여러 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Composite node.
+        /// Composite nodes can have multiple children and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> RandomSelector<TContext>(
@@ -221,17 +221,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Composites.SimpleParallel{TContext}"/> 노드를 생성한다.
-        /// 자식 노드를 2개만 가질 수 있다. 병렬 노드 처리 정책에 따라 종료 조건이 달라진다.
+        /// Creates a <see cref="Composites.SimpleParallel{TContext}"/> node.
+        /// Can only have 2 child nodes. The termination condition varies based on the parallel node processing policy.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="policy">병렬 노드 처리 정책</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="policy">Parallel node processing policy</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Composite 노드이다.
-        /// Composite 노드는 여러 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Composite node.
+        /// Composite nodes can have multiple children and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> SimpleParallel<TContext>(
@@ -244,16 +244,16 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Decorators.AutoReset{TContext}"/> 노드를 생성한다.
-        /// 자식 노드가 진행을 완료하면 결과에 상관없이 자식 노드 상태를 Reset한다.
+        /// Creates a <see cref="Decorators.AutoReset{TContext}"/> node.
+        /// Resets the child node's state when the child node completes execution, regardless of the result.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> AutoReset<TContext>(
@@ -265,16 +265,16 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Decorators.Cooldown{TContext}"/> 노드를 생성한다.
+        /// Creates a <see cref="Decorators.Cooldown{TContext}"/> node.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="cooldownTimeInMilliseconds">쿨다운 시간(milliseconds)</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="cooldownTimeInMilliseconds">Cooldown time (milliseconds)</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Cooldown<TContext>(
@@ -287,16 +287,16 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Failer{TContext}"/> 노드를 생성한다.
-        /// 자식 노드의 결과가 성공이든 실패든 상관없이 <see cref="BehaviourStatus.Failed"/>를 반환한다.
+        /// Creates a <see cref="Failer{TContext}"/> node.
+        /// Returns <see cref="BehaviourStatus.Failed"/> regardless of whether the child node's result is success or failure.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> AlwaysFail<TContext>(
@@ -308,16 +308,16 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Succeeder{TContext}"/> 노드를 생성한다.
-        /// 자식 노드의 결과가 성공이든 실패든 상관없이 <see cref="BehaviourStatus.Succeeded"/>를 반환한다.
+        /// Creates a <see cref="Succeeder{TContext}"/> node.
+        /// Returns <see cref="BehaviourStatus.Succeeded"/> regardless of whether the child node's result is success or failure.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> AlwaysSucceed<TContext>(
@@ -329,17 +329,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Inverter{TContext}"/> 노드를 생성한다.
-        /// 자식 노드의 결과가 실패면 <see cref="BehaviourStatus.Succeeded"/>를 반환하고,
-        /// 자식 노드의 결과가 성공이면 <see cref="BehaviourStatus.Failed"/>를 반환한다.
+        /// Creates an <see cref="Inverter{TContext}"/> node.
+        /// Returns <see cref="BehaviourStatus.Succeeded"/> if the child node's result is failure,
+        /// and returns <see cref="BehaviourStatus.Failed"/> if the child node's result is success.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Invert<TContext>(
@@ -351,18 +351,18 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="RateLimiter{TContext}"/> 노드를 생성한다.
-        /// 지연 시간 후에 자식 노드를 실행한다. 지연 시간 중에는 <see cref="BehaviourStatus.Running"/>을 반환하고,
-        /// 이후에는 자식노드의 결과를 반환한다.
+        /// Creates a <see cref="RateLimiter{TContext}"/> node.
+        /// Executes the child node after the delay time. Returns <see cref="BehaviourStatus.Running"/> during the delay time,
+        /// and returns the child node's result afterwards.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="intervalInMilliseconds">지연 시간(milliseconds)</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="intervalInMilliseconds">Delay time (milliseconds)</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> LimitCallRate<TContext>(
@@ -375,17 +375,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Repeater{TContext}"/> 노드를 생성한다.
-        /// 자식 노드의 결과가 <paramref name="repeatCount"/> 횟수 만큼 성공하면 <see cref="BehaviourStatus.Succeeded"/>을 반환한다.
+        /// Creates a <see cref="Repeater{TContext}"/> node.
+        /// Returns <see cref="BehaviourStatus.Succeeded"/> when the child node's result succeeds <paramref name="repeatCount"/> times.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="repeatCount">반복 횟수</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="repeatCount">Repeat count</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Repeat<TContext>(
@@ -398,17 +398,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Decorators.Retry{TContext}"/> 노드를 생성한다.
-        /// 자식 노드의 결과가 실패이면, <paramref name="retryCount"/> 횟수 만큼 반복해서 <see cref="BehaviourStatus.Running"/>을 반환한다.
+        /// Creates a <see cref="Decorators.Retry{TContext}"/> node.
+        /// If the child node's result is failure, returns <see cref="BehaviourStatus.Running"/> repeatedly for <paramref name="retryCount"/> times.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="retryCount">반복 횟수</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="retryCount">Retry count</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Retry<TContext>(
@@ -421,18 +421,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Repeater{TContext}"/> 노드를 생성한다.
-        /// 자식 노드가 <paramref name="timeLimitInMilliseconds"/>만큼 경과할 동안 성공하지 못하면
-        /// <see cref="BehaviourStatus.Failed"/>를 반환한다.
+        /// Creates a <see cref="Repeater{TContext}"/> node.
+        /// Returns <see cref="BehaviourStatus.Failed"/> if the child node does not succeed within <paramref name="timeLimitInMilliseconds"/>.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="timeLimitInMilliseconds">제한 시간(milliseconds)</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="timeLimitInMilliseconds">Time limit (milliseconds)</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> TimeLimit<TContext>(
@@ -445,17 +444,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Decorators.UntilSuccess{TContext}"/> 노드를 생성한다.
-        /// 자식 노드가 성공할 때까지 재시도한다. 실패하면 <paramref name="countdown"/>만큼 재시도한다.
+        /// Creates a <see cref="Decorators.UntilSuccess{TContext}"/> node.
+        /// Retries the child node until it succeeds. On failure, retries <paramref name="countdown"/> times.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="countdown">실패시 재시도할 횟수</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="countdown">Number of retries on failure</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> UntilSuccess<TContext>(
@@ -467,17 +466,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Decorators.UntilFailed{TContext}"/> 노드를 생성한다.
-        /// 자식 노드가 실패할 때까지 재시도한다. 성공하면 <paramref name="countdown"/>만큼 재시도한다.
+        /// Creates a <see cref="Decorators.UntilFailed{TContext}"/> node.
+        /// Retries the child node until it fails. On success, retries <paramref name="countdown"/> times.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="countdown">실패시 재시도할 횟수</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="countdown">Number of retries on failure</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> UntilFailed<TContext>(
@@ -489,17 +488,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Decorators.UntilSuccess{TContext}"/> 노드를 생성한다.
-        /// 자식 노드가 성공할 때까지 재시도한다. 실패하면 <paramref name="countdown"/>만큼 재시도한다.
+        /// Creates a <see cref="Decorators.UntilSuccess{TContext}"/> node.
+        /// Retries the child node until it succeeds. On failure, retries <paramref name="countdown"/> times.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="countdown">실패시 재시도할 횟수</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="countdown">Number of retries on failure</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> UntilSuccessWithinTimeout<TContext>(
@@ -512,19 +511,19 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="CSP.Foundation.BehaviourTree.Decorators.Random{TContext}"/> 노드를 생성한다.
-        /// 확률적으로 자식 노드를 실행하거나 <see cref="BehaviourStatus.Failed"/>를 반환한다.
-        /// 생성된 난수가 <paramref name="threshold"/>값보다 커야 자식 노드를 실행한다.
+        /// Creates a <see cref="CSP.Foundation.BehaviourTree.Decorators.Random{TContext}"/> node.
+        /// Probabilistically executes the child node or returns <see cref="BehaviourStatus.Failed"/>.
+        /// Executes the child node only when the generated random number is greater than the <paramref name="threshold"/> value.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="threshold">문턱값(0.0 ~ 1.0 사이값)</param>
-        /// <param name="randomProvider">난수 생성자</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="threshold">Threshold value (between 0.0 and 1.0)</param>
+        /// <param name="randomProvider">Random number generator</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Random<TContext>(
@@ -538,16 +537,16 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="AsyncAction{TContext}"/> 노드를 생성한다.
-        /// 비동기 함수를 실행하고 기다린다. 타임아웃 시간만큼 결과가 발생하지 않으면 Cancel한다.
-        /// 비동기 함수의 context를 사용시 리소스 경쟁상태를 주의하여야 한다.
+        /// Creates an <see cref="AsyncAction{TContext}"/> node.
+        /// Executes and waits for an asynchronous function. Cancels if no result occurs within the timeout period.
+        /// When using the context of an asynchronous function, be careful of resource race conditions.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="action">비동기 액션</param>
-        /// <param name="timeout">타임 아웃 시간</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="action">Asynchronous action</param>
+        /// <param name="timeout">Timeout duration</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> DoAsync<TContext>(
             this FluentBuilder<TContext> builder,
@@ -562,15 +561,15 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="WaitRenew{TContext}"/> 노드를 생성한다.
-        /// Wait 노드는 초기화시에 <paramref name="getWaitTimeInMilliseconds"/>에 의해서 갱신된다.
-        /// 대기 중에는 <see cref="BehaviourStatus.Running"/>, 대기 종료 후 <see cref="BehaviourStatus.Succeeded"/>을 반환한다.
+        /// Creates a <see cref="WaitRenew{TContext}"/> node.
+        /// The Wait node is renewed by <paramref name="getWaitTimeInMilliseconds"/> during initialization.
+        /// Returns <see cref="BehaviourStatus.Running"/> while waiting and <see cref="BehaviourStatus.Succeeded"/> after the wait completes.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="getWaitTimeInMilliseconds">대기 시간을 갱신하는 델리게이트(milliseconds)</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="getWaitTimeInMilliseconds">Delegate to renew the wait time (milliseconds)</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Wait<TContext>(
             this FluentBuilder<TContext> builder,
@@ -584,18 +583,18 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="TimeLimiterRenew{TContext}"/> 노드를 생성한다.
-        /// 노드가 초기화될 때, <paramref name="getTimeLimitInMilliseconds"/>애 의해서 제한 시간을 갱신한다.
-        /// 자식 노드가 제한 시간을 경과할 동안 성공하지 못하면 <see cref="BehaviourStatus.Failed"/>를 반환한다.
+        /// Creates a <see cref="TimeLimiterRenew{TContext}"/> node.
+        /// When the node is initialized, the time limit is renewed by <paramref name="getTimeLimitInMilliseconds"/>.
+        /// Returns <see cref="BehaviourStatus.Failed"/> if the child node does not succeed within the time limit.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="getTimeLimitInMilliseconds">제한 시간을 갱신하는 델리게이트(milliseconds)</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="getTimeLimitInMilliseconds">Delegate to renew the time limit (milliseconds)</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> TimeLimit<TContext>(
@@ -610,16 +609,16 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="CooldownRenew{TContext}"/> 노드를 생성한다.
+        /// Creates a <see cref="CooldownRenew{TContext}"/> node.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="getCooldownTimeInMilliseconds">쿨다운 시간을 갱신하는 델리게이트(milliseconds)</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="getCooldownTimeInMilliseconds">Delegate to renew the cooldown time (milliseconds)</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Cooldown<TContext>(
@@ -634,19 +633,19 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="RateLimiterRenew{TContext}"/> 노드를 생성한다.
-        /// 지연 시간 후에 자식 노드를 실행한다. 노드가 초기화될 때, <paramref name="getIntervalInMilliseconds"/>애 의해서 지연 시간을 갱신한다.
-        /// 지연 시간 중에는 <see cref="BehaviourStatus.Running"/>을 반환하고,
-        /// 이후에는 자식노드의 결과를 반환한다.
+        /// Creates a <see cref="RateLimiterRenew{TContext}"/> node.
+        /// Executes the child node after the delay time. When the node is initialized, the delay time is renewed by <paramref name="getIntervalInMilliseconds"/>.
+        /// Returns <see cref="BehaviourStatus.Running"/> during the delay time,
+        /// and returns the child node's result afterwards.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="getIntervalInMilliseconds">지연 시간(milliseconds)</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="getIntervalInMilliseconds">Delay time (milliseconds)</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> LimitCallRate<TContext>(
@@ -661,18 +660,18 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="RepeaterRenew{TContext}"/> 노드를 생성한다.
-        /// 자식 노드의 결과가 반복 횟수 만큼 성공하면 <see cref="BehaviourStatus.Succeeded"/>을 반환한다.
-        /// 노드가 초기화될 때, <paramref name="getRepeatCount"/>애 의해서 반복 횟수를 갱신한다.
+        /// Creates a <see cref="RepeaterRenew{TContext}"/> node.
+        /// Returns <see cref="BehaviourStatus.Succeeded"/> when the child node's result succeeds the specified number of times.
+        /// When the node is initialized, the repeat count is renewed by <paramref name="getRepeatCount"/>.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="getRepeatCount">반복 횟수를 갱신하는 델리게이트</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="getRepeatCount">Delegate to renew the repeat count</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Repeat<TContext>(
@@ -687,18 +686,18 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="CSP.Foundation.BehaviourTree.Decorators.RetryRenew{TContext}"/> 노드를 생성한다.
-        /// 자식 노드의 결과가 실패이면, <paramref name="getRetryCount"/> 횟수 만큼 반복해서 <see cref="BehaviourStatus.Running"/>을 반환한다.
-        /// 노드가 초기화될 때, <paramref name="getRetryCount"/>애 의해서 반복 횟수를 갱신한다.
+        /// Creates a <see cref="CSP.Foundation.BehaviourTree.Decorators.RetryRenew{TContext}"/> node.
+        /// If the child node's result is failure, returns <see cref="BehaviourStatus.Running"/> repeatedly for <paramref name="getRetryCount"/> times.
+        /// When the node is initialized, the retry count is renewed by <paramref name="getRetryCount"/>.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="getRetryCount">반복 횟수를 갱신하는 델리게이트</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="getRetryCount">Delegate to renew the retry count</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Retry<TContext>(
@@ -713,17 +712,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Decorators.UntilSuccess{TContext}"/> 노드를 생성한다.
-        /// 자식 노드가 성공할 때까지 재시도한다. 실패하면 <paramref name="getCountdown"/>만큼 재시도한다.
+        /// Creates a <see cref="Decorators.UntilSuccess{TContext}"/> node.
+        /// Retries the child node until it succeeds. On failure, retries <paramref name="getCountdown"/> times.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="getCountdown">실패시 재시도할 횟수</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="getCountdown">Number of retries on failure</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> UntilSuccess<TContext>(
@@ -738,17 +737,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Decorators.UntilFailed{TContext}"/> 노드를 생성한다.
-        /// 자식 노드가 실패할 때까지 재시도한다. 성공하면 <paramref name="getCountdown"/>만큼 재시도한다.
+        /// Creates a <see cref="Decorators.UntilFailed{TContext}"/> node.
+        /// Retries the child node until it fails. On success, retries <paramref name="getCountdown"/> times.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="getCountdown">실패시 재시도할 횟수</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="getCountdown">Number of retries on failure</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> UntilFailed<TContext>(
@@ -785,17 +784,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Decorators.UntilSuccessWithinTimeout{TContext}"/> 노드를 생성한다.
-        /// 자식 노드가 성공할 때까지 재시도한다. 실패하면 <paramref name="getTimeoutInMilliseconds"/>만큼 재시도한다.
+        /// Creates a <see cref="Decorators.UntilSuccessWithinTimeout{TContext}"/> node.
+        /// Retries the child node until it succeeds. On failure, retries <paramref name="getTimeoutInMilliseconds"/> times.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="getTimeoutInMilliseconds">실패시 재시도할 횟수</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="getTimeoutInMilliseconds">Number of retries on failure</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Decorate 노드이다.
-        /// Decorate 노드는 하나의 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Decorator node.
+        /// Decorator nodes can have one child and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> UntilSuccessWithinTimeout<TContext>(
@@ -811,17 +810,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Composites.ActiveSelector{TContext}"/> 노드를 생성한다.
-        /// PrioritySelector의 별칭으로, 동작시 항상 첫째 자식노드부터 시작하며 매 틱마다 재평가한다.
-        /// 자식 노드 중 하나가 성공하면 실행을 종료하고 <see cref="BehaviourStatus.Succeeded"/>를 반환한다.
+        /// Creates a <see cref="Composites.ActiveSelector{TContext}"/> node.
+        /// An alias for PrioritySelector, always starts from the first child node when executed and re-evaluates every tick.
+        /// Returns <see cref="BehaviourStatus.Succeeded"/> when one of the child nodes succeeds.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Composite 노드이다.
-        /// Composite 노드는 여러 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Composite node.
+        /// Composite nodes can have multiple children and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> ActiveSelector<TContext>(
@@ -833,17 +832,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Composites.ActiveSequence{TContext}"/> 노드를 생성한다.
-        /// PrioritySequence의 별칭으로, 동작시 항상 첫째 자식노드부터 시작하며 매 틱마다 재평가한다.
-        /// 자식 노드가 하나라도 실패하면 실행을 종료하고 <see cref="BehaviourStatus.Failed"/>를 반환한다.
+        /// Creates a <see cref="Composites.ActiveSequence{TContext}"/> node.
+        /// An alias for PrioritySequence, always starts from the first child node when executed and re-evaluates every tick.
+        /// Returns <see cref="BehaviourStatus.Failed"/> when any child node fails.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Composite 노드이다.
-        /// Composite 노드는 여러 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Composite node.
+        /// Composite nodes can have multiple children and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> ActiveSequence<TContext>(
@@ -855,17 +854,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Composites.Parallel{TContext}"/> 노드를 생성한다.
-        /// 모든 자식 노드를 병렬로 실행하며, 정책에 따라 종료 조건이 달라진다.
+        /// Creates a <see cref="Composites.Parallel{TContext}"/> node.
+        /// Executes all child nodes in parallel, and the termination condition varies based on the policy.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="policy">병렬 노드 처리 정책</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="policy">Parallel node processing policy</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Composite 노드이다.
-        /// Composite 노드는 여러 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Composite node.
+        /// Composite nodes can have multiple children and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Parallel<TContext>(
@@ -878,17 +877,17 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// <see cref="Composites.Parallel{TContext}"/> 노드를 생성한다.
-        /// 모든 자식 노드를 병렬로 실행하며, N개의 자식이 성공해야 성공한다.
+        /// Creates a <see cref="Composites.Parallel{TContext}"/> node.
+        /// Executes all child nodes in parallel, and succeeds when N children succeed.
         /// </summary>
-        /// <param name="builder">행동트리 빌더</param>
-        /// <param name="name">노드의 표기할 이름</param>
-        /// <param name="successRequired">성공 필요한 자식 노드 개수</param>
-        /// <typeparam name="TContext">행동트리에서 사용하는 context</typeparam>
-        /// <returns>적용 완료된 행동트리 빌더</returns>
+        /// <param name="builder">Behavior tree builder</param>
+        /// <param name="name">The display name of the node</param>
+        /// <param name="successRequired">Number of child nodes required to succeed</param>
+        /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
+        /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
-        /// 위 노드의 타입은 Composite 노드이다.
-        /// Composite 노드는 여러 자식을 가질 수 있으며, 반드시 마지막에 End()를 호출해야 한다.
+        /// This node type is a Composite node.
+        /// Composite nodes can have multiple children and must call End() at the end.
         /// </remarks>
         /// <exception cref="ArgumentNullException"></exception>
         public static FluentBuilder<TContext> Parallel<TContext>(

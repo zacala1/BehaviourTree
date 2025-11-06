@@ -33,14 +33,17 @@ namespace BehaviourTree.Decorators
             _intervalInMilliseconds = intervalInMilliseconds;
         }
 
+        /// <summary>
+        /// Updates the rate limiter, caching the child's result for the configured interval.
+        /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
             var currentTimeStamp = context.GetTimeStampInMilliseconds();
 
-            var elapsedMilliseconds = currentTimeStamp - _previousTimestamp;
-
-            if (_previousTimestamp == null || elapsedMilliseconds >= _intervalInMilliseconds)
+            // Check if we should execute the child (first run or interval elapsed)
+            if (!_previousTimestamp.HasValue ||
+                (currentTimeStamp - _previousTimestamp.Value) >= _intervalInMilliseconds)
             {
                 _previousChildStatus = Child.Tick(context);
 

@@ -1,5 +1,12 @@
-﻿namespace BehaviourTree.Behaviours
+﻿using System;
+
+namespace BehaviourTree.Behaviours
 {
+    /// <summary>
+    /// Leaf node that waits for a specified duration before succeeding.
+    /// Returns Running while waiting, then Success after the duration elapses.
+    /// </summary>
+    /// <typeparam name="TContext">Type of context used during execution</typeparam>
     public sealed class Wait<TContext> : BaseBehaviour<TContext>
     {
         private readonly long _waitTimeInMilliseconds;
@@ -7,12 +14,29 @@
 
         public long WaitTimeInMilliseconds => _waitTimeInMilliseconds;
 
+        /// <summary>
+        /// Creates a wait node with default name.
+        /// </summary>
+        /// <param name="waitTimeInMilliseconds">Duration to wait in milliseconds (must be non-negative)</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when wait time is negative</exception>
         public Wait(int waitTimeInMilliseconds) : this("Wait", waitTimeInMilliseconds)
         {
         }
 
+        /// <summary>
+        /// Creates a wait node with specified name.
+        /// </summary>
+        /// <param name="name">Node name for debugging</param>
+        /// <param name="waitTimeInMilliseconds">Duration to wait in milliseconds (must be non-negative)</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when wait time is negative</exception>
         public Wait(string name, int waitTimeInMilliseconds) : base(name)
         {
+            if (waitTimeInMilliseconds < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(waitTimeInMilliseconds),
+                    "Wait time must be non-negative");
+            }
+
             _waitTimeInMilliseconds = waitTimeInMilliseconds;
         }
 
