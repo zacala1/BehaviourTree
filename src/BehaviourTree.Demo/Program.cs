@@ -18,6 +18,12 @@ namespace BehaviourTree.Demo
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            // Initialize TimeProvider to use the game's time system
+            // This allows behavior tree time-based nodes (Wait, Cooldown) to work without requiring IClock
+            var gameTimer = new Timer();
+            gameTimer.Start();
+            BehaviourTree.TimeProvider.GetTimestampInMilliseconds = () => gameTimer.GetElapsedMilliseconds();
+
             var engine = new Engine();
 
             using (var renderSystem = new HostForm())

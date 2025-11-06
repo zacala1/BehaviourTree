@@ -7,6 +7,9 @@ namespace BehaviourTree.Demo.Ai.BT
     {
         public static IBehaviour<BtContext> BotBehaviour()
         {
+            // PrioritySelector (now properly implements reactive behavior)
+            // re-evaluates from the beginning every tick, allowing higher priority
+            // tasks to interrupt lower priority running tasks
             return FluentBuilder.FluentBuilder.Create<BtContext>()
                 .PrioritySelector("Root")
                     .Subtree(LowHealthBehaviour())
@@ -47,6 +50,9 @@ namespace BehaviourTree.Demo.Ai.BT
 
         private static IBehaviour<BtContext> MineStoneBehaviour()
         {
+            // PrioritySequence (now properly implements reactive behavior)
+            // If pickaxe is lost while mining stone, this will re-evaluate
+            // and go back to getting the pickaxe
             return FluentBuilder.FluentBuilder.Create<BtContext>()
                 .PrioritySequence("Mine stone")
                     .Selector("Get pickaxe")
