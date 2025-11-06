@@ -7,10 +7,19 @@
     /// </summary>
     public class PrioritySequence<TContext> : CompositeBehaviour<TContext>
     {
+        /// <summary>
+        /// Creates a priority sequence node with default name.
+        /// </summary>
+        /// <param name="children">Array of child nodes ordered by priority</param>
         public PrioritySequence(IBehaviour<TContext>[] children) : this("PrioritySequence", children)
         {
         }
 
+        /// <summary>
+        /// Creates a priority sequence node with specified name.
+        /// </summary>
+        /// <param name="name">Node name for debugging</param>
+        /// <param name="children">Array of child nodes ordered by priority</param>
         public PrioritySequence(string name, IBehaviour<TContext>[] children) : base(name, children)
         {
         }

@@ -2,8 +2,18 @@
 
 namespace BehaviourTree.Reflection
 {
+    /// <summary>
+    /// Provides reflection information about a behavior tree node and its hierarchy.
+    /// Used for visualization, debugging, and runtime inspection of behavior trees.
+    /// </summary>
     public sealed class BehaviourTreeInfo
     {
+        /// <summary>
+        /// Creates a new behavior tree info instance.
+        /// </summary>
+        /// <param name="name">Name of the behavior node</param>
+        /// <param name="id">Unique identifier of the node</param>
+        /// <param name="nodeType">Type classification of the node</param>
         internal BehaviourTreeInfo(string name, int id, TreeNodeType nodeType)
         {
             Name = name;

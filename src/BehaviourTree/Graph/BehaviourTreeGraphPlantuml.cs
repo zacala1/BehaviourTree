@@ -7,12 +7,19 @@ using System.Text;
 
 namespace BehaviourTree.Graph
 {
+    /// <summary>
+    /// Generates behavior tree visualizations in PlantUML mindmap format.
+    /// See: https://plantuml.com/mindmap-diagram
+    /// </summary>
     public static class BehaviourTreeGraphPlantuml
     {
         /// <summary>
         /// Generates a PlantUML mindmap diagram from a behavior tree.
         /// See: https://plantuml.com/mindmap-diagram
         /// </summary>
+        /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
+        /// <param name="behaviour">Behavior tree to format</param>
+        /// <returns>PlantUML mindmap markup string</returns>
         public static string Format<TContext>(IBehaviour<TContext> behaviour)
         {
             StringBuilder formatted = new StringBuilder();

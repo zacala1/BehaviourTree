@@ -7,6 +7,10 @@ using System.Text;
 
 namespace BehaviourTree.Graph
 {
+    /// <summary>
+    /// Generates behavior tree visualizations in Dan Abad's text format.
+    /// See: https://github.com/0xabad/behavior_tree/
+    /// </summary>
     public static class BehaviourTreeGraphDanAbad
     {
         /// <summary>
@@ -14,6 +18,9 @@ namespace BehaviourTree.Graph
         /// See: https://github.com/0xabad/behavior_tree/
         /// Note: This format doesn't fully support decorators.
         /// </summary>
+        /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
+        /// <param name="behaviour">Behavior tree to format</param>
+        /// <returns>Formatted string representation in Dan Abad format</returns>
         public static string Format<TContext>(IBehaviour<TContext> behaviour)
         {
             StringBuilder formatted = new StringBuilder();

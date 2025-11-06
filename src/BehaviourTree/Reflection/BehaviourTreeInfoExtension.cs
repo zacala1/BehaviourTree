@@ -5,8 +5,17 @@ using System;
 
 namespace BehaviourTree.Reflection
 {
+    /// <summary>
+    /// Extension methods for extracting reflection information from behavior tree nodes.
+    /// </summary>
     public static class BehaviourTreeInfoExtension
     {
+        /// <summary>
+        /// Gets reflection information for the entire behavior tree starting from this node.
+        /// </summary>
+        /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
+        /// <param name="behaviour">Root behavior node to analyze</param>
+        /// <returns>Hierarchical tree information structure</returns>
         public static BehaviourTreeInfo GetInfo<TContext>(this IBehaviour<TContext> behaviour)
         {
             BehaviourTreeInfo treeInfo = null;
@@ -115,8 +124,19 @@ namespace BehaviourTree.Reflection
         }
     }
 
+    /// <summary>
+    /// Extension methods for querying behavior tree nodes using LINQ-style methods.
+    /// </summary>
     public static partial class BehaviourTree
     {
+        /// <summary>
+        /// Returns the first behavior node that matches the specified predicate.
+        /// </summary>
+        /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
+        /// <param name="source">Root behavior node to search from</param>
+        /// <param name="predicate">Function to test each node</param>
+        /// <returns>First matching behavior node</returns>
+        /// <exception cref="InvalidOperationException">Thrown when no matching node is found</exception>
         public static IBehaviour<TContext> First<TContext>(this IBehaviour<TContext> source, Func<IBehaviour<TContext>, bool> predicate)
         {
             var first = source.TryGetFirst(predicate, out var found);
@@ -128,6 +148,13 @@ namespace BehaviourTree.Reflection
             return first;
         }
 
+        /// <summary>
+        /// Returns the first behavior node that matches the specified predicate, or null if none found.
+        /// </summary>
+        /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
+        /// <param name="source">Root behavior node to search from</param>
+        /// <param name="predicate">Function to test each node</param>
+        /// <returns>First matching behavior node, or null if none found</returns>
         public static IBehaviour<TContext> FirstOrDefault<TContext>(this IBehaviour<TContext> source, Func<IBehaviour<TContext>, bool> predicate)
         {
             return source.TryGetFirst(predicate, out _);

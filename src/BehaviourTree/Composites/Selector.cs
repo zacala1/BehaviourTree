@@ -8,10 +8,19 @@
     {
         private int _currentChildIndex;
 
+        /// <summary>
+        /// Creates a selector node with default name.
+        /// </summary>
+        /// <param name="children">Array of child nodes to execute</param>
         public Selector(IBehaviour<TContext>[] children) : this("Selector", children)
         {
         }
 
+        /// <summary>
+        /// Creates a selector node with specified name.
+        /// </summary>
+        /// <param name="name">Node name for debugging</param>
+        /// <param name="children">Array of child nodes to execute</param>
         public Selector(string name, IBehaviour<TContext>[] children) : base(name, children)
         {
         }

@@ -4,6 +4,11 @@ using System.Threading.Tasks;
 
 namespace BehaviourTree.Behaviours
 {
+    /// <summary>
+    /// Leaf node that executes an asynchronous action and tracks its completion.
+    /// Supports timeout and cancellation conditions for async operations.
+    /// </summary>
+    /// <typeparam name="TContext">Type of context used during execution</typeparam>
     public class AsyncAction<TContext> : BaseBehaviour<TContext>
     {
         private readonly Func<TContext, CancellationToken, Task<BehaviourStatus>> action;
@@ -12,16 +17,35 @@ namespace BehaviourTree.Behaviours
         private Task<BehaviourStatus>? task;
         private CancellationTokenSource? cts;
 
+        /// <summary>
+        /// Creates an async action node with default name.
+        /// </summary>
+        /// <param name="action">Async action to execute</param>
+        /// <param name="timeout">Optional timeout duration (default: no timeout)</param>
         public AsyncAction(Func<TContext, CancellationToken, Task<BehaviourStatus>> action,
             TimeSpan timeout = default) : this("ActionAsync", action, timeout)
         {
         }
 
+        /// <summary>
+        /// Creates an async action node with specified name.
+        /// </summary>
+        /// <param name="name">Node name for debugging</param>
+        /// <param name="action">Async action to execute</param>
+        /// <param name="timeout">Optional timeout duration (default: no timeout)</param>
         public AsyncAction(string name, Func<TContext, CancellationToken, Task<BehaviourStatus>> action,
             TimeSpan timeout = default) : this(name, action, null, timeout)
         {
         }
 
+        /// <summary>
+        /// Creates an async action node with cancellation condition.
+        /// </summary>
+        /// <param name="name">Node name for debugging</param>
+        /// <param name="action">Async action to execute</param>
+        /// <param name="cancelCondition">Predicate that when true cancels the action</param>
+        /// <param name="timeout">Optional timeout duration (default: no timeout)</param>
+        /// <exception cref="ArgumentNullException">Thrown when action is null</exception>
         public AsyncAction(string name,
             Func<TContext, CancellationToken, Task<BehaviourStatus>> action,
             Func<TContext, bool> cancelCondition,

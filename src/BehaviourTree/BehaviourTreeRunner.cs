@@ -16,6 +16,13 @@ namespace BehaviourTree
         private CancellationTokenSource? _tokenSource;
         private readonly object _tokenLock = new object();
 
+        /// <summary>
+        /// Creates a behavior tree runner.
+        /// </summary>
+        /// <param name="behaviourTree">Behavior tree to execute</param>
+        /// <param name="context">Context object for tree execution</param>
+        /// <param name="intervalInMilliseconds">Interval between ticks in milliseconds</param>
+        /// <exception cref="ArgumentNullException">Thrown when behaviourTree or context is null</exception>
         public BehaviourTreeRunner(IBehaviour<TContext> behaviourTree, TContext context, int intervalInMilliseconds)
         {
             _intervalInMilliseconds = intervalInMilliseconds;
@@ -23,6 +30,10 @@ namespace BehaviourTree
             _behaviourTree = behaviourTree ?? throw new ArgumentNullException(nameof(behaviourTree));
         }
 
+        /// <summary>
+        /// Runs the behavior tree repeatedly until it returns Success or Failed status.
+        /// </summary>
+        /// <returns>Task that completes with the final status (Success or Failed)</returns>
         public Task<BehaviourStatus> RunToFailureOrSuccess()
         {
             return DoWork(status =>
@@ -30,11 +41,18 @@ namespace BehaviourTree
                 status == BehaviourStatus.Failed);
         }
 
+        /// <summary>
+        /// Runs the behavior tree repeatedly until explicitly stopped via Stop() method.
+        /// </summary>
+        /// <returns>Task that completes when runner is stopped</returns>
         public Task<BehaviourStatus> RunUntilStopped()
         {
             return DoWork(status => false);
         }
 
+        /// <summary>
+        /// Internal execution loop that ticks the tree at specified intervals.
+        /// </summary>
         private async Task<BehaviourStatus> DoWork(Predicate<BehaviourStatus> shouldStop)
         {
             Stop();

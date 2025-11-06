@@ -8,10 +8,19 @@
     {
         private int _currentChildIndex;
 
+        /// <summary>
+        /// Creates a sequence node with default name.
+        /// </summary>
+        /// <param name="children">Array of child nodes to execute</param>
         public Sequence(IBehaviour<TContext>[] children) : this("Sequence", children)
         {
         }
 
+        /// <summary>
+        /// Creates a sequence node with specified name.
+        /// </summary>
+        /// <param name="name">Node name for debugging</param>
+        /// <param name="children">Array of child nodes to execute</param>
         public Sequence(string name, IBehaviour<TContext>[] children) : base(name, children)
         {
         }

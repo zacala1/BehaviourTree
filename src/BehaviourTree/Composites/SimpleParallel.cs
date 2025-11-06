@@ -2,6 +2,11 @@
 
 namespace BehaviourTree.Composites
 {
+    /// <summary>
+    /// Optimized parallel composite for exactly two children.
+    /// Executes both children concurrently with configurable success policy.
+    /// </summary>
+    /// <typeparam name="TContext">Type of context used during execution</typeparam>
     public sealed class SimpleParallel<TContext> : CompositeBehaviour<TContext>
     {
         private readonly IBehaviour<TContext> _first;
@@ -9,12 +14,29 @@ namespace BehaviourTree.Composites
         private BehaviourStatus _firstStatus;
         private BehaviourStatus _secondStatus;
         private readonly Func<TContext, BehaviourStatus> _behave;
+
+        /// <summary>
+        /// Policy determining when this parallel node succeeds or fails.
+        /// </summary>
         public readonly SimpleParallelPolicy Policy;
 
+        /// <summary>
+        /// Creates a simple parallel node with default name.
+        /// </summary>
+        /// <param name="policy">Policy for determining success/failure</param>
+        /// <param name="first">First child node</param>
+        /// <param name="second">Second child node</param>
         public SimpleParallel(SimpleParallelPolicy policy, IBehaviour<TContext> first, IBehaviour<TContext> second) : this("SimpleParallel", policy, first, second)
         {
         }
 
+        /// <summary>
+        /// Creates a simple parallel node with specified name.
+        /// </summary>
+        /// <param name="name">Node name for debugging</param>
+        /// <param name="policy">Policy for determining success/failure</param>
+        /// <param name="first">First child node</param>
+        /// <param name="second">Second child node</param>
         public SimpleParallel(string name, SimpleParallelPolicy policy, IBehaviour<TContext> first, IBehaviour<TContext> second) : base(name, new[] { first, second })
         {
             Policy = policy;

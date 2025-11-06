@@ -2,6 +2,11 @@
 
 namespace BehaviourTree.Decorators
 {
+    /// <summary>
+    /// Decorator that enforces a cooldown period after child succeeds, renewed on initialization.
+    /// Returns failure during cooldown, otherwise executes child normally.
+    /// </summary>
+    /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
     public sealed class CooldownRenew<TContext> : DecoratorBehaviour<TContext>
     {
         private readonly Func<TContext, long> _getCooldownTimeInMilliseconds;
@@ -9,14 +14,32 @@ namespace BehaviourTree.Decorators
         private long _cooldownStartedTimestamp;
         private bool _onCooldown;
 
+        /// <summary>
+        /// Gets the cooldown duration in milliseconds.
+        /// </summary>
         public long CooldownTimeInMilliseconds => _cooldownTimeInMilliseconds;
 
+        /// <summary>
+        /// Gets whether the decorator is currently on cooldown.
+        /// </summary>
         public bool OnCooldown => _onCooldown;
 
+        /// <summary>
+        /// Creates a new CooldownRenew decorator with a dynamic cooldown time.
+        /// </summary>
+        /// <param name="child">Child behavior to apply cooldown to</param>
+        /// <param name="getCooldownTimeInMilliseconds">Function to get cooldown time from context</param>
         public CooldownRenew(IBehaviour<TContext> child, Func<TContext, long> getCooldownTimeInMilliseconds) : this("Cooldown", child, getCooldownTimeInMilliseconds)
         {
         }
 
+        /// <summary>
+        /// Creates a new CooldownRenew decorator with a dynamic cooldown time and custom name.
+        /// </summary>
+        /// <param name="name">Display name of the node</param>
+        /// <param name="child">Child behavior to apply cooldown to</param>
+        /// <param name="getCooldownTimeInMilliseconds">Function to get cooldown time from context</param>
+        /// <exception cref="ArgumentNullException">Thrown when getCooldownTimeInMilliseconds is null</exception>
         public CooldownRenew(string name, IBehaviour<TContext> child, Func<TContext, long> getCooldownTimeInMilliseconds) : base(name, child)
         {
             _getCooldownTimeInMilliseconds = getCooldownTimeInMilliseconds ?? throw new ArgumentNullException(nameof(getCooldownTimeInMilliseconds));

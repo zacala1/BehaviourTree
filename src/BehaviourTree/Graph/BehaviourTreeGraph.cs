@@ -2,11 +2,24 @@
 
 namespace BehaviourTree.Graph
 {
+    /// <summary>
+    /// Provides methods for formatting and saving behavior tree visualizations.
+    /// </summary>
     public static class BehaviourTreeGraph
     {
+        /// <summary>
+        /// Supported output formats for behavior tree visualization.
+        /// </summary>
         public enum FormatOptions
         {
+            /// <summary>
+            /// PlantUML mindmap diagram format.
+            /// </summary>
             Plantuml,
+
+            /// <summary>
+            /// Dan Abad text format for behavior trees.
+            /// </summary>
             DanAbad
         }
 
@@ -14,6 +27,10 @@ namespace BehaviourTree.Graph
         /// Formats a behavior tree into a string representation.
         /// Note: IClock constraint removed - graph generation doesn't require time information.
         /// </summary>
+        /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
+        /// <param name="bt">Behavior tree to format</param>
+        /// <param name="option">Output format option</param>
+        /// <returns>Formatted string representation of the tree</returns>
         public static string Format<TContext>(IBehaviour<TContext> bt, FormatOptions option)
         {
             switch (option)
@@ -33,6 +50,11 @@ namespace BehaviourTree.Graph
         /// Saves a behavior tree graph to a file.
         /// Note: IClock constraint removed - graph generation doesn't require time information.
         /// </summary>
+        /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
+        /// <param name="bt">Behavior tree to save</param>
+        /// <param name="directoryPath">Directory path to save the file</param>
+        /// <param name="fileName">File name without extension</param>
+        /// <param name="option">Output format option</param>
         public static void Save<TContext>(IBehaviour<TContext> bt, string directoryPath, string fileName, FormatOptions option)
         {
             switch (option)
