@@ -83,8 +83,8 @@ namespace BehaviourTree.Tests
                 var behaviourStatus = sut.Tick(new MockContext());
 
                 Assert.That(behaviourStatus, Is.EqualTo(BehaviourStatus.Succeeded));
-                Assert.That(first.ResetCount, Is.EqualTo(1));
-                Assert.That(second.ResetCount, Is.EqualTo(1));
+                Assert.That(first.ResetCallCount, Is.EqualTo(1));
+                Assert.That(second.ResetCallCount, Is.EqualTo(1));
             }
 
             [Test]
@@ -143,8 +143,8 @@ namespace BehaviourTree.Tests
                 var behaviourStatus = sut.Tick(new MockContext());
 
                 Assert.That(behaviourStatus, Is.EqualTo(BehaviourStatus.Failed));
-                Assert.That(first.ResetCount, Is.EqualTo(1));
-                Assert.That(second.ResetCount, Is.EqualTo(1));
+                Assert.That(first.ResetCallCount, Is.EqualTo(1));
+                Assert.That(second.ResetCallCount, Is.EqualTo(1));
             }
 
             [Test]

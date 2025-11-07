@@ -16,23 +16,6 @@ namespace BehaviourTree.Composites
     public sealed class ActiveSequence<TContext> : PrioritySequence<TContext>
     {
         /// <summary>
-        /// Creates an active sequence node with default name.
-        /// </summary>
-        /// <param name="children">Array of child nodes to evaluate</param>
-        public ActiveSequence(IBehaviour<TContext>[] children) : base("ActiveSequence", children)
-        {
-        }
-
-        /// <summary>
-        /// Creates an active sequence node with specified name.
-        /// </summary>
-        /// <param name="name">Node name for debugging</param>
-        /// <param name="children">Array of child nodes to evaluate</param>
-        public ActiveSequence(string name, IBehaviour<TContext>[] children) : base(name, children)
-        {
-        }
-
-        /// <summary>
         /// Creates an active sequence node with default name and variable number of children.
         /// </summary>
         /// <param name="children">Variable number of child nodes to evaluate</param>

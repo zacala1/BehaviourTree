@@ -81,13 +81,13 @@ namespace BehaviourTree.Tests
                 ReturnStatus = status
             };
 
-            Assert.That(sut.ResetCount, Is.EqualTo(0));
+            Assert.That(sut.ResetCallCount, Is.EqualTo(0));
 
             sut.Tick(new MockContext());
 
             sut.Reset();
 
-            Assert.That(sut.ResetCount, Is.EqualTo(1));
+            Assert.That(sut.ResetCallCount, Is.EqualTo(1));
             Assert.That(sut.ResetStatus, Is.EqualTo(status));
         }
 
@@ -101,11 +101,11 @@ namespace BehaviourTree.Tests
                 ReturnStatus = status
             };
 
-            Assert.That(sut.ResetCount, Is.EqualTo(0));
+            Assert.That(sut.ResetCallCount, Is.EqualTo(0));
 
             sut.Reset();
 
-            Assert.That(sut.ResetCount, Is.EqualTo(0));
+            Assert.That(sut.ResetCallCount, Is.EqualTo(0));
         }
     }
 }

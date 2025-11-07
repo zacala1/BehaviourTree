@@ -17,13 +17,13 @@ namespace BehaviourTree.Tests
 
             var sut = new MockDecoratorBehaviour(childBehaviour);
 
-            Assert.That(childBehaviour.ResetCount, Is.EqualTo(0));
+            Assert.That(childBehaviour.ResetCallCount, Is.EqualTo(0));
 
             sut.Tick(new MockContext());
 
             sut.Reset();
 
-            Assert.That(childBehaviour.ResetCount, Is.EqualTo(1));
+            Assert.That(childBehaviour.ResetCallCount, Is.EqualTo(1));
             Assert.That(childBehaviour.ResetStatus, Is.EqualTo(status));
         }
 
@@ -39,11 +39,11 @@ namespace BehaviourTree.Tests
 
             var sut = new MockDecoratorBehaviour(childBehaviour);
 
-            Assert.That(childBehaviour.ResetCount, Is.EqualTo(0));
+            Assert.That(childBehaviour.ResetCallCount, Is.EqualTo(0));
 
             sut.Reset();
 
-            Assert.That(childBehaviour.ResetCount, Is.EqualTo(0));
+            Assert.That(childBehaviour.ResetCallCount, Is.EqualTo(0));
         }
     }
 }

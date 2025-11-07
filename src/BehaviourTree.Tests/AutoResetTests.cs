@@ -17,7 +17,7 @@ namespace BehaviourTree.Tests
 
             sut.Tick(new MockContext());
 
-            Assert.That(child.ResetCount, Is.EqualTo(1));
+            Assert.That(child.ResetCallCount, Is.EqualTo(1));
         }
 
         [Test]
@@ -29,7 +29,7 @@ namespace BehaviourTree.Tests
 
             sut.Tick(new MockContext());
 
-            Assert.That(child.ResetCount, Is.EqualTo(0));
+            Assert.That(child.ResetCallCount, Is.EqualTo(0));
         }
 
         [TestCase(BehaviourStatus.Succeeded)]

@@ -16,23 +16,6 @@ namespace BehaviourTree.Composites
     public sealed class ActiveSelector<TContext> : PrioritySelector<TContext>
     {
         /// <summary>
-        /// Creates an active selector node with default name.
-        /// </summary>
-        /// <param name="children">Array of child nodes to evaluate</param>
-        public ActiveSelector(IBehaviour<TContext>[] children) : base("ActiveSelector", children)
-        {
-        }
-
-        /// <summary>
-        /// Creates an active selector node with specified name.
-        /// </summary>
-        /// <param name="name">Node name for debugging</param>
-        /// <param name="children">Array of child nodes to evaluate</param>
-        public ActiveSelector(string name, IBehaviour<TContext>[] children) : base(name, children)
-        {
-        }
-
-        /// <summary>
         /// Creates an active selector node with default name and variable number of children.
         /// </summary>
         /// <param name="children">Variable number of child nodes to evaluate</param>

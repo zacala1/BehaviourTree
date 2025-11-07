@@ -19,7 +19,7 @@ namespace BehaviourTree.Tests
 
             foreach (var child in behaviours)
             {
-                Assert.That(child.ResetCount, Is.EqualTo(0));
+                Assert.That(child.ResetCallCount, Is.EqualTo(0));
             }
 
             sut.Tick(new MockContext());
@@ -28,7 +28,7 @@ namespace BehaviourTree.Tests
 
             foreach (var child in behaviours)
             {
-                Assert.That(child.ResetCount, Is.EqualTo(1));
+                Assert.That(child.ResetCallCount, Is.EqualTo(1));
                 Assert.That(child.ResetStatus, Is.EqualTo(status));
             }
         }
@@ -46,14 +46,14 @@ namespace BehaviourTree.Tests
 
             foreach (var child in behaviours)
             {
-                Assert.That(child.ResetCount, Is.EqualTo(0));
+                Assert.That(child.ResetCallCount, Is.EqualTo(0));
             }
 
             sut.Reset();
 
             foreach (var child in behaviours)
             {
-                Assert.That(child.ResetCount, Is.EqualTo(0));
+                Assert.That(child.ResetCallCount, Is.EqualTo(0));
             }
         }
     }
