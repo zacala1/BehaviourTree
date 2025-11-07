@@ -64,7 +64,7 @@ namespace BehaviourTree.Tests
             var updateEvent = observer.Events.Dequeue();
             Assert.That(updateEvent.NodeId, Is.EqualTo(node.Id));
             Assert.That(updateEvent.EventType, Is.EqualTo(BehaviourTreeNodeInfoEventType.Update));
-            Assert.That(updateEvent.Status, Is.EqualTo(BehaviourStatus.Success));
+            Assert.That(updateEvent.Status, Is.EqualTo(BehaviourStatus.Succeeded));
 
             var terminateEvent = observer.Events.Dequeue();
             Assert.That(terminateEvent.NodeId, Is.EqualTo(node.Id));
@@ -111,7 +111,7 @@ namespace BehaviourTree.Tests
 
             var node1Update = observer.Events.Dequeue();
             Assert.That(node1Update.NodeId, Is.EqualTo(node1.Id));
-            Assert.That(node1Update.Status, Is.EqualTo(BehaviourStatus.Success));
+            Assert.That(node1Update.Status, Is.EqualTo(BehaviourStatus.Succeeded));
 
             var node1Terminate = observer.Events.Dequeue();
             Assert.That(node1Terminate.NodeId, Is.EqualTo(node1.Id));
@@ -192,7 +192,7 @@ namespace BehaviourTree.Tests
         {
             // Arrange
             var observer = new TestObserver();
-            var node = new ActionBehaviour<MockContext>("TestAction", c => BehaviourStatus.Success);
+            var node = new ActionBehaviour<MockContext>("TestAction", c => BehaviourStatus.Succeeded);
             node.AttachObserver(observer);
 
             // Act
@@ -205,7 +205,7 @@ namespace BehaviourTree.Tests
             Assert.That(updateEvent.NodeName, Is.EqualTo("TestAction"));
             Assert.That(updateEvent.NodeType, Contains.Substring("Action"));
             Assert.That(updateEvent.ElapsedMilliseconds, Is.GreaterThanOrEqualTo(0));
-            Assert.That(updateEvent.Status, Is.EqualTo(BehaviourStatus.Success));
+            Assert.That(updateEvent.Status, Is.EqualTo(BehaviourStatus.Succeeded));
         }
     }
 }

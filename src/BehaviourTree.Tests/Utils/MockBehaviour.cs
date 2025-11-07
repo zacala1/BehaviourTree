@@ -14,7 +14,7 @@
         public int InitializeCallCount { get; private set; }
         public int UpdateCallCount { get; private set; }
         public int TerminateCallCount { get; private set; }
-        public int ResetCount { get; private set; }
+        public int ResetCallCount { get; set; }
 
         public BehaviourStatus TerminateStatus { get; private set; }
         public BehaviourStatus ResetStatus { get; private set; }
@@ -35,7 +35,7 @@
         protected override void DoReset(BehaviourStatus status)
         {
             ResetStatus = status;
-            ResetCount++;
+            ResetCallCount++;
         }
 
         protected override void OnInitialize(MockContext context)

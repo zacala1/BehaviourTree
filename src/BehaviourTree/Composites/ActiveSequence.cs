@@ -31,5 +31,22 @@ namespace BehaviourTree.Composites
         public ActiveSequence(string name, IBehaviour<TContext>[] children) : base(name, children)
         {
         }
+
+        /// <summary>
+        /// Creates an active sequence node with default name and variable number of children.
+        /// </summary>
+        /// <param name="children">Variable number of child nodes to evaluate</param>
+        public ActiveSequence(params IBehaviour<TContext>[] children) : base("ActiveSequence", children)
+        {
+        }
+
+        /// <summary>
+        /// Creates an active sequence node with specified name and variable number of children.
+        /// </summary>
+        /// <param name="name">Node name for debugging</param>
+        /// <param name="children">Variable number of child nodes to evaluate</param>
+        public ActiveSequence(string name, params IBehaviour<TContext>[] children) : base(name, children)
+        {
+        }
     }
 }

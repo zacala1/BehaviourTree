@@ -31,5 +31,22 @@ namespace BehaviourTree.Composites
         public ActiveSelector(string name, IBehaviour<TContext>[] children) : base(name, children)
         {
         }
+
+        /// <summary>
+        /// Creates an active selector node with default name and variable number of children.
+        /// </summary>
+        /// <param name="children">Variable number of child nodes to evaluate</param>
+        public ActiveSelector(params IBehaviour<TContext>[] children) : base("ActiveSelector", children)
+        {
+        }
+
+        /// <summary>
+        /// Creates an active selector node with specified name and variable number of children.
+        /// </summary>
+        /// <param name="name">Node name for debugging</param>
+        /// <param name="children">Variable number of child nodes to evaluate</param>
+        public ActiveSelector(string name, params IBehaviour<TContext>[] children) : base(name, children)
+        {
+        }
     }
 }
