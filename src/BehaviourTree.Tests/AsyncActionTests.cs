@@ -155,7 +155,7 @@ namespace BehaviourTree.Tests
         public void AsyncAction_PassesContext_ToAsyncFunction()
         {
             // Arrange
-            MockContext capturedContext = null;
+            MockContext? capturedContext = null;
             var expectedContext = new MockContext();
             var asyncAction = new AsyncAction<MockContext>("Test", async (ctx, token) =>
             {

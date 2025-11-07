@@ -63,7 +63,7 @@ namespace BehaviourTree.Tests
         public void AfterFailed_PassesContext_ToCallback()
         {
             // Arrange
-            MockContext capturedContext = null;
+            MockContext? capturedContext = null;
             var expectedContext = new MockContext();
             var child = new MockBehaviour(BehaviourStatus.Failed);
             var decorator = new AfterFailed<MockContext>("Test", child, ctx => capturedContext = ctx);
