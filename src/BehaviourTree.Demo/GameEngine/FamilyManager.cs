@@ -60,7 +60,7 @@ namespace BehaviourTree.Demo.GameEngine
         {
             foreach (var family in _families.Values)
             {
-                family.ComponentRemovedFromEntity((Entity)sender, e.GetType());
+                family.ComponentRemovedFromEntity((Entity)sender!, e.GetType());
             }
         }
 
@@ -68,7 +68,7 @@ namespace BehaviourTree.Demo.GameEngine
         {
             foreach (var family in _families.Values)
             {
-                family.ComponentAddedToEntity((Entity)sender, e.GetType());
+                family.ComponentAddedToEntity((Entity)sender!, e.GetType());
             }
         }
     }
