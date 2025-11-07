@@ -9,19 +9,19 @@
         private int _currentChildIndex;
 
         /// <summary>
-        /// Creates a selector node with default name.
+        /// Creates a selector node with default name and variable number of children.
         /// </summary>
-        /// <param name="children">Array of child nodes to execute</param>
-        public Selector(IBehaviour<TContext>[] children) : this("Selector", children)
+        /// <param name="children">Variable number of child nodes to execute</param>
+        public Selector(params IBehaviour<TContext>[] children) : this("Selector", children)
         {
         }
 
         /// <summary>
-        /// Creates a selector node with specified name.
+        /// Creates a selector node with specified name and variable number of children.
         /// </summary>
         /// <param name="name">Node name for debugging</param>
-        /// <param name="children">Array of child nodes to execute</param>
-        public Selector(string name, IBehaviour<TContext>[] children) : base(name, children)
+        /// <param name="children">Variable number of child nodes to execute</param>
+        public Selector(string name, params IBehaviour<TContext>[] children) : base(name, children)
         {
         }
 

@@ -179,9 +179,9 @@ namespace BehaviourTree.Tests.FluentBuilder
                 .Build();
 
             Assert.That(sut, Is.Not.Null);
-            Assert.That(sut, Is.InstanceOf<Repeat<TestContext>>());
+            Assert.That(sut, Is.InstanceOf<Repeater<TestContext>>());
 
-            var repeatNode = sut as Repeat<TestContext>;
+            var repeatNode = sut as Repeater<TestContext>;
             Assert.That(repeatNode.RepeatCount, Is.EqualTo(5));
             Assert.That(repeatNode.Child, Is.Not.Null);
         }
