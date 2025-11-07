@@ -20,6 +20,11 @@
         public BehaviourStatus ResetStatus { get; private set; }
         public BehaviourStatus ReturnStatus { get; set; }
 
+        public void SetStatus(BehaviourStatus status)
+        {
+            ReturnStatus = status;
+        }
+
         protected override BehaviourStatus Update(MockContext context)
         {
             UpdateCallCount++;

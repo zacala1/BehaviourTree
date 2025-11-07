@@ -11,6 +11,11 @@ namespace BehaviourTree.Tests.Utils
         private long _timestamp;
 
         /// <summary>
+        /// General purpose counter for tests.
+        /// </summary>
+        public int Counter { get; set; }
+
+        /// <summary>
         /// Advances the mock clock by the specified number of milliseconds.
         /// </summary>
         /// <param name="milliseconds">Number of milliseconds to advance</param>

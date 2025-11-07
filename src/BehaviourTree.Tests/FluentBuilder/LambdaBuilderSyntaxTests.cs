@@ -9,10 +9,22 @@ namespace BehaviourTree.Tests.FluentBuilder
     [TestFixture]
     internal sealed class LambdaBuilderSyntaxTests
     {
-        private class TestContext
+        private class TestContext : IClock
         {
+            private long _timestamp;
+
             public bool ConditionResult { get; set; }
             public int ActionCallCount { get; set; }
+
+            public long GetTimeStampInMilliseconds()
+            {
+                return _timestamp;
+            }
+
+            public void SetTimeStamp(long milliseconds)
+            {
+                _timestamp = milliseconds;
+            }
         }
 
         [Test]
@@ -202,9 +214,9 @@ namespace BehaviourTree.Tests.FluentBuilder
                 .Build();
 
             Assert.That(sut, Is.Not.Null);
-            Assert.That(sut, Is.InstanceOf<TimeLimit<TestContext>>());
+            Assert.That(sut, Is.InstanceOf<TimeLimiter<TestContext>>());
 
-            var timeLimit = sut as TimeLimit<TestContext>;
+            var timeLimit = sut as TimeLimiter<TestContext>;
             Assert.That(timeLimit.TimeLimitInMilliseconds, Is.EqualTo(1000));
             Assert.That(timeLimit.Child, Is.Not.Null);
         }

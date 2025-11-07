@@ -147,7 +147,7 @@ namespace BehaviourTree.Tests
         [Test]
         public void WhenNestedTreeDisposed_DisposesAllNodesRecursively()
         {
-            var sut = FluentBuilder.Create<TestContext>()
+            var sut = BehaviourTree.FluentBuilder.FluentBuilder.Create<TestContext>()
                 .Sequence("root", seq =>
                 {
                     seq.Do("action1", ctx => BehaviourStatus.Succeeded);
