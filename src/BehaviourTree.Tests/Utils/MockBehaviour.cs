@@ -6,6 +6,11 @@
         {
         }
 
+        public MockBehaviour(BehaviourStatus returnStatus) : base("MockBehaviour")
+        {
+            ReturnStatus = returnStatus;
+        }
+
         public int InitializeCallCount { get; private set; }
         public int UpdateCallCount { get; private set; }
         public int TerminateCallCount { get; private set; }
