@@ -98,8 +98,8 @@ namespace BehaviourTree.Demo.Ai.BT
                 return BehaviourStatus.Failed;
             }
 
-            var positionComponent = context.Agent.GetComponent<PositionComponent>()!.Value;
-            var targetEntityComponent = context.Agent.GetComponent<TargetEntityComponent>()!.Value;
+            var positionComponent = context.Agent.GetComponent<PositionComponent>()!;
+            var targetEntityComponent = context.Agent.GetComponent<TargetEntityComponent>()!;
 
             var position = positionComponent.Position;
             var targetId = targetEntityComponent.TargetId;
@@ -118,7 +118,7 @@ namespace BehaviourTree.Demo.Ai.BT
                 return BehaviourStatus.Failed;
             }
 
-            var targetPosition = target.GetComponent<PositionComponent>()!.Value;
+            var targetPosition = target.GetComponent<PositionComponent>()!;
             var distance = Vector2.Distance(position, targetPosition.Position);
 
             if (distance < 2)
@@ -141,32 +141,27 @@ namespace BehaviourTree.Demo.Ai.BT
                 return BehaviourStatus.Failed;
             }
 
-            var targetEntityComp = context.Agent.GetComponent<TargetEntityComponent>();
-            if (!targetEntityComp.HasValue)
-            {
-                return BehaviourStatus.Failed;
-            }
-
-            var targetEntity = context.Engine.GetEntityById(targetEntityComp.Value.TargetId);
+            var targetEntityComp = context.Agent.GetComponent<TargetEntityComponent>()!;
+            var targetEntity = context.Engine.GetEntityById(targetEntityComp.TargetId);
             if (targetEntity == null)
             {
                 return BehaviourStatus.Failed;
             }
 
-            var lootableComponent = targetEntity.GetComponent<LootableComponent>();
-            var itemComponent = targetEntity.GetComponent<ItemComponent>();
-
-            if (lootableComponent == null || !itemComponent.HasValue)
+            if (!targetEntity.HasComponent<LootableComponent>() || !targetEntity.HasComponent<ItemComponent>())
             {
                 return BehaviourStatus.Failed;
             }
 
+            var lootableComponent = targetEntity.GetComponent<LootableComponent>()!;
+            var itemComponent = targetEntity.GetComponent<ItemComponent>()!;
+
             var quantity = lootableComponent.LootAll();
 
             var inventoryComponent = context.Agent.GetComponent<InventoryComponent>()!;
-            inventoryComponent.Add(itemComponent.Value.ItemType, quantity);
+            inventoryComponent.Add(itemComponent.ItemType, quantity);
 
-            var staminaCost = GetStaminaCost(itemComponent.Value.ItemType);
+            var staminaCost = GetStaminaCost(itemComponent.ItemType);
 
             context.Agent.GetComponent<StaminaComponent>()!.ReduceBy(staminaCost);
 

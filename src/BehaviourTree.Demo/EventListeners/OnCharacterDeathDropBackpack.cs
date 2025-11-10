@@ -17,7 +17,7 @@ namespace BehaviourTree.Demo.EventListeners
             }
 
             var inventoryComponent = entity.GetComponent<InventoryComponent>()!;
-            var positionComponent = entity.GetComponent<PositionComponent>()!.Value;
+            var positionComponent = entity.GetComponent<PositionComponent>()!;
 
             foreach (var item in inventoryComponent.Items)
             {

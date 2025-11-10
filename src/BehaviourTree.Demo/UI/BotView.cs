@@ -63,9 +63,9 @@ namespace BehaviourTree.Demo.UI
 
         private void SetCurrentSprite()
         {
-            var movementComponent = _botEntity.GetComponent<MovementComponent>();
-
-            var velocity = movementComponent.HasValue ? movementComponent.Value.Velocity : Vector2.Zero;
+            var velocity = _botEntity.HasComponent<MovementComponent>()
+                ? _botEntity.GetComponent<MovementComponent>()!.Velocity
+                : Vector2.Zero;
             var absXVelocity = Math.Abs(velocity.X);
             var absYVelocity = Math.Abs(velocity.Y);
 

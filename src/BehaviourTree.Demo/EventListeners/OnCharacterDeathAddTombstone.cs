@@ -16,7 +16,7 @@ namespace BehaviourTree.Demo.EventListeners
                 return;
             }
 
-            var positionComponent = entity.GetComponent<PositionComponent>()!.Value;
+            var positionComponent = entity.GetComponent<PositionComponent>()!;
 
             engine.NewEntity()
                 .AddComponent(new PositionComponent(positionComponent.Position))
