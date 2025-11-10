@@ -12,7 +12,7 @@ namespace BehaviourTree.Demo.GameEngine
         private readonly Dictionary<Type, Action<Node, IComponent>> _componentSetters;
         private readonly Type[] _componentTypes;
         private readonly Func<Node> _nodeFactory;
-        private readonly List<Node> _nodes = new List<Node>();
+        private readonly FastCollection<Node> _nodes = new FastCollection<Node>();
 
         public ComponentMatchingFamily(Type nodeType)
         {

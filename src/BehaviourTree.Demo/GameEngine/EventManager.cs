@@ -6,7 +6,8 @@ namespace BehaviourTree.Demo.GameEngine
     public sealed class EventManager : IEventManager
     {
         private readonly Engine _engine;
-        private readonly Dictionary<Type, HashSet<object>> _eventListeners = new Dictionary<Type, HashSet<object>>(32);
+        // Use object to store FastCollection<IEventListener<TEvent>> without boxing
+        private readonly Dictionary<Type, object> _eventListeners = new Dictionary<Type, object>(32);
 
         public EventManager(Engine engine)
         {
@@ -15,12 +16,16 @@ namespace BehaviourTree.Demo.GameEngine
 
         public void PublishEvent<TEvent>(TEvent @event)
         {
-            if (!_eventListeners.TryGetValue(typeof(TEvent), out var listeners))
+            if (!_eventListeners.TryGetValue(typeof(TEvent), out var listenersObj))
             {
                 return;
             }
 
-            foreach (IEventListener<TEvent> listener in listeners)
+            // Cast to strongly-typed collection (no boxing)
+            var listeners = (FastCollection<IEventListener<TEvent>>)listenersObj;
+
+            // Use value-type enumerator to avoid allocation
+            foreach (var listener in listeners)
             {
                 listener.Handle(_engine, @event);
             }
@@ -30,20 +35,29 @@ namespace BehaviourTree.Demo.GameEngine
         {
             var eventType = typeof(TEvent);
 
-            if (!_eventListeners.TryGetValue(eventType, out var listeners))
+            if (!_eventListeners.TryGetValue(eventType, out var listenersObj))
             {
-                _eventListeners[eventType] = listeners = new HashSet<object>(8);
+                // Create strongly-typed FastCollection
+                var listeners = new FastCollection<IEventListener<TEvent>>(8);
+                _eventListeners[eventType] = listeners;
+                listeners.Add(eventListener);
             }
-
-            listeners.Add(eventListener);
+            else
+            {
+                // Cast and add (no boxing)
+                var listeners = (FastCollection<IEventListener<TEvent>>)listenersObj;
+                listeners.Add(eventListener);
+            }
         }
 
         public void UnsubscribeFromEvent<TEvent>(IEventListener<TEvent> eventListener)
         {
             var eventType = typeof(TEvent);
 
-            if (_eventListeners.TryGetValue(eventType, out var listeners))
+            if (_eventListeners.TryGetValue(eventType, out var listenersObj))
             {
+                // Cast and remove (no boxing)
+                var listeners = (FastCollection<IEventListener<TEvent>>)listenersObj;
                 listeners.Remove(eventListener);
             }
         }
