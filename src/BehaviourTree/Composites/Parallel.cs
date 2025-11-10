@@ -70,15 +70,16 @@ namespace BehaviourTree.Composites
         public Parallel(string name, int successRequired, params IBehaviour<TContext>[] children)
             : base(name, children)
         {
-            if (successRequired < 1 || successRequired > children.Length)
+            // Treat 0 as RequireOne (at least one must succeed)
+            if (successRequired < 0 || successRequired > children.Length)
             {
                 throw new ArgumentException(
-                    $"successRequired must be between 1 and {children.Length}",
+                    $"successRequired must be between 0 and {children.Length}",
                     nameof(successRequired));
             }
 
             _policy = ParallelPolicy.RequireN;
-            _successRequired = successRequired;
+            _successRequired = successRequired == 0 ? 1 : successRequired;
             _childStatuses = new BehaviourStatus[children.Length];
         }
 

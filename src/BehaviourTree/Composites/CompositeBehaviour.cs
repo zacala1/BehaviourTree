@@ -19,19 +19,14 @@ namespace BehaviourTree.Composites
         /// Creates a composite behavior node with the specified children.
         /// </summary>
         /// <param name="name">Node name for debugging</param>
-        /// <param name="children">Array of child nodes (must contain at least one non-null child)</param>
+        /// <param name="children">Array of child nodes (can be empty for graceful handling)</param>
         /// <exception cref="ArgumentNullException">Thrown when children is null</exception>
-        /// <exception cref="ArgumentException">Thrown when children is empty or contains null elements</exception>
+        /// <exception cref="ArgumentException">Thrown when children contains null elements</exception>
         protected CompositeBehaviour(string name, IBehaviour<TContext>[] children) : base(name)
         {
             if (children == null)
             {
                 throw new ArgumentNullException(nameof(children));
-            }
-
-            if (children.Length == 0)
-            {
-                throw new ArgumentException("Must have at least one child", nameof(children));
             }
 
             if (children.Any(x => x == null))

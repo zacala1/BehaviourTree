@@ -69,7 +69,10 @@ namespace BehaviourTree.Behaviours
             {
                 try
                 {
-                    cts = new CancellationTokenSource(timeout);
+                    // Only apply timeout if it's greater than zero
+                    cts = timeout > TimeSpan.Zero
+                        ? new CancellationTokenSource(timeout)
+                        : new CancellationTokenSource();
                     task = action.Invoke(context, cts.Token);
                     return BehaviourStatus.Running;
                 }

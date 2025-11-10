@@ -41,8 +41,9 @@
             {
                 var child = children[i];
 
-                // Reset children that are not currently running to ensure fresh evaluation
-                if (child.Status != BehaviourStatus.Running)
+                // Reset children that have completed (Succeeded or Failed) for fresh evaluation
+                // Ready children don't need reset, Running children must continue
+                if (child.Status == BehaviourStatus.Succeeded || child.Status == BehaviourStatus.Failed)
                 {
                     child.Reset();
                 }

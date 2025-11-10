@@ -10,6 +10,7 @@ namespace BehaviourTree.Decorators
     public sealed class AfterFailed<TContext> : DecoratorBehaviour<TContext>
     {
         private BehaviourStatus childStatus;
+        private bool callbackExecuted;
         private readonly Action<TContext> _action;
 
         /// <summary>
@@ -44,9 +45,17 @@ namespace BehaviourTree.Decorators
                 childStatus = Child.Tick(context);
             }
 
-            if (childStatus == BehaviourStatus.Failed)
+            if (childStatus == BehaviourStatus.Failed && !callbackExecuted)
             {
-                _action.Invoke(context);
+                callbackExecuted = true;
+                try
+                {
+                    _action.Invoke(context);
+                }
+                catch
+                {
+                    // Exceptions in callbacks should not crash the behavior tree
+                }
             }
 
             return childStatus;
@@ -57,6 +66,7 @@ namespace BehaviourTree.Decorators
         protected override void OnTerminate(BehaviourStatus status)
         {
             childStatus = BehaviourStatus.Ready;
+            callbackExecuted = false;
         }
 
         /// <summary>Resets node state for re-execution.</summary>
@@ -64,6 +74,7 @@ namespace BehaviourTree.Decorators
         protected override void DoReset(BehaviourStatus status)
         {
             childStatus = BehaviourStatus.Ready;
+            callbackExecuted = false;
             base.DoReset(status);
         }
     }
