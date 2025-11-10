@@ -2,7 +2,7 @@
 
 namespace BehaviourTree.Demo.Components
 {
-    public sealed class ItemComponent : IComponent
+    public struct ItemComponent : IComponent
     {
         public readonly ItemTypes ItemType;
 

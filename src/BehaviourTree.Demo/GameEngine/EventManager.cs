@@ -6,7 +6,7 @@ namespace BehaviourTree.Demo.GameEngine
     public sealed class EventManager : IEventManager
     {
         private readonly Engine _engine;
-        private readonly Dictionary<Type, HashSet<object>> _eventListeners = new Dictionary<Type, HashSet<object>>();
+        private readonly Dictionary<Type, HashSet<object>> _eventListeners = new Dictionary<Type, HashSet<object>>(32);
 
         public EventManager(Engine engine)
         {
@@ -32,7 +32,7 @@ namespace BehaviourTree.Demo.GameEngine
 
             if (!_eventListeners.TryGetValue(eventType, out var listeners))
             {
-                _eventListeners[eventType] = listeners = new HashSet<object>();
+                _eventListeners[eventType] = listeners = new HashSet<object>(8);
             }
 
             listeners.Add(eventListener);

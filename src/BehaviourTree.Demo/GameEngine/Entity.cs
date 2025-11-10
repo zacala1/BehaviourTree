@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BehaviourTree.Demo.GameEngine
 {
@@ -9,7 +8,7 @@ namespace BehaviourTree.Demo.GameEngine
     /// </summary>
     public class Entity
     {
-        private readonly Dictionary<Type, IComponent> _components = new Dictionary<Type, IComponent>();
+        private readonly Dictionary<Type, IComponent> _components = new Dictionary<Type, IComponent>(16);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Entity"/> class.
@@ -117,9 +116,9 @@ namespace BehaviourTree.Demo.GameEngine
         /// Gets all components.
         /// </summary>
         /// <returns>All components in the entity.</returns>
-        public IComponent[] GetComponents()
+        public IEnumerable<IComponent> GetComponents()
         {
-            return _components.Values.ToArray();
+            return _components.Values;
         }
 
         protected virtual void OnComponentAdded(IComponent component)

@@ -1,14 +1,13 @@
 ﻿using BehaviourTree.Demo.GameEngine;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BehaviourTree.Demo.Components
 {
     public sealed class InventoryComponent : IComponent
     {
-        private readonly Dictionary<ItemTypes, int> _items = new Dictionary<ItemTypes, int>();
-        public IEnumerable<KeyValuePair<ItemTypes, int>> Items => _items.ToList();
+        private readonly Dictionary<ItemTypes, int> _items = new Dictionary<ItemTypes, int>(16);
+        public IEnumerable<KeyValuePair<ItemTypes, int>> Items => _items;
 
         public bool Has(ItemTypes itemType, int quantity = 1)
         {

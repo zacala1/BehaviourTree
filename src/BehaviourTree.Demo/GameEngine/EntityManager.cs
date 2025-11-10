@@ -9,7 +9,7 @@ namespace BehaviourTree.Demo.GameEngine
     public class EntityManager : IEntityManager
     {
         private int _maxId;
-        private readonly Dictionary<int, Entity> _entities = new Dictionary<int, Entity>();
+        private readonly Dictionary<int, Entity> _entities = new Dictionary<int, Entity>(1024);
 
         /// <summary>
         /// Occurs when an entity is added.

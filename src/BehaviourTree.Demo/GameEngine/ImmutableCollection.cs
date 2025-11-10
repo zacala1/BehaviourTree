@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BehaviourTree.Demo.GameEngine
 {
@@ -15,7 +14,7 @@ namespace BehaviourTree.Demo.GameEngine
 
         public IEnumerator<T> GetEnumerator()
         {
-            return _inner.ToList().GetEnumerator();
+            return _inner.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

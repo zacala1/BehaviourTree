@@ -7,7 +7,7 @@ namespace BehaviourTree.Demo.GameEngine
     public sealed class FamilyManager
     {
         private readonly EntityManager _entityManager;
-        private readonly Dictionary<Type, IFamily> _families = new Dictionary<Type, IFamily>();
+        private readonly Dictionary<Type, IFamily> _families = new Dictionary<Type, IFamily>(16);
 
         public FamilyManager(EntityManager entityManager)
         {

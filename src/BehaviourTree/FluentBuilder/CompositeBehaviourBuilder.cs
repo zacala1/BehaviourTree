@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace BehaviourTree.FluentBuilder
 {
@@ -33,9 +32,11 @@ namespace BehaviourTree.FluentBuilder
         /// <returns>Built composite behavior instance</returns>
         public override IBehaviour<TContext> Build()
         {
-            var behaviours = Children
-                .Select(x => x.Build())
-                .ToArray();
+            var behaviours = new IBehaviour<TContext>[Children.Count];
+            for (int i = 0; i < Children.Count; i++)
+            {
+                behaviours[i] = Children[i].Build();
+            }
 
             return Factory(behaviours);
         }

@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System;
 
 namespace BehaviourTree
 {
@@ -17,7 +17,8 @@ namespace BehaviourTree
         public static T[] Shuffle<T>(this T[] items, IRandomProvider randomProvider)
         {
             var n = items.Length;
-            var newArray = items.ToArray();
+            var newArray = new T[n];
+            Array.Copy(items, newArray, n);
 
             while (n > 1)
             {
