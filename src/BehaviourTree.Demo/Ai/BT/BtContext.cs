@@ -2,9 +2,17 @@
 
 namespace BehaviourTree.Demo.Ai.BT
 {
+    /// <summary>
+    /// Behavior tree context optimized for high-performance real-time AI.
+    /// Uses direct field access to minimize virtual call overhead.
+    /// </summary>
     public sealed class BtContext : IClock
     {
-        private long _timeStampInMilliseconds;
+        /// <summary>
+        /// Direct field access for timestamp (avoids virtual call overhead).
+        /// Use this field directly in hot paths instead of GetTimeStampInMilliseconds().
+        /// </summary>
+        public long TimeStampInMilliseconds;
 
         public BtContext()
         {
@@ -24,7 +32,7 @@ namespace BehaviourTree.Demo.Ai.BT
         /// </summary>
         public void Initialize(Entity agent, Engine engine, long timeStampInMilliseconds)
         {
-            _timeStampInMilliseconds = timeStampInMilliseconds;
+            TimeStampInMilliseconds = timeStampInMilliseconds;
             Agent = agent;
             Engine = engine;
         }
@@ -36,12 +44,16 @@ namespace BehaviourTree.Demo.Ai.BT
         {
             Agent = null!;
             Engine = null!;
-            _timeStampInMilliseconds = 0;
+            TimeStampInMilliseconds = 0;
         }
 
+        /// <summary>
+        /// IClock interface implementation (for generic constraints).
+        /// For performance-critical code, use TimeStampInMilliseconds field directly.
+        /// </summary>
         public long GetTimeStampInMilliseconds()
         {
-            return _timeStampInMilliseconds;
+            return TimeStampInMilliseconds;
         }
     }
 }

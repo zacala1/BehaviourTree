@@ -6,13 +6,17 @@ using System.Reflection;
 
 namespace BehaviourTree.Demo.GameEngine
 {
+    /// <summary>
+    /// Component matching family with O(1) node removal using FastRemovalList.
+    /// Uses compiled expression trees for fast node creation and component assignment.
+    /// </summary>
     public sealed class ComponentMatchingFamily : IFamily
     {
         private readonly Dictionary<int, Node> _entityNodeLookup = new Dictionary<int, Node>(1024);
         private readonly Dictionary<Type, Action<Node, IComponent>> _componentSetters;
         private readonly Type[] _componentTypes;
         private readonly Func<Node> _nodeFactory;
-        private readonly FastCollection<Node> _nodes = new FastCollection<Node>();
+        private readonly FastRemovalList<Node> _nodes = new FastRemovalList<Node>(1024);
 
         public ComponentMatchingFamily(Type nodeType)
         {
