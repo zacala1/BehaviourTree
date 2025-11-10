@@ -148,31 +148,32 @@ namespace BehaviourTree.Demo.GameEngine
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void AddScalar(Span<float> values, float scalar)
         {
-            if (!Vector.IsHardwareAccelerated || values.Length < Vector<float>.Count)
+#if NET5_0_OR_GREATER || NETCOREAPP
+            if (Vector.IsHardwareAccelerated && values.Length >= Vector<float>.Count)
             {
-                // Scalar fallback
-                for (int i = 0; i < values.Length; i++)
+                // SIMD path (only on .NET Core/5+ where Vector<T> supports Span<T>)
+                int vectorSize = Vector<float>.Count;
+                int lastVectorIndex = values.Length - values.Length % vectorSize;
+
+                var scalarVector = new Vector<float>(scalar);
+
+                for (int i = 0; i < lastVectorIndex; i += vectorSize)
+                {
+                    var vector = new Vector<float>(values.Slice(i, vectorSize));
+                    vector += scalarVector;
+                    vector.CopyTo(values.Slice(i, vectorSize));
+                }
+
+                // Process remaining elements
+                for (int i = lastVectorIndex; i < values.Length; i++)
                 {
                     values[i] += scalar;
                 }
                 return;
             }
-
-            // SIMD path
-            int vectorSize = Vector<float>.Count;
-            int lastVectorIndex = values.Length - values.Length % vectorSize;
-
-            var scalarVector = new Vector<float>(scalar);
-
-            for (int i = 0; i < lastVectorIndex; i += vectorSize)
-            {
-                var vector = new Vector<float>(values.Slice(i, vectorSize));
-                vector += scalarVector;
-                vector.CopyTo(values.Slice(i, vectorSize));
-            }
-
-            // Process remaining elements
-            for (int i = lastVectorIndex; i < values.Length; i++)
+#endif
+            // Scalar fallback (always used on .NET Framework)
+            for (int i = 0; i < values.Length; i++)
             {
                 values[i] += scalar;
             }
@@ -184,31 +185,32 @@ namespace BehaviourTree.Demo.GameEngine
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void MultiplyScalar(Span<float> values, float scalar)
         {
-            if (!Vector.IsHardwareAccelerated || values.Length < Vector<float>.Count)
+#if NET5_0_OR_GREATER || NETCOREAPP
+            if (Vector.IsHardwareAccelerated && values.Length >= Vector<float>.Count)
             {
-                // Scalar fallback
-                for (int i = 0; i < values.Length; i++)
+                // SIMD path (only on .NET Core/5+ where Vector<T> supports Span<T>)
+                int vectorSize = Vector<float>.Count;
+                int lastVectorIndex = values.Length - values.Length % vectorSize;
+
+                var scalarVector = new Vector<float>(scalar);
+
+                for (int i = 0; i < lastVectorIndex; i += vectorSize)
+                {
+                    var vector = new Vector<float>(values.Slice(i, vectorSize));
+                    vector *= scalarVector;
+                    vector.CopyTo(values.Slice(i, vectorSize));
+                }
+
+                // Process remaining elements
+                for (int i = lastVectorIndex; i < values.Length; i++)
                 {
                     values[i] *= scalar;
                 }
                 return;
             }
-
-            // SIMD path
-            int vectorSize = Vector<float>.Count;
-            int lastVectorIndex = values.Length - values.Length % vectorSize;
-
-            var scalarVector = new Vector<float>(scalar);
-
-            for (int i = 0; i < lastVectorIndex; i += vectorSize)
-            {
-                var vector = new Vector<float>(values.Slice(i, vectorSize));
-                vector *= scalarVector;
-                vector.CopyTo(values.Slice(i, vectorSize));
-            }
-
-            // Process remaining elements
-            for (int i = lastVectorIndex; i < values.Length; i++)
+#endif
+            // Scalar fallback (always used on .NET Framework)
+            for (int i = 0; i < values.Length; i++)
             {
                 values[i] *= scalar;
             }
