@@ -65,7 +65,7 @@ namespace BehaviourTree.Demo.UI
         {
             var movementComponent = _botEntity.GetComponent<MovementComponent>();
 
-            var velocity = movementComponent?.Velocity ?? Vector2.Zero;
+            var velocity = movementComponent.HasValue ? movementComponent.Value.Velocity : Vector2.Zero;
             var absXVelocity = Math.Abs(velocity.X);
             var absYVelocity = Math.Abs(velocity.Y);
 

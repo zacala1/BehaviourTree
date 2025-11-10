@@ -5,7 +5,7 @@ namespace BehaviourTree.Demo.Nodes
 {
     public sealed class InventoryNode : Node
     {
-        public PositionComponent PositionComponent = null!;
+        public PositionComponent PositionComponent;
         public RenderComponent RenderComponent = null!;
         public InventoryComponent InventoryComponent = null!;
     }

@@ -5,7 +5,7 @@ namespace BehaviourTree.Demo.Nodes
 {
     public sealed class HealthBarNode : Node
     {
-        public PositionComponent PositionComponent = null!;
+        public PositionComponent PositionComponent;
         public RenderComponent RenderComponent = null!;
         public HealthBarComponent HealthBarComponent = null!;
         public HealthComponent HealthComponent = null!;

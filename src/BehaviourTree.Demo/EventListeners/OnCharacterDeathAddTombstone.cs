@@ -11,17 +11,12 @@ namespace BehaviourTree.Demo.EventListeners
         {
             var entity = engine.GetEntityById(@event.EntityId);
 
-            if (entity == null)
+            if (entity == null || !entity.HasComponent<PositionComponent>())
             {
                 return;
             }
 
-            var positionComponent = entity.GetComponent<PositionComponent>();
-
-            if (positionComponent == null)
-            {
-                return;
-            }
+            var positionComponent = entity.GetComponent<PositionComponent>()!.Value;
 
             engine.NewEntity()
                 .AddComponent(new PositionComponent(positionComponent.Position))

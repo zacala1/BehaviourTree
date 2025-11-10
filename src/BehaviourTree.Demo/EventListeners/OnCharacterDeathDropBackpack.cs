@@ -11,13 +11,13 @@ namespace BehaviourTree.Demo.EventListeners
         {
             var entity = engine.GetEntityById(@event.EntityId);
 
-            var inventoryComponent = entity?.GetComponent<InventoryComponent>();
-            var positionComponent = entity?.GetComponent<PositionComponent>();
-
-            if (inventoryComponent == null || positionComponent == null)
+            if (entity == null || !entity.HasComponent<InventoryComponent>() || !entity.HasComponent<PositionComponent>())
             {
                 return;
             }
+
+            var inventoryComponent = entity.GetComponent<InventoryComponent>()!;
+            var positionComponent = entity.GetComponent<PositionComponent>()!.Value;
 
             foreach (var item in inventoryComponent.Items)
             {
