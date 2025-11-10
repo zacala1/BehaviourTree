@@ -6,12 +6,8 @@ using System.Runtime.InteropServices;
 namespace BehaviourTree.Demo.GameEngine
 {
     /// <summary>
-    /// Faster and lighter implementation of System.Collections.ObjectModel.Collection{T}
-    /// with value types enumerators to avoid allocation in foreach loops, and various
-    /// helper functions.
-    ///
-    /// Based on Stride Game Engine implementation (MIT License)
-    /// https://github.com/stride3d/stride
+    /// High-performance collection with value-type enumerator to avoid foreach allocations.
+    /// Based on Stride Game Engine (MIT License).
     /// </summary>
     public class FastCollection<T> : IList<T>, IReadOnlyList<T>
     {
@@ -179,9 +175,6 @@ namespace BehaviourTree.Demo.GameEngine
             }
         }
 
-        /// <summary>
-        /// Gets a value-type enumerator to avoid allocations in foreach loops.
-        /// </summary>
         public Enumerator GetEnumerator()
         {
             return new Enumerator(this);
@@ -255,9 +248,6 @@ namespace BehaviourTree.Demo.GameEngine
             }
         }
 
-        /// <summary>
-        /// Value-type enumerator to avoid heap allocations during foreach loops.
-        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         public struct Enumerator : IEnumerator<T>
         {

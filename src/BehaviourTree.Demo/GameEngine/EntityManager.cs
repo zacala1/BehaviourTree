@@ -8,8 +8,10 @@ namespace BehaviourTree.Demo.GameEngine
     /// </summary>
     public class EntityManager : IEntityManager
     {
+        private const int DefaultEntityCapacity = 1024;
+
         private int _maxId;
-        private readonly Dictionary<int, Entity> _entities = new Dictionary<int, Entity>(1024);
+        private readonly Dictionary<int, Entity> _entities = new Dictionary<int, Entity>(DefaultEntityCapacity);
 
         /// <summary>
         /// Occurs when an entity is added.

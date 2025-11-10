@@ -12,11 +12,13 @@ namespace BehaviourTree.Demo.GameEngine
     /// </summary>
     public sealed class ComponentMatchingFamily : IFamily
     {
-        private readonly Dictionary<int, Node> _entityNodeLookup = new Dictionary<int, Node>(1024);
+        private const int DefaultNodeCapacity = 1024;
+
+        private readonly Dictionary<int, Node> _entityNodeLookup = new Dictionary<int, Node>(DefaultNodeCapacity);
         private readonly Dictionary<Type, Action<Node, IComponent>> _componentSetters;
         private readonly Type[] _componentTypes;
         private readonly Func<Node> _nodeFactory;
-        private readonly FastRemovalList<Node> _nodes = new FastRemovalList<Node>(1024);
+        private readonly FastRemovalList<Node> _nodes = new FastRemovalList<Node>(DefaultNodeCapacity);
 
         public ComponentMatchingFamily(Type nodeType)
         {

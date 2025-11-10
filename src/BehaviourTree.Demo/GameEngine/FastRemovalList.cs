@@ -7,15 +7,8 @@ using System.Runtime.InteropServices;
 namespace BehaviourTree.Demo.GameEngine
 {
     /// <summary>
-    /// High-performance list optimized for O(1) removal using swap-and-pop technique.
-    /// Order is NOT preserved during removal operations.
-    /// Ideal for ECS systems where entity order doesn't matter.
-    ///
-    /// Performance characteristics:
-    /// - Add: O(1) amortized
-    /// - Remove: O(1) - swaps with last element and removes
-    /// - Iteration: O(n) with zero-allocation value-type enumerator
-    /// - Lookup: O(1) via internal index tracking
+    /// High-performance list with O(1) removal using swap-and-pop technique.
+    /// Order is NOT preserved. Ideal for ECS systems where order doesn't matter.
     /// </summary>
     /// <typeparam name="T">Element type (must be reference type for index tracking)</typeparam>
     public sealed class FastRemovalList<T> : IEnumerable<T> where T : class
@@ -23,8 +16,6 @@ namespace BehaviourTree.Demo.GameEngine
         private const int DefaultCapacity = 4;
         private T[] _items;
         private int _size;
-
-        // Maps item to its current index in the array for O(1) removal
         private readonly Dictionary<T, int> _indexMap;
 
         public FastRemovalList() : this(DefaultCapacity)
@@ -38,21 +29,9 @@ namespace BehaviourTree.Demo.GameEngine
             _indexMap = new Dictionary<T, int>(capacity);
         }
 
-        /// <summary>
-        /// Gets the number of elements in the list.
-        /// </summary>
         public int Count => _size;
 
-        /// <summary>
-        /// Gets the current capacity of the internal array.
-        /// </summary>
         public int Capacity => _items.Length;
-
-        /// <summary>
-        /// Gets the element at the specified index.
-        /// WARNING: Index may change after Remove operations due to swap-and-pop.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T this[int index]
         {
             get
@@ -62,11 +41,6 @@ namespace BehaviourTree.Demo.GameEngine
                 return _items[index];
             }
         }
-
-        /// <summary>
-        /// Adds an item to the list in O(1) time.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(T item)
         {
             if (item == null)
@@ -85,12 +59,6 @@ namespace BehaviourTree.Demo.GameEngine
             _size++;
         }
 
-        /// <summary>
-        /// Removes an item from the list in O(1) time using swap-and-pop.
-        /// The last element is moved to the removed element's position.
-        /// This means order is NOT preserved.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Remove(T item)
         {
             if (item == null)
@@ -103,11 +71,6 @@ namespace BehaviourTree.Demo.GameEngine
             return true;
         }
 
-        /// <summary>
-        /// Removes the element at the specified index in O(1) time.
-        /// The last element is moved to this position.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveAt(int index)
         {
             if (index < 0 || index >= _size)
@@ -117,50 +80,31 @@ namespace BehaviourTree.Demo.GameEngine
             RemoveAtInternal(index, item);
         }
 
-        /// <summary>
-        /// Internal O(1) removal implementation using swap-and-pop.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void RemoveAtInternal(int index, T item)
         {
             _size--;
             _indexMap.Remove(item);
 
-            // If this is not the last element, swap with the last element
             if (index != _size)
             {
                 T lastItem = _items[_size];
                 _items[index] = lastItem;
-                _indexMap[lastItem] = index;  // Update the moved item's index
+                _indexMap[lastItem] = index;
             }
 
-            // Clear the last position
             _items[_size] = null!;
         }
 
-        /// <summary>
-        /// Checks if the list contains the specified item in O(1) time.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains(T item)
         {
             return _indexMap.ContainsKey(item);
         }
 
-        /// <summary>
-        /// Gets the current index of an item in O(1) time.
-        /// Returns -1 if the item is not in the list.
-        /// WARNING: Index may change after Remove operations.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int IndexOf(T item)
         {
             return _indexMap.TryGetValue(item, out int index) ? index : -1;
         }
 
-        /// <summary>
-        /// Removes all elements from the list.
-        /// </summary>
         public void Clear()
         {
             if (_size > 0)
@@ -171,9 +115,6 @@ namespace BehaviourTree.Demo.GameEngine
             _size = 0;
         }
 
-        /// <summary>
-        /// Ensures the internal array has at least the specified capacity.
-        /// </summary>
         private void EnsureCapacity(int min)
         {
             if (_items.Length < min)
@@ -193,9 +134,6 @@ namespace BehaviourTree.Demo.GameEngine
             }
         }
 
-        /// <summary>
-        /// Gets a value-type enumerator for zero-allocation foreach loops.
-        /// </summary>
         public Enumerator GetEnumerator()
         {
             return new Enumerator(this);
@@ -211,9 +149,6 @@ namespace BehaviourTree.Demo.GameEngine
             return new Enumerator(this);
         }
 
-        /// <summary>
-        /// Value-type enumerator for zero-allocation iteration.
-        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         public struct Enumerator : IEnumerator<T>
         {
@@ -221,7 +156,6 @@ namespace BehaviourTree.Demo.GameEngine
             private int _index;
             private T? _current;
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal Enumerator(FastRemovalList<T> list)
             {
                 _list = list;
@@ -233,7 +167,6 @@ namespace BehaviourTree.Demo.GameEngine
             {
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool MoveNext()
             {
                 if (_index < _list._size)

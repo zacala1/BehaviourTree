@@ -8,7 +8,9 @@ namespace BehaviourTree.Demo.GameEngine
     /// </summary>
     public class Entity
     {
-        private readonly Dictionary<Type, IComponent> _components = new Dictionary<Type, IComponent>(16);
+        private const int DefaultComponentCapacity = 16;
+
+        private readonly Dictionary<Type, IComponent> _components = new Dictionary<Type, IComponent>(DefaultComponentCapacity);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Entity"/> class.
@@ -55,6 +57,7 @@ namespace BehaviourTree.Demo.GameEngine
         {
             if (_components.TryGetValue(componentType, out var component))
             {
+                _components.Remove(componentType);
                 OnComponentRemoved(component);
             }
 

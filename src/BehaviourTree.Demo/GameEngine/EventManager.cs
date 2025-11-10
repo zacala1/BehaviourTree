@@ -5,29 +5,29 @@ namespace BehaviourTree.Demo.GameEngine
 {
     public sealed class EventManager : IEventManager
     {
+        private const int DefaultEventTypesCapacity = 32;
+        private const int DefaultListenersPerEventCapacity = 8;
+
         private readonly Engine _engine;
-        // Use object to store FastCollection<IEventListener<TEvent>> without boxing
-        private readonly Dictionary<Type, object> _eventListeners = new Dictionary<Type, object>(32);
+        private readonly Dictionary<Type, object> _eventListeners = new Dictionary<Type, object>(DefaultEventTypesCapacity);
 
         public EventManager(Engine engine)
         {
             _engine = engine;
         }
 
-        public void PublishEvent<TEvent>(TEvent @event)
+        public void PublishEvent<TEvent>(TEvent eventData)
         {
             if (!_eventListeners.TryGetValue(typeof(TEvent), out var listenersObj))
             {
                 return;
             }
 
-            // Cast to strongly-typed collection (no boxing)
             var listeners = (FastCollection<IEventListener<TEvent>>)listenersObj;
 
-            // Use value-type enumerator to avoid allocation
             foreach (var listener in listeners)
             {
-                listener.Handle(_engine, @event);
+                listener.Handle(_engine, eventData);
             }
         }
 
@@ -37,14 +37,12 @@ namespace BehaviourTree.Demo.GameEngine
 
             if (!_eventListeners.TryGetValue(eventType, out var listenersObj))
             {
-                // Create strongly-typed FastCollection
-                var listeners = new FastCollection<IEventListener<TEvent>>(8);
+                var listeners = new FastCollection<IEventListener<TEvent>>(DefaultListenersPerEventCapacity);
                 _eventListeners[eventType] = listeners;
                 listeners.Add(eventListener);
             }
             else
             {
-                // Cast and add (no boxing)
                 var listeners = (FastCollection<IEventListener<TEvent>>)listenersObj;
                 listeners.Add(eventListener);
             }
@@ -52,11 +50,8 @@ namespace BehaviourTree.Demo.GameEngine
 
         public void UnsubscribeFromEvent<TEvent>(IEventListener<TEvent> eventListener)
         {
-            var eventType = typeof(TEvent);
-
-            if (_eventListeners.TryGetValue(eventType, out var listenersObj))
+            if (_eventListeners.TryGetValue(typeof(TEvent), out var listenersObj))
             {
-                // Cast and remove (no boxing)
                 var listeners = (FastCollection<IEventListener<TEvent>>)listenersObj;
                 listeners.Remove(eventListener);
             }
