@@ -65,8 +65,9 @@ namespace BehaviourTree.Decorators
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
+            // Don't reset callbackExecuted here - it should only reset on DoReset
+            // This prevents the callback from executing multiple times on consecutive ticks
             childStatus = BehaviourStatus.Ready;
-            callbackExecuted = false;
         }
 
         /// <summary>Resets node state for re-execution.</summary>

@@ -41,13 +41,9 @@
             {
                 var child = children[i];
 
-                // Reset children that have completed (Succeeded or Failed) for fresh evaluation
-                // Ready children don't need reset, Running children must continue
-                if (child.Status == BehaviourStatus.Succeeded || child.Status == BehaviourStatus.Failed)
-                {
-                    child.Reset();
-                }
-
+                // Tick the child directly without resetting
+                // Children in Failed/Succeeded status will be re-evaluated via Update() without re-initialization
+                // This allows reactive behavior while maintaining proper lifecycle (Initialize once, Update multiple times)
                 var childStatus = child.Tick(context);
 
                 if (childStatus != BehaviourStatus.Failed)
@@ -55,7 +51,11 @@
                     // Reset all children after the current one since we're returning
                     for (var j = i + 1; j < count; j++)
                     {
-                        children[j].Reset();
+                        // Only reset children that aren't already Ready to avoid unnecessary resets
+                        if (children[j].Status != BehaviourStatus.Ready)
+                        {
+                            children[j].Reset();
+                        }
                     }
 
                     return childStatus;
