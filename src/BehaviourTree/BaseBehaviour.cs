@@ -41,8 +41,13 @@ namespace BehaviourTree
                 NotifyObservers(BehaviourTreeNodeInfoEventType.Initialize, Status, 0);
             }
 
-            // OPTIMIZATION: Only create Stopwatch if observers exist or in DEBUG mode
-            bool needsTiming = HasObservers
+            // OPTIMIZATION: Only create Stopwatch if timing is needed
+            // Timing is needed when:
+            // 1. Observers are attached (to provide timing info in events)
+            // 2. DetailedTiming is enabled globally (for profiling)
+            // 3. In DEBUG mode (for slow node detection)
+            bool needsTiming = (BehaviourTreeConfig.EnableEvents && HasObservers)
+                || BehaviourTreeConfig.EnableDetailedTiming
 #if DEBUG
                 || true  // Always time in DEBUG for slow node detection
 #endif
@@ -67,8 +72,8 @@ namespace BehaviourTree
             NotifyObservers(BehaviourTreeNodeInfoEventType.Update, Status, elapsedMs);
 
 #if DEBUG
-            // Warn about slow nodes in debug mode
-            if (elapsedMs >= DEBUG_SLOW_NODE_THRESHOLD_MS)
+            // Warn about slow nodes in debug mode (if warnings enabled)
+            if (BehaviourTreeConfig.EnableSlowNodeWarnings && elapsedMs >= DEBUG_SLOW_NODE_THRESHOLD_MS)
             {
                 Debug.WriteLine($"[{DateTime.Now:yyyy/MM/dd/HH:mm:ss.ffff}] Behavior Node is hanging. id={Id}, name={Name}, status={Status}, time={elapsedMs}ms");
             }
@@ -254,7 +259,10 @@ namespace BehaviourTree
         [System.Diagnostics.DebuggerStepThrough]
         protected void NotifyObservers(BehaviourTreeNodeInfoEventType eventType, BehaviourStatus status, long elapsedMs)
         {
-            // OPTIMIZATION: Early exit for performance when no observers
+            // OPTIMIZATION 1: Global event system disabled - zero overhead (fastest path)
+            if (!BehaviourTreeConfig.EnableEvents) return;
+
+            // OPTIMIZATION 2: Early exit for performance when no observers
             if (_observers.Count == 0) return;
 
             // OPTIMIZATION: Use cached type name instead of GetType().Name
