@@ -12,7 +12,8 @@ namespace BehaviourTree
         /// </summary>
         public long GetTimeStampInMilliseconds()
         {
-            return TimeSpan.FromTicks(DateTime.UtcNow.Ticks).Milliseconds;
+            // BUG FIX: Use total milliseconds since epoch, not just milliseconds component (0-999)
+            return DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
         }
     }
 }

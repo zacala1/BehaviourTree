@@ -215,9 +215,4 @@ namespace BehaviourTree
     /// - Set configuration once at application startup
     /// - Do not modify during tree execution
     /// </remarks>
-    internal static class BehaviourTreePerformanceInfo
-    {
-        // This class exists purely for documentation purposes
-        // to provide detailed performance information via IntelliSense
-    }
 }

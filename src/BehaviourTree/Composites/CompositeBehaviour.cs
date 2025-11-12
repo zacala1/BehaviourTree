@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+using System;
 
 namespace BehaviourTree.Composites
 {
@@ -29,9 +28,13 @@ namespace BehaviourTree.Composites
                 throw new ArgumentNullException(nameof(children));
             }
 
-            if (children.Any(x => x == null))
+            // OPTIMIZATION: Use foreach instead of LINQ for better performance
+            for (int i = 0; i < children.Length; i++)
             {
-                throw new ArgumentException("Children cannot contain null elements", nameof(children));
+                if (children[i] == null)
+                {
+                    throw new ArgumentException("Children cannot contain null elements", nameof(children));
+                }
             }
 
             Children = children;

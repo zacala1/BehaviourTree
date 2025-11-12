@@ -2,7 +2,6 @@ using BehaviourTree.Behaviours;
 using BehaviourTree.Composites;
 using BehaviourTree.Decorators;
 using System;
-using System.Linq;
 using System.Text;
 
 namespace BehaviourTree.Graph
@@ -81,7 +80,8 @@ namespace BehaviourTree.Graph
 
         private static string GetIndentation(int depth)
         {
-            return string.Join(string.Empty, Enumerable.Repeat("*", depth + 1));
+            // OPTIMIZATION: Use string constructor instead of LINQ for better performance
+            return new string('*', depth + 1);
         }
 
         private static string GetMarksign<TContext>(IBehaviour<TContext> obj)
