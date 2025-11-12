@@ -1,22 +1,22 @@
 using BehaviourTree.Demo.Components;
-using Xunit;
+using NUnit.Framework;
 
 namespace BehaviourTree.Demo.SystemTests.Components
 {
     public class HealthComponentTests
     {
-        [Fact]
+        [Test]
         public void Constructor_InitializesHealthToMaxHealth()
         {
             // Arrange & Act
             var component = new HealthComponent(100);
 
             // Assert
-            Assert.Equal(100, component.MaxHealth);
-            Assert.Equal(100, component.Health);
+            Assert.AreEqual(100, component.MaxHealth);
+            Assert.AreEqual(100, component.Health);
         }
 
-        [Fact]
+        [Test]
         public void ReduceBy_DecreasesHealth()
         {
             // Arrange
@@ -26,10 +26,10 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.ReduceBy(30);
 
             // Assert
-            Assert.Equal(70, component.Health);
+            Assert.AreEqual(70, component.Health);
         }
 
-        [Fact]
+        [Test]
         public void ReduceBy_DoesNotGoBelowZero()
         {
             // Arrange
@@ -39,10 +39,10 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.ReduceBy(150);
 
             // Assert
-            Assert.Equal(0, component.Health);
+            Assert.AreEqual(0, component.Health);
         }
 
-        [Fact]
+        [Test]
         public void IncreaseBy_IncreasesHealth()
         {
             // Arrange
@@ -53,10 +53,10 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.IncreaseBy(20);
 
             // Assert
-            Assert.Equal(70, component.Health);
+            Assert.AreEqual(70, component.Health);
         }
 
-        [Fact]
+        [Test]
         public void IncreaseBy_DoesNotExceedMaxHealth()
         {
             // Arrange
@@ -67,10 +67,10 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.IncreaseBy(50);
 
             // Assert
-            Assert.Equal(100, component.Health);
+            Assert.AreEqual(100, component.Health);
         }
 
-        [Fact]
+        [Test]
         public void MultipleOperations_MaintainCorrectHealth()
         {
             // Arrange
@@ -83,7 +83,7 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.ReduceBy(15);
 
             // Assert
-            Assert.Equal(35, component.Health);
+            Assert.AreEqual(35, component.Health);
         }
     }
 }

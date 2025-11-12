@@ -1,11 +1,11 @@
 using BehaviourTree.Demo.Components;
-using Xunit;
+using NUnit.Framework;
 
 namespace BehaviourTree.Demo.SystemTests.Components
 {
     public class InventoryComponentTests
     {
-        [Fact]
+        [Test]
         public void Add_AddsItemToInventory()
         {
             // Arrange
@@ -15,11 +15,11 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.Add(ItemTypes.Food, 5);
 
             // Assert
-            Assert.True(component.Has(ItemTypes.Food));
-            Assert.Equal(5, component.Count(ItemTypes.Food));
+            Assert.IsTrue(component.Has(ItemTypes.Food));
+            Assert.AreEqual(5, component.Count(ItemTypes.Food));
         }
 
-        [Fact]
+        [Test]
         public void Add_MultipleCalls_AccumulatesQuantity()
         {
             // Arrange
@@ -30,10 +30,10 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.Add(ItemTypes.Food, 2);
 
             // Assert
-            Assert.Equal(5, component.Count(ItemTypes.Food));
+            Assert.AreEqual(5, component.Count(ItemTypes.Food));
         }
 
-        [Fact]
+        [Test]
         public void Remove_DecreasesQuantity()
         {
             // Arrange
@@ -44,10 +44,10 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.Remove(ItemTypes.Food, 4);
 
             // Assert
-            Assert.Equal(6, component.Count(ItemTypes.Food));
+            Assert.AreEqual(6, component.Count(ItemTypes.Food));
         }
 
-        [Fact]
+        [Test]
         public void Remove_DoesNotGoBelowZero()
         {
             // Arrange
@@ -58,10 +58,10 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.Remove(ItemTypes.Food, 10);
 
             // Assert
-            Assert.Equal(0, component.Count(ItemTypes.Food));
+            Assert.AreEqual(0, component.Count(ItemTypes.Food));
         }
 
-        [Fact]
+        [Test]
         public void Remove_NonExistentItem_DoesNothing()
         {
             // Arrange
@@ -71,10 +71,10 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.Remove(ItemTypes.Food, 5);
 
             // Assert
-            Assert.Equal(0, component.Count(ItemTypes.Food));
+            Assert.AreEqual(0, component.Count(ItemTypes.Food));
         }
 
-        [Fact]
+        [Test]
         public void Has_ReturnsTrueWhenItemExists()
         {
             // Arrange
@@ -82,20 +82,20 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.Add(ItemTypes.Wood, 5);
 
             // Act & Assert
-            Assert.True(component.Has(ItemTypes.Wood));
+            Assert.IsTrue(component.Has(ItemTypes.Wood));
         }
 
-        [Fact]
+        [Test]
         public void Has_ReturnsFalseWhenItemDoesNotExist()
         {
             // Arrange
             var component = new InventoryComponent();
 
             // Act & Assert
-            Assert.False(component.Has(ItemTypes.Wood));
+            Assert.IsFalse(component.Has(ItemTypes.Wood));
         }
 
-        [Fact]
+        [Test]
         public void Has_WithQuantity_ReturnsTrueWhenSufficientQuantity()
         {
             // Arrange
@@ -103,11 +103,11 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.Add(ItemTypes.Wood, 10);
 
             // Act & Assert
-            Assert.True(component.Has(ItemTypes.Wood, 5));
-            Assert.True(component.Has(ItemTypes.Wood, 10));
+            Assert.IsTrue(component.Has(ItemTypes.Wood, 5));
+            Assert.IsTrue(component.Has(ItemTypes.Wood, 10));
         }
 
-        [Fact]
+        [Test]
         public void Has_WithQuantity_ReturnsFalseWhenInsufficientQuantity()
         {
             // Arrange
@@ -115,20 +115,20 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.Add(ItemTypes.Wood, 5);
 
             // Act & Assert
-            Assert.False(component.Has(ItemTypes.Wood, 10));
+            Assert.IsFalse(component.Has(ItemTypes.Wood, 10));
         }
 
-        [Fact]
+        [Test]
         public void Count_ReturnsZeroForNonExistentItem()
         {
             // Arrange
             var component = new InventoryComponent();
 
             // Act & Assert
-            Assert.Equal(0, component.Count(ItemTypes.Stone));
+            Assert.AreEqual(0, component.Count(ItemTypes.Stone));
         }
 
-        [Fact]
+        [Test]
         public void MultipleItemTypes_ManagedIndependently()
         {
             // Arrange
@@ -140,9 +140,9 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.Add(ItemTypes.Stone, 3);
 
             // Assert
-            Assert.Equal(5, component.Count(ItemTypes.Food));
-            Assert.Equal(10, component.Count(ItemTypes.Wood));
-            Assert.Equal(3, component.Count(ItemTypes.Stone));
+            Assert.AreEqual(5, component.Count(ItemTypes.Food));
+            Assert.AreEqual(10, component.Count(ItemTypes.Wood));
+            Assert.AreEqual(3, component.Count(ItemTypes.Stone));
         }
     }
 }

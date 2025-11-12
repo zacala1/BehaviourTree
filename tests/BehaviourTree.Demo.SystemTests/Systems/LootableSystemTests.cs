@@ -2,13 +2,13 @@ using BehaviourTree.Demo.Components;
 using BehaviourTree.Demo.GameEngine;
 using BehaviourTree.Demo.Nodes;
 using BehaviourTree.Demo.Systems;
-using Xunit;
+using NUnit.Framework;
 
 namespace BehaviourTree.Demo.SystemTests.Systems
 {
     public class LootableSystemTests
     {
-        [Fact]
+        [Test]
         public void Constructor_InitializesSystem()
         {
             // Arrange
@@ -18,10 +18,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             var lootableSystem = new LootableSystem(engine);
 
             // Assert
-            Assert.NotNull(lootableSystem);
+            Assert.IsNotNull(lootableSystem);
         }
 
-        [Fact]
+        [Test]
         public void Update_WhenQuantityIsZero_RemovesEntity()
         {
             // Arrange
@@ -39,10 +39,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert
             var retrievedEntity = engine.GetEntityById(entity.Id);
-            Assert.Null(retrievedEntity);
+            Assert.IsNull(retrievedEntity);
         }
 
-        [Fact]
+        [Test]
         public void Update_WhenQuantityIsNotZero_DoesNotRemoveEntity()
         {
             // Arrange
@@ -60,11 +60,11 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert
             var retrievedEntity = engine.GetEntityById(entity.Id);
-            Assert.NotNull(retrievedEntity);
-            Assert.Equal(5, retrievedEntity.GetComponent<LootableComponent>().Quantity);
+            Assert.IsNotNull(retrievedEntity);
+            Assert.AreEqual(5, retrievedEntity.GetComponent<LootableComponent>().Quantity);
         }
 
-        [Fact]
+        [Test]
         public void Update_MultipleEntities_RemovesOnlyEmptyOnes()
         {
             // Arrange
@@ -90,12 +90,12 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(100);
 
             // Assert
-            Assert.Null(engine.GetEntityById(entity1.Id)); // Removed
-            Assert.NotNull(engine.GetEntityById(entity2.Id)); // Still exists
-            Assert.Null(engine.GetEntityById(entity3.Id)); // Removed
+            Assert.IsNull(engine.GetEntityById(entity1.Id)); // Removed
+            Assert.IsNotNull(engine.GetEntityById(entity2.Id)); // Still exists
+            Assert.IsNull(engine.GetEntityById(entity3.Id)); // Removed
         }
 
-        [Fact]
+        [Test]
         public void Update_WithNoLootableEntities_DoesNotThrow()
         {
             // Arrange

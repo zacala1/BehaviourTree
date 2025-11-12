@@ -1,22 +1,22 @@
 using BehaviourTree.Demo.Components;
-using Xunit;
+using NUnit.Framework;
 
 namespace BehaviourTree.Demo.SystemTests.Components
 {
     public class StaminaComponentTests
     {
-        [Fact]
+        [Test]
         public void Constructor_InitializesStaminaToMaxStamina()
         {
             // Arrange & Act
             var component = new StaminaComponent(100);
 
             // Assert
-            Assert.Equal(100, component.MaxStamina);
-            Assert.Equal(100, component.Stamina);
+            Assert.AreEqual(100, component.MaxStamina);
+            Assert.AreEqual(100, component.Stamina);
         }
 
-        [Fact]
+        [Test]
         public void ReduceBy_DecreasesStamina()
         {
             // Arrange
@@ -26,10 +26,10 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.ReduceBy(30);
 
             // Assert
-            Assert.Equal(70, component.Stamina);
+            Assert.AreEqual(70, component.Stamina);
         }
 
-        [Fact]
+        [Test]
         public void ReduceBy_DoesNotGoBelowZero()
         {
             // Arrange
@@ -39,10 +39,10 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.ReduceBy(150);
 
             // Assert
-            Assert.Equal(0, component.Stamina);
+            Assert.AreEqual(0, component.Stamina);
         }
 
-        [Fact]
+        [Test]
         public void IncreaseBy_IncreasesStamina()
         {
             // Arrange
@@ -53,10 +53,10 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.IncreaseBy(20);
 
             // Assert
-            Assert.Equal(70, component.Stamina);
+            Assert.AreEqual(70, component.Stamina);
         }
 
-        [Fact]
+        [Test]
         public void IncreaseBy_DoesNotExceedMaxStamina()
         {
             // Arrange
@@ -67,10 +67,10 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.IncreaseBy(50);
 
             // Assert
-            Assert.Equal(100, component.Stamina);
+            Assert.AreEqual(100, component.Stamina);
         }
 
-        [Fact]
+        [Test]
         public void MultipleOperations_MaintainCorrectStamina()
         {
             // Arrange
@@ -83,7 +83,7 @@ namespace BehaviourTree.Demo.SystemTests.Components
             component.ReduceBy(15);
 
             // Assert
-            Assert.Equal(35, component.Stamina);
+            Assert.AreEqual(35, component.Stamina);
         }
     }
 }

@@ -1,26 +1,26 @@
 using BehaviourTree.Demo.GameEngine;
 using System;
 using System.Linq;
-using Xunit;
+using NUnit.Framework;
 
 namespace BehaviourTree.Demo.SystemTests.GameEngine
 {
     public class RingBufferTests
     {
-        [Fact]
+        [Test]
         public void Constructor_InitializesWithCorrectCapacity()
         {
             // Arrange & Act
             var buffer = new RingBuffer<int>(10);
 
             // Assert
-            Assert.Equal(10, buffer.Capacity);
-            Assert.Equal(0, buffer.Count);
-            Assert.True(buffer.IsEmpty);
-            Assert.False(buffer.IsFull);
+            Assert.AreEqual(10, buffer.Capacity);
+            Assert.AreEqual(0, buffer.Count);
+            Assert.IsTrue(buffer.IsEmpty);
+            Assert.IsFalse(buffer.IsFull);
         }
 
-        [Fact]
+        [Test]
         public void Constructor_ZeroOrNegativeCapacity_ThrowsException()
         {
             // Act & Assert
@@ -28,7 +28,7 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             Assert.Throws<ArgumentOutOfRangeException>(() => new RingBuffer<int>(-1));
         }
 
-        [Fact]
+        [Test]
         public void Enqueue_AddsItemToBuffer()
         {
             // Arrange
@@ -38,12 +38,12 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var result = buffer.Enqueue(42);
 
             // Assert
-            Assert.True(result);
-            Assert.Equal(1, buffer.Count);
-            Assert.False(buffer.IsEmpty);
+            Assert.IsTrue(result);
+            Assert.AreEqual(1, buffer.Count);
+            Assert.IsFalse(buffer.IsEmpty);
         }
 
-        [Fact]
+        [Test]
         public void Enqueue_WhenFull_ReturnsFalse()
         {
             // Arrange
@@ -56,11 +56,11 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var result = buffer.Enqueue(4);
 
             // Assert
-            Assert.False(result);
-            Assert.Equal(3, buffer.Count);
+            Assert.IsFalse(result);
+            Assert.AreEqual(3, buffer.Count);
         }
 
-        [Fact]
+        [Test]
         public void EnqueueOverwrite_WhenFull_OverwritesOldest()
         {
             // Arrange
@@ -73,15 +73,15 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             buffer.EnqueueOverwrite(4);
 
             // Assert
-            Assert.Equal(3, buffer.Count);
-            Assert.True(buffer.IsFull);
+            Assert.AreEqual(3, buffer.Count);
+            Assert.IsTrue(buffer.IsFull);
 
             // Verify oldest item (1) was overwritten
             buffer.TryDequeue(out var first);
-            Assert.Equal(2, first);
+            Assert.AreEqual(2, first);
         }
 
-        [Fact]
+        [Test]
         public void TryDequeue_RemovesAndReturnsItem()
         {
             // Arrange
@@ -92,13 +92,13 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var result = buffer.TryDequeue(out var item);
 
             // Assert
-            Assert.True(result);
-            Assert.Equal(42, item);
-            Assert.Equal(0, buffer.Count);
-            Assert.True(buffer.IsEmpty);
+            Assert.IsTrue(result);
+            Assert.AreEqual(42, item);
+            Assert.AreEqual(0, buffer.Count);
+            Assert.IsTrue(buffer.IsEmpty);
         }
 
-        [Fact]
+        [Test]
         public void TryDequeue_WhenEmpty_ReturnsFalse()
         {
             // Arrange
@@ -108,11 +108,11 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var result = buffer.TryDequeue(out var item);
 
             // Assert
-            Assert.False(result);
-            Assert.Equal(default(int), item);
+            Assert.IsFalse(result);
+            Assert.AreEqual(default(int), item);
         }
 
-        [Fact]
+        [Test]
         public void TryDequeue_FIFOOrder()
         {
             // Arrange
@@ -123,16 +123,16 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
 
             // Act & Assert
             buffer.TryDequeue(out var first);
-            Assert.Equal(1, first);
+            Assert.AreEqual(1, first);
 
             buffer.TryDequeue(out var second);
-            Assert.Equal(2, second);
+            Assert.AreEqual(2, second);
 
             buffer.TryDequeue(out var third);
-            Assert.Equal(3, third);
+            Assert.AreEqual(3, third);
         }
 
-        [Fact]
+        [Test]
         public void TryPeek_ReturnsItemWithoutRemoving()
         {
             // Arrange
@@ -143,12 +143,12 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var result = buffer.TryPeek(out var item);
 
             // Assert
-            Assert.True(result);
-            Assert.Equal(42, item);
-            Assert.Equal(1, buffer.Count);
+            Assert.IsTrue(result);
+            Assert.AreEqual(42, item);
+            Assert.AreEqual(1, buffer.Count);
         }
 
-        [Fact]
+        [Test]
         public void TryPeek_WhenEmpty_ReturnsFalse()
         {
             // Arrange
@@ -158,11 +158,11 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var result = buffer.TryPeek(out var item);
 
             // Assert
-            Assert.False(result);
-            Assert.Equal(default(int), item);
+            Assert.IsFalse(result);
+            Assert.AreEqual(default(int), item);
         }
 
-        [Fact]
+        [Test]
         public void Clear_RemovesAllItems()
         {
             // Arrange
@@ -175,11 +175,11 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             buffer.Clear();
 
             // Assert
-            Assert.Equal(0, buffer.Count);
-            Assert.True(buffer.IsEmpty);
+            Assert.AreEqual(0, buffer.Count);
+            Assert.IsTrue(buffer.IsEmpty);
         }
 
-        [Fact]
+        [Test]
         public void CircularBehavior_WorksCorrectly()
         {
             // Arrange
@@ -201,12 +201,12 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             buffer.TryDequeue(out var second);
             buffer.TryDequeue(out var third);
 
-            Assert.Equal(3, first);
-            Assert.Equal(4, second);
-            Assert.Equal(5, third);
+            Assert.AreEqual(3, first);
+            Assert.AreEqual(4, second);
+            Assert.AreEqual(5, third);
         }
 
-        [Fact]
+        [Test]
         public void GetEnumerator_IteratesInCorrectOrder()
         {
             // Arrange
@@ -219,10 +219,10 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var items = buffer.ToList();
 
             // Assert
-            Assert.Equal(new[] { 1, 2, 3 }, items);
+            Assert.AreEqual(new[] { 1, 2, 3 }, items);
         }
 
-        [Fact]
+        [Test]
         public void GetEnumerator_WithWrappedBuffer_IteratesCorrectly()
         {
             // Arrange
@@ -237,10 +237,10 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var items = buffer.ToList();
 
             // Assert
-            Assert.Equal(new[] { 2, 3, 4 }, items);
+            Assert.AreEqual(new[] { 2, 3, 4 }, items);
         }
 
-        [Fact]
+        [Test]
         public void CopyTo_CopiesAllElements()
         {
             // Arrange
@@ -254,12 +254,12 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             buffer.CopyTo(array, 0);
 
             // Assert
-            Assert.Equal(1, array[0]);
-            Assert.Equal(2, array[1]);
-            Assert.Equal(3, array[2]);
+            Assert.AreEqual(1, array[0]);
+            Assert.AreEqual(2, array[1]);
+            Assert.AreEqual(3, array[2]);
         }
 
-        [Fact]
+        [Test]
         public void CopyTo_WithWrappedBuffer_CopiesCorrectly()
         {
             // Arrange
@@ -275,28 +275,28 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             buffer.CopyTo(array, 1);
 
             // Assert
-            Assert.Equal(2, array[1]);
-            Assert.Equal(3, array[2]);
-            Assert.Equal(4, array[3]);
+            Assert.AreEqual(2, array[1]);
+            Assert.AreEqual(3, array[2]);
+            Assert.AreEqual(4, array[3]);
         }
 
-        [Fact]
+        [Test]
         public void IsFull_ReflectsCorrectState()
         {
             // Arrange
             var buffer = new RingBuffer<int>(2);
 
             // Act & Assert
-            Assert.False(buffer.IsFull);
+            Assert.IsFalse(buffer.IsFull);
 
             buffer.Enqueue(1);
-            Assert.False(buffer.IsFull);
+            Assert.IsFalse(buffer.IsFull);
 
             buffer.Enqueue(2);
-            Assert.True(buffer.IsFull);
+            Assert.IsTrue(buffer.IsFull);
 
             buffer.TryDequeue(out _);
-            Assert.False(buffer.IsFull);
+            Assert.IsFalse(buffer.IsFull);
         }
     }
 }

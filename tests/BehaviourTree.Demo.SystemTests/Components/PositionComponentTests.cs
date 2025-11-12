@@ -1,12 +1,12 @@
 using BehaviourTree.Demo.Components;
 using System.Numerics;
-using Xunit;
+using NUnit.Framework;
 
 namespace BehaviourTree.Demo.SystemTests.Components
 {
     public class PositionComponentTests
     {
-        [Fact]
+        [Test]
         public void Constructor_InitializesPositionAndPreviousPosition()
         {
             // Arrange
@@ -16,13 +16,13 @@ namespace BehaviourTree.Demo.SystemTests.Components
             var component = new PositionComponent(initialPosition);
 
             // Assert
-            Assert.Equal(100, component.Position.X);
-            Assert.Equal(200, component.Position.Y);
-            Assert.Equal(100, component.PreviousPosition.X);
-            Assert.Equal(200, component.PreviousPosition.Y);
+            Assert.AreEqual(100, component.Position.X);
+            Assert.AreEqual(200, component.Position.Y);
+            Assert.AreEqual(100, component.PreviousPosition.X);
+            Assert.AreEqual(200, component.PreviousPosition.Y);
         }
 
-        [Fact]
+        [Test]
         public void GetInterpolatedPosition_AtZeroInterpolation_ReturnsPreviousPosition()
         {
             // Arrange
@@ -34,11 +34,11 @@ namespace BehaviourTree.Demo.SystemTests.Components
             var interpolated = component.GetInterpolatedPosition(0f);
 
             // Assert
-            Assert.Equal(100, interpolated.X);
-            Assert.Equal(100, interpolated.Y);
+            Assert.AreEqual(100, interpolated.X);
+            Assert.AreEqual(100, interpolated.Y);
         }
 
-        [Fact]
+        [Test]
         public void GetInterpolatedPosition_AtOneInterpolation_ReturnsCurrentPosition()
         {
             // Arrange
@@ -50,11 +50,11 @@ namespace BehaviourTree.Demo.SystemTests.Components
             var interpolated = component.GetInterpolatedPosition(1f);
 
             // Assert
-            Assert.Equal(200, interpolated.X);
-            Assert.Equal(200, interpolated.Y);
+            Assert.AreEqual(200, interpolated.X);
+            Assert.AreEqual(200, interpolated.Y);
         }
 
-        [Fact]
+        [Test]
         public void GetInterpolatedPosition_AtHalfInterpolation_ReturnsMidpoint()
         {
             // Arrange
@@ -66,11 +66,11 @@ namespace BehaviourTree.Demo.SystemTests.Components
             var interpolated = component.GetInterpolatedPosition(0.5f);
 
             // Assert
-            Assert.Equal(150, interpolated.X);
-            Assert.Equal(150, interpolated.Y);
+            Assert.AreEqual(150, interpolated.X);
+            Assert.AreEqual(150, interpolated.Y);
         }
 
-        [Fact]
+        [Test]
         public void GetInterpolatedPosition_CustomInterpolation_CalculatesCorrectly()
         {
             // Arrange
@@ -82,11 +82,11 @@ namespace BehaviourTree.Demo.SystemTests.Components
             var interpolated = component.GetInterpolatedPosition(0.25f);
 
             // Assert
-            Assert.Equal(25, interpolated.X);
-            Assert.Equal(12.5f, interpolated.Y);
+            Assert.AreEqual(25, interpolated.X);
+            Assert.AreEqual(12.5f, interpolated.Y);
         }
 
-        [Fact]
+        [Test]
         public void GetInterpolatedPosition_NegativeMovement_CalculatesCorrectly()
         {
             // Arrange
@@ -98,8 +98,8 @@ namespace BehaviourTree.Demo.SystemTests.Components
             var interpolated = component.GetInterpolatedPosition(0.5f);
 
             // Assert
-            Assert.Equal(150, interpolated.X);
-            Assert.Equal(175, interpolated.Y);
+            Assert.AreEqual(150, interpolated.X);
+            Assert.AreEqual(175, interpolated.Y);
         }
     }
 }

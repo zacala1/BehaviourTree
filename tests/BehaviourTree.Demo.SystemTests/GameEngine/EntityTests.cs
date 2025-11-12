@@ -1,23 +1,23 @@
 using BehaviourTree.Demo.Components;
 using BehaviourTree.Demo.GameEngine;
 using System.Linq;
-using Xunit;
+using NUnit.Framework;
 
 namespace BehaviourTree.Demo.SystemTests.GameEngine
 {
     public class EntityTests
     {
-        [Fact]
+        [Test]
         public void Constructor_SetsId()
         {
             // Arrange & Act
             var entity = new Entity(42);
 
             // Assert
-            Assert.Equal(42, entity.Id);
+            Assert.AreEqual(42, entity.Id);
         }
 
-        [Fact]
+        [Test]
         public void AddComponent_AddsComponentToEntity()
         {
             // Arrange
@@ -28,10 +28,10 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             entity.AddComponent(healthComponent);
 
             // Assert
-            Assert.True(entity.HasComponent<HealthComponent>());
+            Assert.IsTrue(entity.HasComponent<HealthComponent>());
         }
 
-        [Fact]
+        [Test]
         public void AddComponent_ReturnsEntity_ForChaining()
         {
             // Arrange
@@ -41,10 +41,10 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var result = entity.AddComponent(new HealthComponent(100));
 
             // Assert
-            Assert.Same(entity, result);
+            Assert.AreSame(entity, result);
         }
 
-        [Fact]
+        [Test]
         public void AddComponent_MultipleComponents_AllAdded()
         {
             // Arrange
@@ -56,12 +56,12 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             entity.AddComponent(new InventoryComponent());
 
             // Assert
-            Assert.True(entity.HasComponent<HealthComponent>());
-            Assert.True(entity.HasComponent<StaminaComponent>());
-            Assert.True(entity.HasComponent<InventoryComponent>());
+            Assert.IsTrue(entity.HasComponent<HealthComponent>());
+            Assert.IsTrue(entity.HasComponent<StaminaComponent>());
+            Assert.IsTrue(entity.HasComponent<InventoryComponent>());
         }
 
-        [Fact]
+        [Test]
         public void AddComponent_SameTypeMultipleTimes_ReplacesComponent()
         {
             // Arrange
@@ -75,10 +75,10 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
 
             // Assert
             var component = entity.GetComponent<HealthComponent>();
-            Assert.Equal(200, component.MaxHealth);
+            Assert.AreEqual(200, component.MaxHealth);
         }
 
-        [Fact]
+        [Test]
         public void GetComponent_ReturnsCorrectComponent()
         {
             // Arrange
@@ -90,11 +90,11 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var retrieved = entity.GetComponent<HealthComponent>();
 
             // Assert
-            Assert.NotNull(retrieved);
-            Assert.Equal(100, retrieved.MaxHealth);
+            Assert.IsNotNull(retrieved);
+            Assert.AreEqual(100, retrieved.MaxHealth);
         }
 
-        [Fact]
+        [Test]
         public void GetComponent_NonExistentComponent_ReturnsNull()
         {
             // Arrange
@@ -104,10 +104,10 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var component = entity.GetComponent<HealthComponent>();
 
             // Assert
-            Assert.Null(component);
+            Assert.IsNull(component);
         }
 
-        [Fact]
+        [Test]
         public void HasComponent_ReturnsTrueWhenComponentExists()
         {
             // Arrange
@@ -115,20 +115,20 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             entity.AddComponent(new HealthComponent(100));
 
             // Act & Assert
-            Assert.True(entity.HasComponent<HealthComponent>());
+            Assert.IsTrue(entity.HasComponent<HealthComponent>());
         }
 
-        [Fact]
+        [Test]
         public void HasComponent_ReturnsFalseWhenComponentDoesNotExist()
         {
             // Arrange
             var entity = new Entity(1);
 
             // Act & Assert
-            Assert.False(entity.HasComponent<HealthComponent>());
+            Assert.IsFalse(entity.HasComponent<HealthComponent>());
         }
 
-        [Fact]
+        [Test]
         public void RemoveComponent_RemovesComponent()
         {
             // Arrange
@@ -139,10 +139,10 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             entity.RemoveComponent<HealthComponent>();
 
             // Assert
-            Assert.False(entity.HasComponent<HealthComponent>());
+            Assert.IsFalse(entity.HasComponent<HealthComponent>());
         }
 
-        [Fact]
+        [Test]
         public void RemoveComponent_ReturnsEntity_ForChaining()
         {
             // Arrange
@@ -153,10 +153,10 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var result = entity.RemoveComponent<HealthComponent>();
 
             // Assert
-            Assert.Same(entity, result);
+            Assert.AreSame(entity, result);
         }
 
-        [Fact]
+        [Test]
         public void RemoveComponent_NonExistentComponent_DoesNotThrow()
         {
             // Arrange
@@ -166,7 +166,7 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             entity.RemoveComponent<HealthComponent>();
         }
 
-        [Fact]
+        [Test]
         public void GetComponents_ReturnsAllComponents()
         {
             // Arrange
@@ -179,10 +179,10 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var components = entity.GetComponents().ToList();
 
             // Assert
-            Assert.Equal(3, components.Count);
+            Assert.AreEqual(3, components.Count);
         }
 
-        [Fact]
+        [Test]
         public void ComponentAdded_EventFired_WhenComponentAdded()
         {
             // Arrange
@@ -195,11 +195,11 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             entity.AddComponent(healthComponent);
 
             // Assert
-            Assert.NotNull(addedComponent);
+            Assert.IsNotNull(addedComponent);
             Assert.IsType<HealthComponent>(addedComponent);
         }
 
-        [Fact]
+        [Test]
         public void ComponentRemoved_EventFired_WhenComponentRemoved()
         {
             // Arrange
@@ -212,11 +212,11 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             entity.RemoveComponent<HealthComponent>();
 
             // Assert
-            Assert.NotNull(removedComponent);
+            Assert.IsNotNull(removedComponent);
             Assert.IsType<HealthComponent>(removedComponent);
         }
 
-        [Fact]
+        [Test]
         public void ChainedOperations_WorkCorrectly()
         {
             // Arrange
@@ -229,9 +229,9 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
                 .AddComponent(new InventoryComponent());
 
             // Assert
-            Assert.True(entity.HasComponent<HealthComponent>());
-            Assert.True(entity.HasComponent<StaminaComponent>());
-            Assert.True(entity.HasComponent<InventoryComponent>());
+            Assert.IsTrue(entity.HasComponent<HealthComponent>());
+            Assert.IsTrue(entity.HasComponent<StaminaComponent>());
+            Assert.IsTrue(entity.HasComponent<InventoryComponent>());
         }
     }
 }

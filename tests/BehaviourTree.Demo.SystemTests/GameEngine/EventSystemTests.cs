@@ -1,12 +1,12 @@
 using BehaviourTree.Demo.Events;
 using BehaviourTree.Demo.GameEngine;
-using Xunit;
+using NUnit.Framework;
 
 namespace BehaviourTree.Demo.SystemTests.GameEngine
 {
     public class EventSystemTests
     {
-        [Fact]
+        [Test]
         public void PublishEvent_NotifiesSubscribedListener()
         {
             // Arrange
@@ -18,11 +18,11 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             engine.PublishEvent(new HealthReachedZero(42));
 
             // Assert
-            Assert.True(listener.EventReceived);
-            Assert.Equal(42, listener.LastEntityId);
+            Assert.IsTrue(listener.EventReceived);
+            Assert.AreEqual(42, listener.LastEntityId);
         }
 
-        [Fact]
+        [Test]
         public void PublishEvent_MultipleListeners_AllNotified()
         {
             // Arrange
@@ -36,11 +36,11 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             engine.PublishEvent(new HealthReachedZero(42));
 
             // Assert
-            Assert.True(listener1.EventReceived);
-            Assert.True(listener2.EventReceived);
+            Assert.IsTrue(listener1.EventReceived);
+            Assert.IsTrue(listener2.EventReceived);
         }
 
-        [Fact]
+        [Test]
         public void UnsubscribeFromEvent_ListenerNoLongerNotified()
         {
             // Arrange
@@ -53,10 +53,10 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             engine.PublishEvent(new HealthReachedZero(42));
 
             // Assert
-            Assert.False(listener.EventReceived);
+            Assert.IsFalse(listener.EventReceived);
         }
 
-        [Fact]
+        [Test]
         public void PublishEvent_EntityAdded_AutomaticallyPublished()
         {
             // Arrange
@@ -68,11 +68,11 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var entity = engine.NewEntity();
 
             // Assert
-            Assert.True(listener.EventReceived);
-            Assert.Equal(entity.Id, listener.LastEntityId);
+            Assert.IsTrue(listener.EventReceived);
+            Assert.AreEqual(entity.Id, listener.LastEntityId);
         }
 
-        [Fact]
+        [Test]
         public void PublishEvent_EntityRemoved_AutomaticallyPublished()
         {
             // Arrange
@@ -85,11 +85,11 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             engine.RemoveEntity(entity.Id);
 
             // Assert
-            Assert.True(listener.EventReceived);
-            Assert.Equal(entity.Id, listener.LastEntityId);
+            Assert.IsTrue(listener.EventReceived);
+            Assert.AreEqual(entity.Id, listener.LastEntityId);
         }
 
-        [Fact]
+        [Test]
         public void PublishEvent_DifferentEventTypes_OnlyRelevantListenersNotified()
         {
             // Arrange
@@ -104,8 +104,8 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             engine.PublishEvent(new HealthReachedZero(42));
 
             // Assert
-            Assert.True(healthListener.EventReceived);
-            Assert.False(entityAddedListener.EventReceived);
+            Assert.IsTrue(healthListener.EventReceived);
+            Assert.IsFalse(entityAddedListener.EventReceived);
         }
 
         // Test helper classes

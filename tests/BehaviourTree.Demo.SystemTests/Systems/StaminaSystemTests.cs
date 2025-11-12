@@ -2,13 +2,13 @@ using BehaviourTree.Demo.Components;
 using BehaviourTree.Demo.GameEngine;
 using BehaviourTree.Demo.Nodes;
 using BehaviourTree.Demo.Systems;
-using Xunit;
+using NUnit.Framework;
 
 namespace BehaviourTree.Demo.SystemTests.Systems
 {
     public class StaminaSystemTests
     {
-        [Fact]
+        [Test]
         public void Constructor_InitializesSystem()
         {
             // Arrange
@@ -18,10 +18,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             var staminaSystem = new StaminaSystem(engine);
 
             // Assert
-            Assert.NotNull(staminaSystem);
+            Assert.IsNotNull(staminaSystem);
         }
 
-        [Fact]
+        [Test]
         public void Update_BeforeFrequencyThreshold_DoesNotIncreaseStamina()
         {
             // Arrange
@@ -40,10 +40,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert - Stamina should still be 50 (no increase yet)
             var stamina = entity.GetComponent<StaminaComponent>();
-            Assert.Equal(50, stamina.Stamina);
+            Assert.AreEqual(50, stamina.Stamina);
         }
 
-        [Fact]
+        [Test]
         public void Update_AfterFrequencyThreshold_IncreasesStamina()
         {
             // Arrange
@@ -63,10 +63,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert - Stamina should be increased
             var stamina = entity.GetComponent<StaminaComponent>();
-            Assert.True(stamina.Stamina > 50);
+            Assert.IsTrue(stamina.Stamina > 50);
         }
 
-        [Fact]
+        [Test]
         public void Update_CalculatesDeltaCorrectly()
         {
             // Arrange
@@ -85,10 +85,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert
             var stamina = entity.GetComponent<StaminaComponent>();
-            Assert.Equal(52, stamina.Stamina);
+            Assert.AreEqual(52, stamina.Stamina);
         }
 
-        [Fact]
+        [Test]
         public void Update_DoesNotExceedMaxStamina()
         {
             // Arrange
@@ -107,10 +107,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert - Should be capped at max (100)
             var stamina = entity.GetComponent<StaminaComponent>();
-            Assert.Equal(100, stamina.Stamina);
+            Assert.AreEqual(100, stamina.Stamina);
         }
 
-        [Fact]
+        [Test]
         public void Update_MultipleEntities_IncreasesAllStamina()
         {
             // Arrange
@@ -139,12 +139,12 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(100); // Delta = 100ms
 
             // Assert
-            Assert.Equal(52, entity1.GetComponent<StaminaComponent>().Stamina);
-            Assert.Equal(52, entity2.GetComponent<StaminaComponent>().Stamina);
-            Assert.Equal(52, entity3.GetComponent<StaminaComponent>().Stamina);
+            Assert.AreEqual(52, entity1.GetComponent<StaminaComponent>().Stamina);
+            Assert.AreEqual(52, entity2.GetComponent<StaminaComponent>().Stamina);
+            Assert.AreEqual(52, entity3.GetComponent<StaminaComponent>().Stamina);
         }
 
-        [Fact]
+        [Test]
         public void Update_WithNoStaminaEntities_DoesNotThrow()
         {
             // Arrange

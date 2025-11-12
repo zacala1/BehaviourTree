@@ -3,13 +3,13 @@ using BehaviourTree.Demo.Events;
 using BehaviourTree.Demo.GameEngine;
 using BehaviourTree.Demo.Nodes;
 using BehaviourTree.Demo.Systems;
-using Xunit;
+using NUnit.Framework;
 
 namespace BehaviourTree.Demo.SystemTests.Systems
 {
     public class HealthSystemTests
     {
-        [Fact]
+        [Test]
         public void Constructor_InitializesSystem()
         {
             // Arrange
@@ -19,10 +19,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             var healthSystem = new HealthSystem(engine);
 
             // Assert
-            Assert.NotNull(healthSystem);
+            Assert.IsNotNull(healthSystem);
         }
 
-        [Fact]
+        [Test]
         public void Update_BeforeFrequencyThreshold_DoesNotReduceHealth()
         {
             // Arrange
@@ -39,10 +39,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert - Health should still be 100 (no reduction yet)
             var health = entity.GetComponent<HealthComponent>();
-            Assert.Equal(100, health.Health);
+            Assert.AreEqual(100, health.Health);
         }
 
-        [Fact]
+        [Test]
         public void Update_AfterFrequencyThreshold_ReducesHealth()
         {
             // Arrange
@@ -60,10 +60,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert - Health should be reduced
             var health = entity.GetComponent<HealthComponent>();
-            Assert.True(health.Health < 100);
+            Assert.IsTrue(health.Health < 100);
         }
 
-        [Fact]
+        [Test]
         public void Update_CalculatesDeltaCorrectly()
         {
             // Arrange
@@ -80,10 +80,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert
             var health = entity.GetComponent<HealthComponent>();
-            Assert.Equal(98, health.Health);
+            Assert.AreEqual(98, health.Health);
         }
 
-        [Fact]
+        [Test]
         public void Update_WhenHealthReachesZero_PublishesEvent()
         {
             // Arrange
@@ -101,11 +101,11 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(900); // Delta = 900ms, should reduce by 3 (900/300)
 
             // Assert
-            Assert.True(listener.EventReceived);
-            Assert.Equal(entity.Id, listener.EntityId);
+            Assert.IsTrue(listener.EventReceived);
+            Assert.AreEqual(entity.Id, listener.EntityId);
         }
 
-        [Fact]
+        [Test]
         public void Update_WhenHealthAlreadyZero_DoesNotPublishEvent()
         {
             // Arrange
@@ -125,10 +125,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(300);
 
             // Assert
-            Assert.False(listener.EventReceived);
+            Assert.IsFalse(listener.EventReceived);
         }
 
-        [Fact]
+        [Test]
         public void Update_MultipleEntities_ReducesAllHealth()
         {
             // Arrange
@@ -151,12 +151,12 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(600); // Delta = 600ms
 
             // Assert
-            Assert.Equal(98, entity1.GetComponent<HealthComponent>().Health);
-            Assert.Equal(98, entity2.GetComponent<HealthComponent>().Health);
-            Assert.Equal(98, entity3.GetComponent<HealthComponent>().Health);
+            Assert.AreEqual(98, entity1.GetComponent<HealthComponent>().Health);
+            Assert.AreEqual(98, entity2.GetComponent<HealthComponent>().Health);
+            Assert.AreEqual(98, entity3.GetComponent<HealthComponent>().Health);
         }
 
-        [Fact]
+        [Test]
         public void Update_WithNoHealthEntities_DoesNotThrow()
         {
             // Arrange

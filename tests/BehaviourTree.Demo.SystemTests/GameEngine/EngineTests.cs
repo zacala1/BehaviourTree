@@ -1,12 +1,12 @@
 using BehaviourTree.Demo.Components;
 using BehaviourTree.Demo.GameEngine;
-using Xunit;
+using NUnit.Framework;
 
 namespace BehaviourTree.Demo.SystemTests.GameEngine
 {
     public class EngineTests
     {
-        [Fact]
+        [Test]
         public void NewEntity_CreatesEntity()
         {
             // Arrange
@@ -16,11 +16,11 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var entity = engine.NewEntity();
 
             // Assert
-            Assert.NotNull(entity);
-            Assert.True(entity.Id > 0);
+            Assert.IsNotNull(entity);
+            Assert.IsTrue(entity.Id > 0);
         }
 
-        [Fact]
+        [Test]
         public void NewEntity_CreatesMultipleEntitiesWithUniqueIds()
         {
             // Arrange
@@ -32,12 +32,12 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var entity3 = engine.NewEntity();
 
             // Assert
-            Assert.NotEqual(entity1.Id, entity2.Id);
-            Assert.NotEqual(entity1.Id, entity3.Id);
-            Assert.NotEqual(entity2.Id, entity3.Id);
+            Assert.AreNotEqual(entity1.Id, entity2.Id);
+            Assert.AreNotEqual(entity1.Id, entity3.Id);
+            Assert.AreNotEqual(entity2.Id, entity3.Id);
         }
 
-        [Fact]
+        [Test]
         public void GetEntityById_ReturnsCorrectEntity()
         {
             // Arrange
@@ -48,11 +48,11 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var retrievedEntity = engine.GetEntityById(entity.Id);
 
             // Assert
-            Assert.NotNull(retrievedEntity);
-            Assert.Equal(entity.Id, retrievedEntity.Id);
+            Assert.IsNotNull(retrievedEntity);
+            Assert.AreEqual(entity.Id, retrievedEntity.Id);
         }
 
-        [Fact]
+        [Test]
         public void GetEntityById_NonExistentId_ReturnsNull()
         {
             // Arrange
@@ -62,10 +62,10 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var entity = engine.GetEntityById(999);
 
             // Assert
-            Assert.Null(entity);
+            Assert.IsNull(entity);
         }
 
-        [Fact]
+        [Test]
         public void RemoveEntity_RemovesEntityFromEngine()
         {
             // Arrange
@@ -77,10 +77,10 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             var retrievedEntity = engine.GetEntityById(entity.Id);
 
             // Assert
-            Assert.Null(retrievedEntity);
+            Assert.IsNull(retrievedEntity);
         }
 
-        [Fact]
+        [Test]
         public void Update_CallsSystemUpdate()
         {
             // Arrange
@@ -92,11 +92,11 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             engine.Update(100);
 
             // Assert
-            Assert.True(testSystem.UpdateCalled);
-            Assert.Equal(100, testSystem.LastEllapsedMilliseconds);
+            Assert.IsTrue(testSystem.UpdateCalled);
+            Assert.AreEqual(100, testSystem.LastEllapsedMilliseconds);
         }
 
-        [Fact]
+        [Test]
         public void AddSystem_MultipleSystems_AllGetUpdated()
         {
             // Arrange
@@ -110,11 +110,11 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             engine.Update(50);
 
             // Assert
-            Assert.True(testSystem1.UpdateCalled);
-            Assert.True(testSystem2.UpdateCalled);
+            Assert.IsTrue(testSystem1.UpdateCalled);
+            Assert.IsTrue(testSystem2.UpdateCalled);
         }
 
-        [Fact]
+        [Test]
         public void RemoveSystem_SystemNoLongerUpdated()
         {
             // Arrange
@@ -127,7 +127,7 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             engine.Update(100);
 
             // Assert
-            Assert.False(testSystem.UpdateCalled);
+            Assert.IsFalse(testSystem.UpdateCalled);
         }
 
         // Test helper system

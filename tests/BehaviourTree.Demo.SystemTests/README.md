@@ -120,13 +120,14 @@ BehaviourTree.Demo.SystemTests/
 
 ## 테스트 통계
 
-- **총 테스트 수**: 110개 이상
+- **총 테스트 수**: 145개 이상
 - **테스트 커버리지**: 컴포넌트, 시스템, 및 게임 엔진 핵심 기능 포괄
 - **타겟 프레임워크**: net8.0, net6.0, net48
 
 ## 의존성
 
-- xUnit 2.4.2
+- NUnit 3.13.3
+- NUnit3TestAdapter 4.5.0
 - Microsoft.NET.Test.Sdk 17.6.0
 - BehaviourTree.Demo 프로젝트 참조
 

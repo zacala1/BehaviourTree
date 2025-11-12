@@ -1,31 +1,31 @@
 using BehaviourTree.Demo.Components;
-using Xunit;
+using NUnit.Framework;
 
 namespace BehaviourTree.Demo.SystemTests.Components
 {
     public class LootableComponentTests
     {
-        [Fact]
+        [Test]
         public void Constructor_DefaultQuantity_IsOne()
         {
             // Arrange & Act
             var component = new LootableComponent();
 
             // Assert
-            Assert.Equal(1, component.Quantity);
+            Assert.AreEqual(1, component.Quantity);
         }
 
-        [Fact]
+        [Test]
         public void Constructor_WithQuantity_SetsQuantity()
         {
             // Arrange & Act
             var component = new LootableComponent(10);
 
             // Assert
-            Assert.Equal(10, component.Quantity);
+            Assert.AreEqual(10, component.Quantity);
         }
 
-        [Fact]
+        [Test]
         public void Loot_WithinAvailableQuantity_ReturnsCorrectAmount()
         {
             // Arrange
@@ -35,11 +35,11 @@ namespace BehaviourTree.Demo.SystemTests.Components
             var looted = component.Loot(5);
 
             // Assert
-            Assert.Equal(5, looted);
-            Assert.Equal(5, component.Quantity);
+            Assert.AreEqual(5, looted);
+            Assert.AreEqual(5, component.Quantity);
         }
 
-        [Fact]
+        [Test]
         public void Loot_ExceedingAvailableQuantity_ReturnsAvailableAmount()
         {
             // Arrange
@@ -52,10 +52,10 @@ namespace BehaviourTree.Demo.SystemTests.Components
             // Note: There might be a bug in the original implementation at line 21
             // where it should be 'removed = Quantity' before setting Quantity to 0
             // This test will verify the current behavior
-            Assert.Equal(0, component.Quantity);
+            Assert.AreEqual(0, component.Quantity);
         }
 
-        [Fact]
+        [Test]
         public void Loot_ExactQuantity_EmptiesLoot()
         {
             // Arrange
@@ -65,11 +65,11 @@ namespace BehaviourTree.Demo.SystemTests.Components
             var looted = component.Loot(5);
 
             // Assert
-            Assert.Equal(5, looted);
-            Assert.Equal(0, component.Quantity);
+            Assert.AreEqual(5, looted);
+            Assert.AreEqual(0, component.Quantity);
         }
 
-        [Fact]
+        [Test]
         public void LootAll_ReturnsAllQuantity()
         {
             // Arrange
@@ -79,11 +79,11 @@ namespace BehaviourTree.Demo.SystemTests.Components
             var looted = component.LootAll();
 
             // Assert
-            Assert.Equal(10, looted);
-            Assert.Equal(0, component.Quantity);
+            Assert.AreEqual(10, looted);
+            Assert.AreEqual(0, component.Quantity);
         }
 
-        [Fact]
+        [Test]
         public void MultipleLoot_DecreasesQuantityCorrectly()
         {
             // Arrange
@@ -94,12 +94,12 @@ namespace BehaviourTree.Demo.SystemTests.Components
             var looted2 = component.Loot(8);
 
             // Assert
-            Assert.Equal(5, looted1);
-            Assert.Equal(8, looted2);
-            Assert.Equal(7, component.Quantity);
+            Assert.AreEqual(5, looted1);
+            Assert.AreEqual(8, looted2);
+            Assert.AreEqual(7, component.Quantity);
         }
 
-        [Fact]
+        [Test]
         public void Loot_WhenEmpty_ReturnsZero()
         {
             // Arrange
@@ -110,8 +110,8 @@ namespace BehaviourTree.Demo.SystemTests.Components
             var looted = component.Loot(5);
 
             // Assert
-            Assert.Equal(0, looted);
-            Assert.Equal(0, component.Quantity);
+            Assert.AreEqual(0, looted);
+            Assert.AreEqual(0, component.Quantity);
         }
     }
 }

@@ -3,13 +3,13 @@ using BehaviourTree.Demo.Components;
 using BehaviourTree.Demo.GameEngine;
 using BehaviourTree.Demo.Nodes;
 using BehaviourTree.Demo.Systems;
-using Xunit;
+using NUnit.Framework;
 
 namespace BehaviourTree.Demo.SystemTests.Systems
 {
     public class AiSystemTests
     {
-        [Fact]
+        [Test]
         public void Constructor_InitializesSystem()
         {
             // Arrange
@@ -19,10 +19,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             var aiSystem = new AiSystem(engine);
 
             // Assert
-            Assert.NotNull(aiSystem);
+            Assert.IsNotNull(aiSystem);
         }
 
-        [Fact]
+        [Test]
         public void Update_ExecutesBehaviourTreeForEntity()
         {
             // Arrange
@@ -38,11 +38,11 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(100);
 
             // Assert
-            Assert.True(testBehaviour.WasExecuted);
-            Assert.Equal(100, testBehaviour.LastTimestamp);
+            Assert.IsTrue(testBehaviour.WasExecuted);
+            Assert.AreEqual(100, testBehaviour.LastTimestamp);
         }
 
-        [Fact]
+        [Test]
         public void Update_ExecutesBehaviourTreeForMultipleEntities()
         {
             // Arrange
@@ -66,15 +66,15 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(250);
 
             // Assert
-            Assert.True(testBehaviour1.WasExecuted);
-            Assert.True(testBehaviour2.WasExecuted);
-            Assert.True(testBehaviour3.WasExecuted);
-            Assert.Equal(250, testBehaviour1.LastTimestamp);
-            Assert.Equal(250, testBehaviour2.LastTimestamp);
-            Assert.Equal(250, testBehaviour3.LastTimestamp);
+            Assert.IsTrue(testBehaviour1.WasExecuted);
+            Assert.IsTrue(testBehaviour2.WasExecuted);
+            Assert.IsTrue(testBehaviour3.WasExecuted);
+            Assert.AreEqual(250, testBehaviour1.LastTimestamp);
+            Assert.AreEqual(250, testBehaviour2.LastTimestamp);
+            Assert.AreEqual(250, testBehaviour3.LastTimestamp);
         }
 
-        [Fact]
+        [Test]
         public void Update_PassesCorrectContextToBehaviourTree()
         {
             // Arrange
@@ -90,13 +90,13 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(500);
 
             // Assert
-            Assert.NotNull(testBehaviour.LastContext);
-            Assert.Equal(entity, testBehaviour.LastContext.Agent);
-            Assert.Equal(engine, testBehaviour.LastContext.Engine);
-            Assert.Equal(500, testBehaviour.LastContext.TimeStampInMilliseconds);
+            Assert.IsNotNull(testBehaviour.LastContext);
+            Assert.AreEqual(entity, testBehaviour.LastContext.Agent);
+            Assert.AreEqual(engine, testBehaviour.LastContext.Engine);
+            Assert.AreEqual(500, testBehaviour.LastContext.TimeStampInMilliseconds);
         }
 
-        [Fact]
+        [Test]
         public void Update_MultipleUpdates_UsesContextPool()
         {
             // Arrange
@@ -119,15 +119,15 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             var context3 = testBehaviour.LastContext;
 
             // Assert - Contexts should be different instances but timestamps should be updated
-            Assert.NotNull(context1);
-            Assert.NotNull(context2);
-            Assert.NotNull(context3);
+            Assert.IsNotNull(context1);
+            Assert.IsNotNull(context2);
+            Assert.IsNotNull(context3);
 
             // Each update should have correct timestamp
-            Assert.Equal(300, context3.TimeStampInMilliseconds);
+            Assert.AreEqual(300, context3.TimeStampInMilliseconds);
         }
 
-        [Fact]
+        [Test]
         public void Update_WithSuccessfulBehaviour_ReturnsSuccess()
         {
             // Arrange
@@ -143,10 +143,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(100);
 
             // Assert
-            Assert.Equal(BehaviourStatus.Success, successBehaviour.LastStatus);
+            Assert.AreEqual(BehaviourStatus.Success, successBehaviour.LastStatus);
         }
 
-        [Fact]
+        [Test]
         public void Update_WithFailedBehaviour_ReturnsFailure()
         {
             // Arrange
@@ -162,10 +162,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(100);
 
             // Assert
-            Assert.Equal(BehaviourStatus.Failure, failedBehaviour.LastStatus);
+            Assert.AreEqual(BehaviourStatus.Failure, failedBehaviour.LastStatus);
         }
 
-        [Fact]
+        [Test]
         public void Update_WithRunningBehaviour_ReturnsRunning()
         {
             // Arrange
@@ -181,10 +181,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(100);
 
             // Assert
-            Assert.Equal(BehaviourStatus.Running, runningBehaviour.LastStatus);
+            Assert.AreEqual(BehaviourStatus.Running, runningBehaviour.LastStatus);
         }
 
-        [Fact]
+        [Test]
         public void Update_WithNoEntities_DoesNotThrow()
         {
             // Arrange
@@ -198,7 +198,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(100);
         }
 
-        [Fact]
+        [Test]
         public void Update_EntityWithoutBTBehaviourComponent_IsNotProcessed()
         {
             // Arrange
@@ -214,7 +214,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(100);
         }
 
-        [Fact]
+        [Test]
         public void Update_LargeNumberOfEntities_ProcessesAll()
         {
             // Arrange
@@ -236,8 +236,8 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             // Assert - All entities should have been processed
             foreach (var behaviour in behaviours)
             {
-                Assert.True(behaviour.WasExecuted);
-                Assert.Equal(100, behaviour.LastTimestamp);
+                Assert.IsTrue(behaviour.WasExecuted);
+                Assert.AreEqual(100, behaviour.LastTimestamp);
             }
         }
 

@@ -4,13 +4,13 @@ using BehaviourTree.Demo.Nodes;
 using BehaviourTree.Demo.Systems;
 using System.Drawing;
 using System.Numerics;
-using Xunit;
+using NUnit.Framework;
 
 namespace BehaviourTree.Demo.SystemTests.Systems
 {
     public class MoveSystemTests
     {
-        [Fact]
+        [Test]
         public void Constructor_InitializesSystem()
         {
             // Arrange
@@ -21,10 +21,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             var moveSystem = new MoveSystem(engine, boardSize);
 
             // Assert
-            Assert.NotNull(moveSystem);
+            Assert.IsNotNull(moveSystem);
         }
 
-        [Fact]
+        [Test]
         public void Update_AppliesVelocityToPosition()
         {
             // Arrange
@@ -43,11 +43,11 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert
             var position = entity.GetComponent<PositionComponent>();
-            Assert.Equal(110, position.Position.X);
-            Assert.Equal(105, position.Position.Y);
+            Assert.AreEqual(110, position.Position.X);
+            Assert.AreEqual(105, position.Position.Y);
         }
 
-        [Fact]
+        [Test]
         public void Update_StoresPreviousPosition()
         {
             // Arrange
@@ -66,11 +66,11 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert
             var position = entity.GetComponent<PositionComponent>();
-            Assert.Equal(100, position.PreviousPosition.X);
-            Assert.Equal(100, position.PreviousPosition.Y);
+            Assert.AreEqual(100, position.PreviousPosition.X);
+            Assert.AreEqual(100, position.PreviousPosition.Y);
         }
 
-        [Fact]
+        [Test]
         public void Update_ClampsToBoardBoundaries_MinimumX()
         {
             // Arrange
@@ -89,10 +89,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert
             var position = entity.GetComponent<PositionComponent>();
-            Assert.Equal(0, position.Position.X); // Clamped to 0
+            Assert.AreEqual(0, position.Position.X); // Clamped to 0
         }
 
-        [Fact]
+        [Test]
         public void Update_ClampsToBoardBoundaries_MinimumY()
         {
             // Arrange
@@ -111,10 +111,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert
             var position = entity.GetComponent<PositionComponent>();
-            Assert.Equal(0, position.Position.Y); // Clamped to 0
+            Assert.AreEqual(0, position.Position.Y); // Clamped to 0
         }
 
-        [Fact]
+        [Test]
         public void Update_ClampsToBoardBoundaries_MaximumX()
         {
             // Arrange
@@ -133,10 +133,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert
             var position = entity.GetComponent<PositionComponent>();
-            Assert.Equal(800, position.Position.X); // Clamped to board width
+            Assert.AreEqual(800, position.Position.X); // Clamped to board width
         }
 
-        [Fact]
+        [Test]
         public void Update_ClampsToBoardBoundaries_MaximumY()
         {
             // Arrange
@@ -155,10 +155,10 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert
             var position = entity.GetComponent<PositionComponent>();
-            Assert.Equal(600, position.Position.Y); // Clamped to board height
+            Assert.AreEqual(600, position.Position.Y); // Clamped to board height
         }
 
-        [Fact]
+        [Test]
         public void Update_MultipleEntities_MovesAll()
         {
             // Arrange
@@ -185,19 +185,19 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert
             var pos1 = entity1.GetComponent<PositionComponent>();
-            Assert.Equal(105, pos1.Position.X);
-            Assert.Equal(105, pos1.Position.Y);
+            Assert.AreEqual(105, pos1.Position.X);
+            Assert.AreEqual(105, pos1.Position.Y);
 
             var pos2 = entity2.GetComponent<PositionComponent>();
-            Assert.Equal(195, pos2.Position.X);
-            Assert.Equal(195, pos2.Position.Y);
+            Assert.AreEqual(195, pos2.Position.X);
+            Assert.AreEqual(195, pos2.Position.Y);
 
             var pos3 = entity3.GetComponent<PositionComponent>();
-            Assert.Equal(310, pos3.Position.X);
-            Assert.Equal(290, pos3.Position.Y);
+            Assert.AreEqual(310, pos3.Position.X);
+            Assert.AreEqual(290, pos3.Position.Y);
         }
 
-        [Fact]
+        [Test]
         public void Update_WithNoMoveEntities_DoesNotThrow()
         {
             // Arrange
