@@ -121,15 +121,17 @@ namespace BehaviourTree.Graph
                 // Decorator nodes - delegate to GetDecoratorSymbol
                 DecoratorBehaviour<TContext> => $"<{GetDecoratorSymbol(obj)}>",
 
-                // Fallback for unknown types
-                _ => $"[{obj.GetType().Name}]"
+                // Fallback for unknown types - use Source Generator metadata
+                _ => $"[{(obj is IBehaviourMetadata metadata ? metadata.TypeName : obj.GetType().Name)}]"
             };
         }
 
         private static string GetDecoratorSymbol<TContext>(IBehaviour<TContext> obj)
         {
+            // OPTIMIZATION: Use Source Generator metadata to avoid reflection
+            var typeName = (obj is IBehaviourMetadata metadata) ? metadata.TypeName : obj.GetType().Name;
+
             // Handle types with IClock constraint using runtime type checking
-            var typeName = obj.GetType().Name;
             if (typeName.StartsWith("TimeLimiter")) return "TL";
             if (typeName.StartsWith("RateLimiter")) return "RL";
             if (typeName.StartsWith("UntilSuccessWithinTimeout")) return "UST";
@@ -162,7 +164,7 @@ namespace BehaviourTree.Graph
                 Random<TContext> random => $"Rnd:{random.Threshold:F2}",
 
                 // Fallback
-                _ => obj.GetType().Name
+                _ => typeName
             };
         }
 
@@ -171,6 +173,12 @@ namespace BehaviourTree.Graph
             if (!string.IsNullOrWhiteSpace(obj.Name))
             {
                 return obj.Name;
+            }
+
+            // OPTIMIZATION: Use Source Generator metadata to avoid reflection
+            if (obj is IBehaviourMetadata metadata)
+            {
+                return metadata.TypeName;
             }
 
             return obj.GetType().Name;

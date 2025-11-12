@@ -52,6 +52,13 @@ v2.0.0 - Major Update (2025)
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
 
+  <!-- Source Generator reference -->
+  <ItemGroup>
+    <ProjectReference Include="..\BehaviourTree.SourceGenerators\BehaviourTree.SourceGenerators.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
   <!-- .NET Framework specific -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System" />

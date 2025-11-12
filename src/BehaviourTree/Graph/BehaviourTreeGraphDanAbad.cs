@@ -120,15 +120,17 @@ namespace BehaviourTree.Graph
                 // Decorator nodes (0xabad format doesn't fully support these)
                 DecoratorBehaviour<TContext> => $"?  // {GetDecoratorInfo(obj)}",
 
-                // Fallback
-                _ => $"[{obj.GetType().Name}]"
+                // Fallback - use Source Generator metadata
+                _ => $"[{(obj is IBehaviourMetadata metadata ? metadata.TypeName : obj.GetType().Name)}]"
             };
         }
 
         private static string GetDecoratorInfo<TContext>(IBehaviour<TContext> obj)
         {
+            // OPTIMIZATION: Use Source Generator metadata to avoid reflection
+            var typeName = (obj is IBehaviourMetadata metadata) ? metadata.TypeName : obj.GetType().Name;
+
             // Handle types with IClock constraint using runtime type checking
-            var typeName = obj.GetType().Name;
             if (typeName.StartsWith("TimeLimiter")) return "TimeLimit";
             if (typeName.StartsWith("RateLimiter")) return "RateLimit";
             if (typeName.StartsWith("UntilSuccessWithinTimeout")) return "UntilSuccessWithinTimeout";
@@ -148,7 +150,7 @@ namespace BehaviourTree.Graph
                 AfterSuccess<TContext> => "AfterSuccess",
                 AfterFailed<TContext> => "AfterFailed",
                 Random<TContext> random => $"Random({random.Threshold:F2})",
-                _ => obj.GetType().Name
+                _ => typeName
             };
         }
 
@@ -159,11 +161,13 @@ namespace BehaviourTree.Graph
                 return obj.Name;
             }
 
-            var type = obj.GetType();
+            // OPTIMIZATION: Use Source Generator metadata to avoid reflection
+            if (obj is IBehaviourMetadata metadata)
+            {
+                return metadata.TypeName;
+            }
 
-            // TODO: check for generic
-
-            return type.Name;
+            return obj.GetType().Name;
         }
     }
 }

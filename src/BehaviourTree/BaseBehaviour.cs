@@ -229,8 +229,11 @@ namespace BehaviourTree
 
             Name = name;
 
-            // OPTIMIZATION: Cache type name once to avoid repeated GetType().Name calls
-            _cachedTypeName = GetType().Name;
+            // OPTIMIZATION: Use Source Generator metadata to avoid reflection
+            // Falls back to reflection only if metadata not available (shouldn't happen in normal usage)
+            _cachedTypeName = (this is IBehaviourMetadata metadata)
+                ? metadata.TypeName
+                : GetType().Name;
         }
 
         /// <summary>

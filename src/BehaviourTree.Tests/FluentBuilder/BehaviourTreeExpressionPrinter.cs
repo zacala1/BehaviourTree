@@ -70,6 +70,22 @@ namespace BehaviourTree.Tests.FluentBuilder
                 return obj.Name;
             }
 
+            // OPTIMIZATION: Use Source Generator metadata to avoid reflection
+            if (obj is IBehaviourMetadata metadata)
+            {
+                var typeName = metadata.TypeName;
+
+                // Handle generic types by removing backtick and type parameters
+                if (metadata.IsGenericType)
+                {
+                    var backtickIndex = typeName.IndexOf('`');
+                    return backtickIndex > 0 ? typeName.Substring(0, backtickIndex) : typeName;
+                }
+
+                return typeName;
+            }
+
+            // Fallback to reflection (shouldn't happen in normal usage)
             var type = obj.GetType();
 
             // Handle generic types by removing backtick and type parameters
