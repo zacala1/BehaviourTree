@@ -25,102 +25,74 @@ namespace BehaviourTree.Reflection
 
         private static void InternalGetInfos<TContext>(ref BehaviourTreeInfo? treeInfo, int depth, IBehaviour<TContext> child)
         {
-            InternalGetInfos(ref treeInfo, depth, (dynamic)child);
-        }
-
-        private static void InternalGetInfos<TContext>(ref BehaviourTreeInfo? treeInfo, int depth, CompositeBehaviour<TContext> obj)
-        {
-            TreeNodeType nodeType;
-            switch (obj)
+            switch (child)
             {
-                case SimpleParallel<TContext> _:
-                    nodeType = TreeNodeType.Composite_Parallel;
+                case CompositeBehaviour<TContext> composite:
+                    TreeNodeType compositeNodeType = composite switch
+                    {
+                        SimpleParallel<TContext> => TreeNodeType.Composite_Parallel,
+                        PrioritySelector<TContext> or RandomSelector<TContext> or Selector<TContext> => TreeNodeType.Composite_Selector,
+                        PrioritySequence<TContext> or RandomSequence<TContext> or Sequence<TContext> => TreeNodeType.Composite_Sequence,
+                        _ => TreeNodeType.Composite
+                    };
+
+                    var compositeNodeInfo = new BehaviourTreeInfo(composite.Name, composite.Id, compositeNodeType)
+                    {
+                        NodeTypeSpecific = composite.GetType().FullName ?? composite.GetType().Name,
+                        Parent = treeInfo,
+                        Status = composite.Status,
+                        Depth = depth,
+                        IsExpanded = true
+                    };
+
+                    if (treeInfo == null) treeInfo = compositeNodeInfo;
+                    else treeInfo.ChildrenTreeInfos.Add(compositeNodeInfo);
+
+                    var childDepth = depth + 1;
+                    foreach (var compositeChild in composite.Children)
+                    {
+                        InternalGetInfos(ref compositeNodeInfo, childDepth, compositeChild);
+                    }
                     break;
 
-                case PrioritySelector<TContext> _:
-                case RandomSelector<TContext> _:
-                case Selector<TContext> _:
-                    nodeType = TreeNodeType.Composite_Selector;
+                case DecoratorBehaviour<TContext> decorator:
+                    var decoratorNodeInfo = new BehaviourTreeInfo(decorator.Name, decorator.Id, TreeNodeType.Decorate)
+                    {
+                        NodeTypeSpecific = decorator.GetType().FullName ?? decorator.GetType().Name,
+                        Parent = treeInfo,
+                        Status = decorator.Status,
+                        Depth = depth,
+                        IsExpanded = true
+                    };
+
+                    if (treeInfo == null) treeInfo = decoratorNodeInfo;
+                    else treeInfo.ChildrenTreeInfos.Add(decoratorNodeInfo);
+
+                    InternalGetInfos(ref decoratorNodeInfo, depth + 1, decorator.Child);
                     break;
 
-                case PrioritySequence<TContext> _:
-                case RandomSequence<TContext> _:
-                case Sequence<TContext> _:
-                    nodeType = TreeNodeType.Composite_Sequence;
-                    break;
+                case BaseBehaviour<TContext> baseBehaviour:
+                    TreeNodeType leafNodeType = baseBehaviour switch
+                    {
+                        Wait<TContext> => TreeNodeType.Leaf_Wait,
+                        Condition<TContext> => TreeNodeType.Leaf_Condition,
+                        ActionBehaviour<TContext> => TreeNodeType.Leaf_Action,
+                        _ => TreeNodeType.Leaf
+                    };
 
-                default:
-                    nodeType = TreeNodeType.Composite;
+                    var leafNodeInfo = new BehaviourTreeInfo(baseBehaviour.Name, baseBehaviour.Id, leafNodeType)
+                    {
+                        NodeTypeSpecific = baseBehaviour.GetType().FullName ?? baseBehaviour.GetType().Name,
+                        Parent = treeInfo,
+                        Status = baseBehaviour.Status,
+                        Depth = depth,
+                        IsExpanded = true
+                    };
+
+                    if (treeInfo == null) treeInfo = leafNodeInfo;
+                    else treeInfo.ChildrenTreeInfos.Add(leafNodeInfo);
                     break;
             }
-            var nodeInfo = new BehaviourTreeInfo(obj.Name, obj.Id, nodeType)
-            {
-                NodeTypeSpecific = obj.GetType().FullName ?? obj.GetType().Name,
-                Parent = treeInfo,
-                Status = obj.Status,
-                Depth = depth,
-                IsExpanded = true
-            };
-
-            if (treeInfo == null) treeInfo = nodeInfo;
-            else treeInfo.ChildrenTreeInfos.Add(nodeInfo);
-
-            var childDepth = depth + 1;
-            foreach (var child in obj.Children)
-            {
-                InternalGetInfos(ref nodeInfo, depth + 1, child);
-            }
-        }
-
-        private static void InternalGetInfos<TContext>(ref BehaviourTreeInfo? treeInfo, int depth, DecoratorBehaviour<TContext> obj)
-        {
-            var nodeInfo = new BehaviourTreeInfo(obj.Name, obj.Id, TreeNodeType.Decorate)
-            {
-                NodeTypeSpecific = obj.GetType().FullName ?? obj.GetType().Name,
-                Parent = treeInfo,
-                Status = obj.Status,
-                Depth = depth,
-                IsExpanded = true
-            };
-
-            if (treeInfo == null) treeInfo = nodeInfo;
-            else treeInfo.ChildrenTreeInfos.Add(nodeInfo);
-
-            InternalGetInfos(ref nodeInfo, ++depth, obj.Child);
-        }
-
-        private static void InternalGetInfos<TContext>(ref BehaviourTreeInfo? treeInfo, int depth, BaseBehaviour<TContext> obj) where TContext : IClock
-        {
-            TreeNodeType nodeType;
-            switch (obj)
-            {
-                case Wait<TContext> _:
-                    nodeType = TreeNodeType.Leaf_Wait;
-                    break;
-
-                case Condition<TContext> _:
-                    nodeType = TreeNodeType.Leaf_Condition;
-                    break;
-
-                case ActionBehaviour<TContext> _:
-                    nodeType = TreeNodeType.Leaf_Action;
-                    break;
-
-                default:
-                    nodeType = TreeNodeType.Leaf;
-                    break;
-            }
-            var nodeInfo = new BehaviourTreeInfo(obj.Name, obj.Id, nodeType)
-            {
-                NodeTypeSpecific = obj.GetType().FullName ?? obj.GetType().Name,
-                Parent = treeInfo,
-                Status = obj.Status,
-                Depth = depth,
-                IsExpanded = true
-            };
-
-            if (treeInfo == null) treeInfo = nodeInfo;
-            else treeInfo.ChildrenTreeInfos.Add(nodeInfo);
         }
     }
 

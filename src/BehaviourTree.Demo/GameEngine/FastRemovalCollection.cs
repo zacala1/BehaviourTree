@@ -7,22 +7,22 @@ using System.Runtime.InteropServices;
 namespace BehaviourTree.Demo.GameEngine
 {
     /// <summary>
-    /// High-performance list with O(1) removal using swap-and-pop technique.
+    /// High-performance collection with O(1) removal using swap-and-pop technique.
     /// Order is NOT preserved. Ideal for ECS systems where order doesn't matter.
     /// </summary>
     /// <typeparam name="T">Element type (must be reference type for index tracking)</typeparam>
-    public sealed class FastRemovalList<T> : IEnumerable<T> where T : class
+    public sealed class FastRemovalCollection<T> : IEnumerable<T> where T : class
     {
         private const int DefaultCapacity = 4;
         private T[] _items;
         private int _size;
         private readonly Dictionary<T, int> _indexMap;
 
-        public FastRemovalList() : this(DefaultCapacity)
+        public FastRemovalCollection() : this(DefaultCapacity)
         {
         }
 
-        public FastRemovalList(int capacity)
+        public FastRemovalCollection(int capacity)
         {
             _items = new T[capacity];
             _size = 0;
@@ -152,11 +152,11 @@ namespace BehaviourTree.Demo.GameEngine
         [StructLayout(LayoutKind.Sequential)]
         public struct Enumerator : IEnumerator<T>
         {
-            private readonly FastRemovalList<T> _list;
+            private readonly FastRemovalCollection<T> _list;
             private int _index;
             private T? _current;
 
-            internal Enumerator(FastRemovalList<T> list)
+            internal Enumerator(FastRemovalCollection<T> list)
             {
                 _list = list;
                 _index = 0;

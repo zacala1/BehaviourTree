@@ -35,30 +35,26 @@ namespace BehaviourTree.Demo.UI
 
         private void RenderBehaviourTree(Graphics graphics, int depth, IBehaviour<BtContext> behaviour)
         {
-            RenderBehaviourTree(graphics, depth, (dynamic)behaviour);
-        }
-
-        private void RenderBehaviourTree(Graphics graphics, int depth, CompositeBehaviour<BtContext> obj)
-        {
-            RenderInternal(graphics, depth, obj);
-
-            var childDepth = depth + 1;
-
-            foreach (var child in obj.Children)
+            switch (behaviour)
             {
-                RenderBehaviourTree(graphics, childDepth, child);
+                case CompositeBehaviour<BtContext> composite:
+                    RenderInternal(graphics, depth, composite);
+                    var childDepth = depth + 1;
+                    foreach (var child in composite.Children)
+                    {
+                        RenderBehaviourTree(graphics, childDepth, child);
+                    }
+                    break;
+
+                case DecoratorBehaviour<BtContext> decorator:
+                    RenderInternal(graphics, depth, decorator);
+                    RenderBehaviourTree(graphics, depth + 1, decorator.Child);
+                    break;
+
+                case BaseBehaviour<BtContext> baseBehaviour:
+                    RenderInternal(graphics, depth, baseBehaviour);
+                    break;
             }
-        }
-
-        private void RenderBehaviourTree(Graphics graphics, int depth, DecoratorBehaviour<BtContext> obj)
-        {
-            RenderInternal(graphics, depth, obj);
-            RenderBehaviourTree(graphics, ++depth, obj.Child);
-        }
-
-        private void RenderBehaviourTree(Graphics graphics, int depth, BaseBehaviour<BtContext> obj)
-        {
-            RenderInternal(graphics, depth, obj);
         }
 
         private void RenderInternal(Graphics graphics, int depth, IBehaviour<BtContext> obj)
@@ -107,7 +103,13 @@ namespace BehaviourTree.Demo.UI
 
             var type = obj.GetType();
 
-            // TODO: check for generic
+            // Handle generic types by removing backtick and type parameters
+            if (type.IsGenericType)
+            {
+                var name = type.Name;
+                var backtickIndex = name.IndexOf('`');
+                return backtickIndex > 0 ? name.Substring(0, backtickIndex) : name;
+            }
 
             return type.Name;
         }

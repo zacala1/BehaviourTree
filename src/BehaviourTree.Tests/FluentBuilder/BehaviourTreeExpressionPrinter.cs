@@ -16,13 +16,32 @@ namespace BehaviourTree.Tests.FluentBuilder
 
         private static string GetExpression(IBehaviour<TContext> obj, int depth)
         {
-            return GetExpression((dynamic)obj, depth);
+            return obj switch
+            {
+                // Specific decorators with parameters
+                Wait<TContext> wait => InternalGetExpression(wait, depth, wait.WaitTimeInMilliseconds),
+                Cooldown<TContext> cooldown => InternalGetExpression(cooldown, depth, cooldown.CooldownTimeInMilliseconds) + GetExpression(cooldown.Child, depth + 1),
+                RateLimiter<TContext> rateLimiter => InternalGetExpression(rateLimiter, depth, rateLimiter.IntervalInMilliseconds) + GetExpression(rateLimiter.Child, depth + 1),
+                Repeater<TContext> repeater => InternalGetExpression(repeater, depth, repeater.RepeatCount) + GetExpression(repeater.Child, depth + 1),
+                Random<TContext> random => InternalGetExpression(random, depth, random.Threshold) + GetExpression(random.Child, depth + 1),
+                TimeLimiter<TContext> timeLimiter => InternalGetExpression(timeLimiter, depth, timeLimiter.TimeLimitInMilliseconds) + GetExpression(timeLimiter.Child, depth + 1),
+
+                // Generic composite behaviour
+                CompositeBehaviour<TContext> composite => GetCompositeExpression(composite, depth),
+
+                // Generic decorator behaviour (not already handled above)
+                DecoratorBehaviour<TContext> decorator => InternalGetExpression(decorator, depth) + GetExpression(decorator.Child, depth + 1),
+
+                // Base behaviour (leaf nodes)
+                BaseBehaviour<TContext> baseBehaviour => InternalGetExpression(baseBehaviour, depth),
+
+                _ => InternalGetExpression(obj, depth)
+            };
         }
 
-        private static string GetExpression(CompositeBehaviour<TContext> obj, int depth)
+        private static string GetCompositeExpression(CompositeBehaviour<TContext> obj, int depth)
         {
             var expression = InternalGetExpression(obj, depth);
-
             var childDepth = depth + 1;
 
             foreach (var child in obj.Children)
@@ -31,58 +50,6 @@ namespace BehaviourTree.Tests.FluentBuilder
             }
 
             return expression;
-        }
-
-        private static string GetExpression(DecoratorBehaviour<TContext> obj, int depth)
-        {
-            return
-                InternalGetExpression(obj, depth) +
-                GetExpression(obj.Child, ++depth);
-        }
-
-        private static string GetExpression(BaseBehaviour<TContext> obj, int depth)
-        {
-            return InternalGetExpression(obj, depth);
-        }
-
-        private static string GetExpression(Wait<TContext> obj, int depth)
-        {
-            return InternalGetExpression(obj, depth, obj.WaitTimeInMilliseconds);
-        }
-
-        private static string GetExpression(Cooldown<TContext> obj, int depth)
-        {
-            return
-                InternalGetExpression(obj, depth, obj.CooldownTimeInMilliseconds) +
-                GetExpression(obj.Child, ++depth);
-        }
-
-        private static string GetExpression(RateLimiter<TContext> obj, int depth)
-        {
-            return
-                InternalGetExpression(obj, depth, obj.IntervalInMilliseconds) +
-                GetExpression(obj.Child, ++depth);
-        }
-
-        private static string GetExpression(Repeater<TContext> obj, int depth)
-        {
-            return
-                InternalGetExpression(obj, depth, obj.RepeatCount) +
-                GetExpression(obj.Child, ++depth);
-        }
-
-        private static string GetExpression(Random<TContext> obj, int depth)
-        {
-            return
-                InternalGetExpression(obj, depth, obj.Threshold) +
-                GetExpression(obj.Child, ++depth);
-        }
-
-        private static string GetExpression(TimeLimiter<TContext> obj, int depth)
-        {
-            return
-                InternalGetExpression(obj, depth, obj.TimeLimitInMilliseconds) +
-                GetExpression(obj.Child, ++depth);
         }
 
         private static string InternalGetExpression(IBehaviour<TContext> obj, int depth, params object[] parameters)
@@ -105,7 +72,13 @@ namespace BehaviourTree.Tests.FluentBuilder
 
             var type = obj.GetType();
 
-            // TODO: check for generic
+            // Handle generic types by removing backtick and type parameters
+            if (type.IsGenericType)
+            {
+                var name = type.Name;
+                var backtickIndex = name.IndexOf('`');
+                return backtickIndex > 0 ? name.Substring(0, backtickIndex) : name;
+            }
 
             return type.Name;
         }
