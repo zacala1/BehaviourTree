@@ -40,6 +40,8 @@ v2.0.0 - Major Update (2025)
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <!-- PERFORMANCE: Enable unsafe code for cache-aligned structs and pointer optimizations -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

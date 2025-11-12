@@ -6,6 +6,7 @@ namespace BehaviourTree
 {
     /// <summary>
     /// Runs a behavior tree repeatedly at a specified interval until stopped or completed.
+    /// OPTIMIZED: Lock-free token management using Interlocked operations.
     /// </summary>
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
     public sealed class BehaviourTreeRunner<TContext> : IDisposable where TContext : class
@@ -13,8 +14,9 @@ namespace BehaviourTree
         private readonly int _intervalInMilliseconds;
         private readonly TContext _context;
         private readonly IBehaviour<TContext> _behaviourTree;
+
+        // LOCK-FREE OPTIMIZATION: Use Interlocked for lock-free CancellationTokenSource management
         private CancellationTokenSource? _tokenSource;
-        private readonly object _tokenLock = new object();
 
         /// <summary>
         /// Creates a behavior tree runner.
@@ -52,15 +54,15 @@ namespace BehaviourTree
 
         /// <summary>
         /// Internal execution loop that ticks the tree at specified intervals.
+        /// OPTIMIZED: Lock-free token source creation using Interlocked.
         /// </summary>
         private async Task<BehaviourStatus> DoWork(Predicate<BehaviourStatus> shouldStop)
         {
             Stop();
 
-            lock (_tokenLock)
-            {
-                _tokenSource = new CancellationTokenSource();
-            }
+            // LOCK-FREE: Atomic token source creation
+            var newTokenSource = new CancellationTokenSource();
+            Interlocked.Exchange(ref _tokenSource, newTokenSource);
 
             var status = await ExecuteCycle(_tokenSource.Token).ConfigureAwait(false);
 
@@ -74,17 +76,17 @@ namespace BehaviourTree
 
         /// <summary>
         /// Stops the running behavior tree by canceling the current execution cycle.
+        /// OPTIMIZED: Lock-free cancellation using Interlocked operations.
         /// </summary>
         public void Stop()
         {
-            lock (_tokenLock)
+            // LOCK-FREE: Atomic token source swap and cancellation
+            var currentTokenSource = Interlocked.Exchange(ref _tokenSource, null);
+
+            if (currentTokenSource != null)
             {
-                if (_tokenSource != null)
-                {
-                    _tokenSource.Cancel();
-                    _tokenSource.Dispose();
-                    _tokenSource = null;
-                }
+                currentTokenSource.Cancel();
+                currentTokenSource.Dispose();
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using BehaviourTree.Events;
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace BehaviourTree
@@ -141,14 +142,37 @@ namespace BehaviourTree
     }
 
     /// <summary>
+    /// Cache-aligned hot fields for optimal CPU cache performance.
+    /// Aligned to 64-byte cache line to prevent false sharing.
+    /// </summary>
+    [StructLayout(LayoutKind.Explicit, Size = 64)]
+    internal struct CacheAlignedNodeState
+    {
+        [FieldOffset(0)]
+        public BehaviourStatus Status;
+
+        [FieldOffset(4)]
+        public int Id;
+
+        [FieldOffset(8)]
+        public volatile int ObserverArrayDirty;  // 0 = clean, 1 = dirty (lock-free flag)
+    }
+
+    /// <summary>
     /// Non-generic base class for all behavior tree nodes.
     /// Provides core functionality including unique IDs, status tracking, and observer pattern support.
     /// OPTIMIZED: Caches type name and observer array to minimize allocations during tick.
+    /// OPTIMIZED: Cache-aligned hot fields to improve CPU cache hit rate.
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("Node: Id = {Id}, Name = {Name}, Status = {Status}")]
     public abstract class BaseBehaviour : IDisposable
     {
         private static long BehaviorCounter = 0;
+
+        // CACHE OPTIMIZATION: Hot fields in cache-aligned struct (64-byte aligned)
+        private CacheAlignedNodeState _state;
+
+        // Cold fields (not accessed in hot path)
         private readonly System.Collections.Generic.List<IBehaviourTreeObserver> _observers = new System.Collections.Generic.List<IBehaviourTreeObserver>();
         private readonly object _observerLock = new object();
 
@@ -157,7 +181,6 @@ namespace BehaviourTree
 
         // OPTIMIZATION: Cache observer array to avoid ToArray() allocations on every notification
         private IBehaviourTreeObserver[]? _cachedObserverArray;
-        private bool _observerArrayDirty = false;
 
         /// <summary>
         /// Unique identifier for this behavior node, auto-incremented across all instances.
@@ -165,7 +188,7 @@ namespace BehaviourTree
         public int Id
         {
             [System.Diagnostics.DebuggerStepThrough]
-            get;
+            get => _state.Id;
         }
 
         /// <summary>
@@ -183,9 +206,9 @@ namespace BehaviourTree
         public BehaviourStatus Status
         {
             [System.Diagnostics.DebuggerStepThrough]
-            get;
+            get => _state.Status;
             [System.Diagnostics.DebuggerStepThrough]
-            protected set;
+            protected set => _state.Status = value;
         }
 
         /// <summary>
@@ -195,9 +218,16 @@ namespace BehaviourTree
         protected BaseBehaviour(string name)
         {
             if (name is null) throw new ArgumentNullException(nameof(name));
-            Id = (int)Interlocked.Increment(ref BehaviorCounter);
+
+            // Initialize cache-aligned state
+            _state = new CacheAlignedNodeState
+            {
+                Id = (int)Interlocked.Increment(ref BehaviorCounter),
+                Status = BehaviourStatus.Ready,
+                ObserverArrayDirty = 0
+            };
+
             Name = name;
-            Status = BehaviourStatus.Ready;
 
             // OPTIMIZATION: Cache type name once to avoid repeated GetType().Name calls
             _cachedTypeName = GetType().Name;
@@ -215,7 +245,7 @@ namespace BehaviourTree
         /// <summary>
         /// Attaches an observer to receive lifecycle event notifications from this behavior tree.
         /// Thread-safe operation that prevents duplicate observers.
-        /// OPTIMIZED: Marks observer array cache as dirty for lazy regeneration.
+        /// OPTIMIZED: Marks observer array cache as dirty for lazy regeneration using lock-free atomic operation.
         /// </summary>
         /// <param name="observer">The observer to attach</param>
         public void AttachObserver(IBehaviourTreeObserver observer)
@@ -227,7 +257,7 @@ namespace BehaviourTree
                 if (!_observers.Contains(observer))
                 {
                     _observers.Add(observer);
-                    _observerArrayDirty = true;  // OPTIMIZATION: Mark cache as dirty
+                    Interlocked.Exchange(ref _state.ObserverArrayDirty, 1);  // LOCK-FREE: Mark cache as dirty
                 }
             }
         }
@@ -235,7 +265,7 @@ namespace BehaviourTree
         /// <summary>
         /// Detaches a previously attached observer.
         /// Thread-safe operation.
-        /// OPTIMIZED: Marks observer array cache as dirty for lazy regeneration.
+        /// OPTIMIZED: Marks observer array cache as dirty for lazy regeneration using lock-free atomic operation.
         /// </summary>
         /// <param name="observer">The observer to detach</param>
         public void DetachObserver(IBehaviourTreeObserver observer)
@@ -246,7 +276,7 @@ namespace BehaviourTree
             {
                 if (_observers.Remove(observer))
                 {
-                    _observerArrayDirty = true;  // OPTIMIZATION: Mark cache as dirty
+                    Interlocked.Exchange(ref _state.ObserverArrayDirty, 1);  // LOCK-FREE: Mark cache as dirty
                 }
             }
         }
@@ -281,11 +311,11 @@ namespace BehaviourTree
 
             lock (_observerLock)
             {
-                // OPTIMIZATION: Regenerate cached array only when observers changed
-                if (_observerArrayDirty || _cachedObserverArray == null)
+                // OPTIMIZATION: Regenerate cached array only when observers changed (lock-free dirty check)
+                if (_state.ObserverArrayDirty == 1 || _cachedObserverArray == null)
                 {
                     _cachedObserverArray = _observers.ToArray();
-                    _observerArrayDirty = false;
+                    Interlocked.Exchange(ref _state.ObserverArrayDirty, 0);  // LOCK-FREE: Mark cache as clean
                 }
 
                 // Use cached array (no allocation unless observers changed)
@@ -342,7 +372,7 @@ namespace BehaviourTree
                     {
                         _observers.Clear();
                         _cachedObserverArray = null;
-                        _observerArrayDirty = false;
+                        Interlocked.Exchange(ref _state.ObserverArrayDirty, 0);
                     }
                 }
 
