@@ -4,7 +4,7 @@ A flexible, extensible C# behavior tree library with generic context support, fl
 
 ## Origin
 
-This library is based on the original work from [milanm/BehaviourTree](https://github.com/milanm/BehaviourTree). Significant improvements and enhancements have been made including:
+This library is based on [Eraclys/BehaviourTree](https://github.com/Eraclys/BehaviourTree). Enhancements include:
 - Instance-based observer pattern for memory-leak-free event monitoring
 - Flexible time provider system (no forced IClock interface)
 - Reactive/Priority nodes for dynamic behavior
@@ -563,5 +563,4 @@ See LICENSE file for details.
 
 ## Credits
 
-Based on original work by [milanm/BehaviourTree](https://github.com/milanm/BehaviourTree).
-Enhanced and maintained with significant improvements to functionality, performance, and reliability.
+Based on [Eraclys/BehaviourTree](https://github.com/Eraclys/BehaviourTree).
