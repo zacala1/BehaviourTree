@@ -3,7 +3,7 @@ using BehaviourTree.Demo.GameEngine;
 using System.Linq;
 using Xunit;
 
-namespace BehaviourTree.Demo.ComponentTests.GameEngine
+namespace BehaviourTree.Demo.SystemTests.GameEngine
 {
     public class EntityTests
     {

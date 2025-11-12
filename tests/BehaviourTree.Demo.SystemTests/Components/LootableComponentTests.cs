@@ -1,7 +1,7 @@
 using BehaviourTree.Demo.Components;
 using Xunit;
 
-namespace BehaviourTree.Demo.ComponentTests.Components
+namespace BehaviourTree.Demo.SystemTests.Components
 {
     public class LootableComponentTests
     {

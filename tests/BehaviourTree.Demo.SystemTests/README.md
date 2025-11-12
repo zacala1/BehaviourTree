@@ -1,6 +1,6 @@
-# BehaviourTree.Demo Component Tests
+# BehaviourTree.Demo System Tests
 
-이 프로젝트는 BehaviourTree.Demo의 AI 로직을 제외한 모든 컴포넌트들의 기능을 검증하는 테스트 프로젝트입니다.
+이 프로젝트는 BehaviourTree.Demo의 모든 컴포넌트, 시스템, 그리고 게임 엔진의 기능을 검증하는 통합 시스템 테스트 프로젝트입니다.
 
 ## 테스트 범위
 
@@ -49,7 +49,17 @@
   - 여러 리스너 처리
   - 엔티티 추가/제거 자동 이벤트
 
-### 3. Utility Classes (유틸리티 클래스)
+### 3. Systems (시스템)
+- **AiSystem**: AI 시스템 테스트
+  - 시스템 초기화
+  - 행동 트리 실행
+  - 다중 엔티티 처리
+  - 컨텍스트 풀링 (Context Pooling)
+  - 컨텍스트 관리 (Rent/Return)
+  - 행동 트리 상태 처리 (Success/Failure/Running)
+  - 대규모 엔티티 처리 성능
+
+### 4. Utility Classes (유틸리티 클래스)
 - **RingBuffer**: 순환 버퍼 테스트
   - 초기화 및 용량 관리
   - Enqueue/Dequeue 동작
@@ -66,15 +76,6 @@
   - Reset 콜백 실행
   - 객체 재사용
   - Clear 기능
-
-## 제외된 테스트
-
-다음 컴포넌트들은 AI 로직과 관련되어 있어 이 테스트 프로젝트에서 제외되었습니다:
-
-- `Ai/BT/BotBehaviours.cs`
-- `Ai/BT/BotBehaviourFunctions.cs`
-- `Ai/BT/BtContext.cs`
-- `Systems/AiSystem.cs`
 
 ## 테스트 실행 방법
 
@@ -100,7 +101,7 @@ dotnet test --framework net48
 ## 프로젝트 구조
 
 ```
-BehaviourTree.Demo.ComponentTests/
+BehaviourTree.Demo.SystemTests/
 ├── Components/
 │   ├── HealthComponentTests.cs
 │   ├── StaminaComponentTests.cs
@@ -112,13 +113,15 @@ BehaviourTree.Demo.ComponentTests/
 │   ├── EventSystemTests.cs
 │   ├── RingBufferTests.cs
 │   └── ObjectPoolTests.cs
+├── Systems/
+│   └── AiSystemTests.cs
 └── README.md
 ```
 
 ## 테스트 통계
 
-- **총 테스트 수**: 100개 이상
-- **테스트 커버리지**: 컴포넌트 및 게임 엔진 핵심 기능 포괄
+- **총 테스트 수**: 110개 이상
+- **테스트 커버리지**: 컴포넌트, 시스템, 및 게임 엔진 핵심 기능 포괄
 - **타겟 프레임워크**: net8.0, net6.0, net48
 
 ## 의존성
@@ -129,4 +132,10 @@ BehaviourTree.Demo.ComponentTests/
 
 ## 참고 사항
 
-이 테스트 프로젝트는 AI 로직을 제외한 게임 엔진의 핵심 기능들을 검증합니다. 각 테스트는 독립적으로 실행 가능하며, 테스트 간에 상태를 공유하지 않습니다.
+이 테스트 프로젝트는 BehaviourTree.Demo의 전체 시스템을 검증하는 통합 테스트를 포함합니다:
+- 컴포넌트 단위 테스트
+- 게임 엔진 핵심 기능 테스트
+- AI 시스템 통합 테스트
+- 유틸리티 클래스 테스트
+
+각 테스트는 독립적으로 실행 가능하며, 테스트 간에 상태를 공유하지 않습니다.

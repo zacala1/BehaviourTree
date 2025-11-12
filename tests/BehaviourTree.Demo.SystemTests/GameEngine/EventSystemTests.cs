@@ -2,7 +2,7 @@ using BehaviourTree.Demo.Events;
 using BehaviourTree.Demo.GameEngine;
 using Xunit;
 
-namespace BehaviourTree.Demo.ComponentTests.GameEngine
+namespace BehaviourTree.Demo.SystemTests.GameEngine
 {
     public class EventSystemTests
     {
