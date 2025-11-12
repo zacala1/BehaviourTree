@@ -75,7 +75,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
         }
 
         [Fact]
-        public void Update_PassesCorrectContextToBeha viourTree()
+        public void Update_PassesCorrectContextToBehaviourTree()
         {
             // Arrange
             var engine = new Engine();
