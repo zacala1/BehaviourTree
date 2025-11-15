@@ -82,7 +82,17 @@ namespace BehaviourTree.Demo.GameEngine
 
         public void ComponentAddedToEntity(Entity entity, Type componentType)
         {
-            AddIfMatch(entity);
+            // If node already exists and this is a required component, update it
+            if (_entityNodeLookup.TryGetValue(entity.Id, out var existingNode) && _componentSetters.ContainsKey(componentType))
+            {
+                var component = entity.GetComponent(componentType);
+                var setter = _componentSetters[componentType];
+                setter(existingNode, component);
+            }
+            else
+            {
+                AddIfMatch(entity);
+            }
         }
 
         public void ComponentRemovedFromEntity(Entity entity, Type componentType)

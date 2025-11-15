@@ -1,4 +1,5 @@
-﻿using BehaviourTree.Demo.GameEngine;
+﻿using BehaviourTree.Demo.Components;
+using BehaviourTree.Demo.GameEngine;
 using BehaviourTree.Demo.Nodes;
 
 namespace BehaviourTree.Demo.Systems
