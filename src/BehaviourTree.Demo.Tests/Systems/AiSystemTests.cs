@@ -3,6 +3,7 @@ using BehaviourTree.Demo.Components;
 using BehaviourTree.Demo.GameEngine;
 using BehaviourTree.Demo.Nodes;
 using BehaviourTree.Demo.Systems;
+using BehaviourTree.Events;
 using NUnit.Framework;
 
 namespace BehaviourTree.Demo.SystemTests.Systems
@@ -246,7 +247,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
         {
             private readonly BehaviourStatus _returnStatus;
 
-            public TestBehaviour(BehaviourStatus returnStatus = BehaviourStatus.Success)
+            public TestBehaviour(BehaviourStatus returnStatus = BehaviourStatus.Succeeded)
             {
                 _returnStatus = returnStatus;
             }
@@ -256,6 +257,11 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             public long LastTimestamp { get; private set; }
             public BehaviourStatus LastStatus { get; private set; }
 
+            // IBehaviour<BtContext> members
+            public int Id => 0;
+            public string Name => "TestBehaviour";
+            public BehaviourStatus Status => LastStatus;
+
             public BehaviourStatus Tick(BtContext context)
             {
                 WasExecuted = true;
@@ -264,6 +270,20 @@ namespace BehaviourTree.Demo.SystemTests.Systems
                 LastStatus = _returnStatus;
                 return _returnStatus;
             }
+
+            public void Reset()
+            {
+                WasExecuted = false;
+                LastContext = null;
+                LastTimestamp = 0;
+                LastStatus = BehaviourStatus.Ready;
+            }
+
+            public void AttachObserver(IBehaviourTreeObserver observer) { }
+
+            public void DetachObserver(IBehaviourTreeObserver observer) { }
+
+            public void Dispose() { }
         }
     }
 }

@@ -114,7 +114,7 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             public bool EventReceived { get; private set; }
             public int LastEntityId { get; private set; }
 
-            public void OnEvent(HealthReachedZero @event)
+            public void Handle(Engine engine, HealthReachedZero @event)
             {
                 EventReceived = true;
                 LastEntityId = @event.EntityId;
@@ -126,7 +126,7 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             public bool EventReceived { get; private set; }
             public int LastEntityId { get; private set; }
 
-            public void OnEvent(EntityAdded @event)
+            public void Handle(Engine engine, EntityAdded @event)
             {
                 EventReceived = true;
                 LastEntityId = @event.EntityId;
@@ -138,7 +138,7 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
             public bool EventReceived { get; private set; }
             public int LastEntityId { get; private set; }
 
-            public void OnEvent(EntityRemoved @event)
+            public void Handle(Engine engine, EntityRemoved @event)
             {
                 EventReceived = true;
                 LastEntityId = @event.EntityId;

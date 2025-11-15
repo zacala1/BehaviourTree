@@ -175,7 +175,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             public bool EventReceived { get; private set; }
             public int EntityId { get; private set; }
 
-            public void OnEvent(HealthReachedZero @event)
+            public void Handle(Engine engine, HealthReachedZero @event)
             {
                 EventReceived = true;
                 EntityId = @event.EntityId;
