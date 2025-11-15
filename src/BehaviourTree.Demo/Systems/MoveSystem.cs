@@ -15,8 +15,9 @@ namespace BehaviourTree.Demo.Systems
 
         protected override void UpdateNode(MoveNode node, long ellapsedMilliseconds)
         {
-            var positionComponent = node.PositionComponent;
-            var movementComponent = node.MovementComponent;
+            // Work with refs to avoid copying structs
+            ref var positionComponent = ref node.PositionComponent;
+            ref var movementComponent = ref node.MovementComponent;
 
             positionComponent.PreviousPosition = positionComponent.Position;
 

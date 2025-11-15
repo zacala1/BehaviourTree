@@ -41,55 +41,43 @@
             {
                 var child = children[i];
 
-                // Tick the child
+                // Tick the child (reactive behavior: children are re-evaluated in their current state)
                 var childStatus = child.Tick(context);
 
-                // For reactive behavior, reset non-running children appropriately
+                // If child succeeds, continue to next child in sequence (don't reset it - reactive behavior)
                 if (childStatus == BehaviourStatus.Succeeded)
                 {
-                    // Reset succeeded children so they can be re-evaluated on next tick
-                    if (child.Status != BehaviourStatus.Ready)
-                    {
-                        child.Reset();
-                    }
-                    // Continue to next child in sequence
+                    // Continue to next child
+                    continue;
                 }
-                else // Failed or Running
+
+                // If child fails or is running, reset all later children and return
+                // Reset all children after the current one since they're being skipped
+                for (var j = i + 1; j < count; j++)
                 {
-                    // Reset all children after the current one since we're not evaluating them
-                    for (var j = i + 1; j < count; j++)
+                    // Only reset children that aren't already Ready to avoid unnecessary resets
+                    if (children[j].Status != BehaviourStatus.Ready)
                     {
-                        // Only reset children that aren't already Ready to avoid unnecessary resets
-                        if (children[j].Status != BehaviourStatus.Ready)
-                        {
-                            children[j].Reset();
-                        }
+                        children[j].Reset();
                     }
-
-                    // Don't reset the child that's Running, but reset if Failed
-                    if (childStatus == BehaviourStatus.Failed && child.Status != BehaviourStatus.Ready)
-                    {
-                        // Reset failed children
-                        // The reset will happen in OnTerminate
-                    }
-
-                    return childStatus;
                 }
+
+                return childStatus;
             }
 
             return BehaviourStatus.Succeeded;
         }
 
         /// <summary>
-        /// Override DoReset to maintain child state for reactive behavior.
-        /// Children are reset explicitly during Update() as needed, not on parent termination.
+        /// Override OnTerminate to prevent resetting children when the parent completes.
+        /// For reactive nodes, children maintain state between parent ticks and are reset
+        /// explicitly during Update() as needed.
         /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
-        protected override void DoReset(BehaviourStatus status)
+        protected override void OnTerminate(BehaviourStatus status)
         {
-            // For reactive nodes, don't reset children when parent terminates
-            // Children maintain their state and are reset explicitly during Update()
-            // This is different from standard composites which reset all children
+            // Don't call base.OnTerminate which would reset all children
+            // Children are reset explicitly during Update() for reactive behavior
         }
     }
 }

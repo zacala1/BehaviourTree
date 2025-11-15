@@ -41,7 +41,7 @@ namespace BehaviourTree.Demo.GameEngine
         /// <returns>The newly created entity.</returns>
         public Entity NewEntity()
         {
-            var entity = new Entity(_maxId++);
+            var entity = new Entity(++_maxId);
 
             _entities.Add(entity.Id, entity);
             OnEntityAdded(entity);
