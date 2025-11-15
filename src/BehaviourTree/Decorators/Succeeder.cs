@@ -4,7 +4,7 @@
     /// Always returns success when the child completes.
     /// </summary>
     /// <typeparam name="TContext">The context type.</typeparam>
-    public sealed class Succeeder<TContext> : DecoratorBehaviour<TContext>
+    public sealed partial class Succeeder<TContext> : DecoratorBehaviour<TContext>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Succeeder{TContext}"/> class.

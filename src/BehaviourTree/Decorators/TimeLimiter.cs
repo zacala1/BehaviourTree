@@ -6,7 +6,7 @@ namespace BehaviourTree.Decorators
     /// Decorator that limits child execution time, returning failure if time limit is exceeded.
     /// </summary>
     /// <typeparam name="TContext">Context type that implements IClock for time tracking</typeparam>
-    public sealed class TimeLimiter<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
+    public sealed partial class TimeLimiter<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
     {
         private readonly Func<TContext, long>? _getTimeLimitInMilliseconds;
         private long _timeLimitInMilliseconds;

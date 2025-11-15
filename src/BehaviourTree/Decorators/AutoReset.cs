@@ -5,7 +5,7 @@
     /// Useful for repeatable actions that should reset immediately after finishing.
     /// </summary>
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
-    public sealed class AutoReset<TContext> : DecoratorBehaviour<TContext>
+    public sealed partial class AutoReset<TContext> : DecoratorBehaviour<TContext>
     {
         /// <summary>
         /// Creates an auto-reset decorator with default name.

@@ -7,7 +7,7 @@ namespace BehaviourTree.Decorators
     /// Returns cached result if called within the interval, otherwise executes child.
     /// </summary>
     /// <typeparam name="TContext">Context type that implements IClock for time tracking</typeparam>
-    public sealed class RateLimiter<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
+    public sealed partial class RateLimiter<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
     {
         private readonly Func<TContext, long>? _getIntervalInMilliseconds;
         private long? _previousTimestamp;

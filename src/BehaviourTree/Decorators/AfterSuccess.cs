@@ -7,7 +7,7 @@ namespace BehaviourTree.Decorators
     /// Returns the child's status unchanged.
     /// </summary>
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
-    public sealed class AfterSuccess<TContext> : DecoratorBehaviour<TContext>
+    public sealed partial class AfterSuccess<TContext> : DecoratorBehaviour<TContext>
     {
         private BehaviourStatus childStatus;
         private bool callbackExecuted;

@@ -13,7 +13,7 @@ namespace BehaviourTree.Composites
     ///
     /// Note: This is an alias for PrioritySequence which implements the same reactive behavior.
     /// </summary>
-    public sealed class ActiveSequence<TContext> : PrioritySequence<TContext>
+    public sealed partial class ActiveSequence<TContext> : PrioritySequence<TContext>
     {
         /// <summary>
         /// Creates an active sequence node with default name and variable number of children.

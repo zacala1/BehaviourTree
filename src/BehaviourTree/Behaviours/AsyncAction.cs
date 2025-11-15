@@ -9,7 +9,7 @@ namespace BehaviourTree.Behaviours
     /// Supports timeout and cancellation conditions for async operations.
     /// </summary>
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
-    public class AsyncAction<TContext> : BaseBehaviour<TContext>
+    public partial class AsyncAction<TContext> : BaseBehaviour<TContext>
     {
         private readonly Func<TContext, CancellationToken, Task<BehaviourStatus>> action;
         private readonly TimeSpan timeout;

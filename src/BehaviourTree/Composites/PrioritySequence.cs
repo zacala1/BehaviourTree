@@ -5,7 +5,7 @@
     /// Allows higher priority children to interrupt lower priority ones.
     /// OPTIMIZED: Cached array access for high-frequency tick operations.
     /// </summary>
-    public class PrioritySequence<TContext> : CompositeBehaviour<TContext>
+    public partial class PrioritySequence<TContext> : CompositeBehaviour<TContext>
     {
         /// <summary>
         /// Creates a priority sequence node with default name.

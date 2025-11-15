@@ -6,7 +6,7 @@ namespace BehaviourTree.Decorators
     /// Repeats the child behavior a specified number of times.
     /// </summary>
     /// <typeparam name="TContext">The context type.</typeparam>
-    public sealed class Repeater<TContext> : DecoratorBehaviour<TContext>
+    public sealed partial class Repeater<TContext> : DecoratorBehaviour<TContext>
     {
         private readonly Func<TContext, int>? _getRepeatCount;
         private int _repeatCount;

@@ -5,7 +5,7 @@
     /// Executes children in random order until one fails or all succeed.
     /// </summary>
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
-    public sealed class RandomSequence<TContext> : Sequence<TContext>
+    public sealed partial class RandomSequence<TContext> : Sequence<TContext>
     {
         private readonly IRandomProvider _randomProvider;
 

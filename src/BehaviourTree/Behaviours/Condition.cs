@@ -8,7 +8,7 @@ namespace BehaviourTree.Behaviours
     /// </summary>
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
     // ReSharper disable once ClassCanBeSealed.Global
-    public class Condition<TContext> : BaseBehaviour<TContext>
+    public partial class Condition<TContext> : BaseBehaviour<TContext>
     {
         private readonly Func<TContext, bool> _predicate;
 

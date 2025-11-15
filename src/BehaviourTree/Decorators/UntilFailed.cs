@@ -6,7 +6,7 @@ namespace BehaviourTree.Decorators
     /// Repeats the child until it fails or a countdown expires.
     /// </summary>
     /// <typeparam name="TContext">The context type.</typeparam>
-    public sealed class UntilFailed<TContext> : DecoratorBehaviour<TContext>
+    public sealed partial class UntilFailed<TContext> : DecoratorBehaviour<TContext>
     {
         private readonly Func<TContext, int>? _getCountdown;
         private int _countdown;

@@ -7,7 +7,7 @@ namespace BehaviourTree.Decorators
     /// Executes child if random value is greater than or equal to threshold, otherwise returns failure.
     /// </summary>
     /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
-    public sealed class Random<TContext> : DecoratorBehaviour<TContext>
+    public sealed partial class Random<TContext> : DecoratorBehaviour<TContext>
     {
         private readonly IRandomProvider _randomProvider;
 

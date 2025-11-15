@@ -7,7 +7,7 @@ namespace BehaviourTree.Composites
     /// Executes both children concurrently with configurable success policy.
     /// </summary>
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
-    public sealed class SimpleParallel<TContext> : CompositeBehaviour<TContext>
+    public sealed partial class SimpleParallel<TContext> : CompositeBehaviour<TContext>
     {
         private readonly IBehaviour<TContext> _first;
         private readonly IBehaviour<TContext> _second;

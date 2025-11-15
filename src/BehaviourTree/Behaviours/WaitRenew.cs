@@ -7,7 +7,7 @@ namespace BehaviourTree.Behaviours
     /// Returns running while waiting and succeeds when the wait time has elapsed.
     /// </summary>
     /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
-    public sealed class WaitRenew<TContext> : BaseBehaviour<TContext>
+    public sealed partial class WaitRenew<TContext> : BaseBehaviour<TContext>
     {
         private readonly Func<TContext, long> _getWaitTimeInMilliseconds;
         private long _waitTimeInMilliseconds;

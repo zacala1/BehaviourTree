@@ -4,7 +4,7 @@
     /// Always returns failure when the child completes.
     /// </summary>
     /// <typeparam name="TContext">The context type.</typeparam>
-    public sealed class Failer<TContext> : DecoratorBehaviour<TContext>
+    public sealed partial class Failer<TContext> : DecoratorBehaviour<TContext>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Failer{TContext}"/> class.

@@ -7,7 +7,7 @@ namespace BehaviourTree.Behaviours
     /// Returns Running while waiting, then Success after the duration elapses.
     /// </summary>
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
-    public sealed class Wait<TContext> : BaseBehaviour<TContext>
+    public sealed partial class Wait<TContext> : BaseBehaviour<TContext>
     {
         private readonly long _waitTimeInMilliseconds;
         private long? _initialTimestamp;

@@ -5,7 +5,7 @@
     /// Executes children in random order until one succeeds or all fail.
     /// </summary>
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
-    public sealed class RandomSelector<TContext> : Selector<TContext>
+    public sealed partial class RandomSelector<TContext> : Selector<TContext>
     {
         private readonly IRandomProvider _randomProvider;
 

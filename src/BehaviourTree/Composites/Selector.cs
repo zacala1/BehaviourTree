@@ -17,7 +17,7 @@ namespace BehaviourTree.Composites
     /// Executes children in order until one succeeds or all fail.
     /// OPTIMIZED: Cache-aligned state and aggressive inlining for minimal overhead.
     /// </summary>
-    public class Selector<TContext> : CompositeBehaviour<TContext>
+    public partial class Selector<TContext> : CompositeBehaviour<TContext>
     {
         // CACHE OPTIMIZATION: Align hot field to cache line
         private CacheAlignedSelectorState _state;
@@ -54,7 +54,7 @@ namespace BehaviourTree.Composites
         /// OPTIMIZED: Cache-aligned state, aggressive inlining, and direct array access.
         /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override BehaviourStatus Update(TContext context)
         {
             // OPTIMIZATION: Use direct array access for better performance

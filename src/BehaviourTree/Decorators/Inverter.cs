@@ -4,7 +4,7 @@
     /// Inverts the child's success and failure status.
     /// </summary>
     /// <typeparam name="TContext">The context type.</typeparam>
-    public sealed class Inverter<TContext> : DecoratorBehaviour<TContext>
+    public sealed partial class Inverter<TContext> : DecoratorBehaviour<TContext>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Inverter{TContext}"/> class.

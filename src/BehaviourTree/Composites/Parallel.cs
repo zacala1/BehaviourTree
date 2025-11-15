@@ -10,7 +10,7 @@ namespace BehaviourTree.Composites
     /// Supports any number of children (N >= 1).
     /// OPTIMIZED: Cache-aligned status array and unsafe pointer operations for maximum performance.
     /// </summary>
-    public sealed class Parallel<TContext> : CompositeBehaviour<TContext>
+    public sealed partial class Parallel<TContext> : CompositeBehaviour<TContext>
     {
         private readonly ParallelPolicy _policy;
         private readonly int _successRequired;

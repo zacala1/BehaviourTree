@@ -7,7 +7,7 @@ namespace BehaviourTree.Decorators
     /// Returns failure during cooldown, otherwise executes child normally.
     /// </summary>
     /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
-    public sealed class CooldownRenew<TContext> : DecoratorBehaviour<TContext>
+    public sealed partial class CooldownRenew<TContext> : DecoratorBehaviour<TContext>
     {
         private readonly Func<TContext, long> _getCooldownTimeInMilliseconds;
         private long _cooldownTimeInMilliseconds;

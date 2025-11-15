@@ -13,7 +13,7 @@ namespace BehaviourTree.Composites
     ///
     /// Note: This is an alias for PrioritySelector which implements the same reactive behavior.
     /// </summary>
-    public sealed class ActiveSelector<TContext> : PrioritySelector<TContext>
+    public sealed partial class ActiveSelector<TContext> : PrioritySelector<TContext>
     {
         /// <summary>
         /// Creates an active selector node with default name and variable number of children.

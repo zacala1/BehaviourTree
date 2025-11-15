@@ -6,7 +6,7 @@ namespace BehaviourTree.Decorators
     /// Decorator that retries the child behavior a specified number of times on failure.
     /// </summary>
     /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
-    public sealed class Retry<TContext> : DecoratorBehaviour<TContext>
+    public sealed partial class Retry<TContext> : DecoratorBehaviour<TContext>
     {
         private readonly Func<TContext, int>? _getRetryCount;
         private int _retryCount;

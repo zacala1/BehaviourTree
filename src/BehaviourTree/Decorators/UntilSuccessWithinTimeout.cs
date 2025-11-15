@@ -7,7 +7,7 @@ namespace BehaviourTree.Decorators
     /// Returns running while child fails, succeeds when child succeeds, and fails on timeout.
     /// </summary>
     /// <typeparam name="TContext">Context type that implements IClock for time tracking</typeparam>
-    public sealed class UntilSuccessWithinTimeout<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
+    public sealed partial class UntilSuccessWithinTimeout<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
     {
         private readonly Func<TContext, long>? _getTimeoutInMilliseconds;
         private readonly Action<TContext>? _timeoutAction;

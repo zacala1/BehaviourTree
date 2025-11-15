@@ -5,7 +5,7 @@
     /// Allows higher priority children to interrupt lower priority ones.
     /// </summary>
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
-    public class PrioritySelector<TContext> : CompositeBehaviour<TContext>
+    public partial class PrioritySelector<TContext> : CompositeBehaviour<TContext>
     {
         /// <summary>
         /// Creates a priority selector node with default name.
