@@ -17,8 +17,8 @@ namespace BehaviourTree.Demo.Components
 
             if (amount > Quantity)
             {
-                Quantity = 0;
                 removed = Quantity;
+                Quantity = 0;
             }
             else
             {

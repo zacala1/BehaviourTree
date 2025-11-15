@@ -23,7 +23,7 @@ namespace BehaviourTree.Demo.Systems
 
             _delta = ellapsedMilliseconds - _previousTimeStamp.Value;
 
-            if (_delta > StaminaGainFrequencyInMilliseconds)
+            if (_delta >= StaminaGainFrequencyInMilliseconds)
             {
                 base.Update(ellapsedMilliseconds);
                 _previousTimeStamp = ellapsedMilliseconds;

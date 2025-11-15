@@ -23,7 +23,7 @@ namespace BehaviourTree.Demo.Systems
 
             _delta = ellapsedMilliseconds - _previousTimeStamp.Value;
 
-            if (_delta > HpLossFrequencyInMilliseconds)
+            if (_delta >= HpLossFrequencyInMilliseconds)
             {
                 base.Update(ellapsedMilliseconds);
                 _previousTimeStamp = ellapsedMilliseconds;
