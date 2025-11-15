@@ -64,11 +64,11 @@ namespace BehaviourTree
             var newTokenSource = new CancellationTokenSource();
             Interlocked.Exchange(ref _tokenSource, newTokenSource);
 
-            var status = await ExecuteCycle(_tokenSource.Token).ConfigureAwait(false);
+            var status = await ExecuteCycle(newTokenSource.Token).ConfigureAwait(false);
 
-            while (!shouldStop(status) && !_tokenSource.IsCancellationRequested)
+            while (!shouldStop(status) && !newTokenSource.IsCancellationRequested)
             {
-                status = await ExecuteCycle(_tokenSource.Token).ConfigureAwait(false);
+                status = await ExecuteCycle(newTokenSource.Token).ConfigureAwait(false);
             }
 
             return status;

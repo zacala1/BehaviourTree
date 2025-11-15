@@ -94,6 +94,21 @@ namespace BehaviourTree.Reflection
                     break;
             }
         }
+
+        /// <summary>
+        /// Gets the full type name using Source Generator metadata, falling back to reflection if needed.
+        /// </summary>
+        private static string GetTypeFullNameOrName<TContext>(IBehaviour<TContext> behaviour)
+        {
+            // OPTIMIZATION: Use Source Generator metadata to avoid reflection
+            if (behaviour is IBehaviourMetadata metadata)
+            {
+                return metadata.FullTypeName ?? metadata.TypeName;
+            }
+
+            // Fallback to reflection (shouldn't happen in normal usage)
+            return behaviour.GetType().FullName ?? behaviour.GetType().Name;
+        }
     }
 
     /// <summary>
@@ -162,21 +177,6 @@ namespace BehaviourTree.Reflection
 
             found = false;
             return default!;
-        }
-
-        /// <summary>
-        /// Gets the full type name using Source Generator metadata, falling back to reflection if needed.
-        /// </summary>
-        private static string GetTypeFullNameOrName<TContext>(IBehaviour<TContext> behaviour)
-        {
-            // OPTIMIZATION: Use Source Generator metadata to avoid reflection
-            if (behaviour is IBehaviourMetadata metadata)
-            {
-                return metadata.FullTypeName ?? metadata.TypeName;
-            }
-
-            // Fallback to reflection (shouldn't happen in normal usage)
-            return behaviour.GetType().FullName ?? behaviour.GetType().Name;
         }
     }
 }

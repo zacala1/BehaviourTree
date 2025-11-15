@@ -196,7 +196,7 @@ namespace BehaviourTree
     /// MEMORY EFFICIENCY:
     ///
     /// Per-node overhead:
-    /// - List<IBehaviourTreeObserver>: 32 bytes (empty list)
+    /// - List&lt;IBehaviourTreeObserver&gt;: 32 bytes (empty list)
     /// - Cached array: 8 bytes (reference, null when no observers)
     /// - Cached type name: 8 bytes (string reference)
     /// - Lock object: 8 bytes
