@@ -1,13 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29926.136
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36705.20 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BehaviourTree", "BehaviourTree\BehaviourTree.csproj", "{7112076B-363D-4886-9186-617283349034}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviourTree.Tests", "BehaviourTree.Tests\BehaviourTree.Tests.csproj", "{642AD8E2-054B-4789-9741-2CFF08BC2A44}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviourTree.Demo", "BehaviourTree.Demo\BehaviourTree.Demo.csproj", "{0E73126D-3B25-4DD8-9D41-A72C1AC1BD44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviourTree.Demo.Tests", "BehaviourTree.Demo.Tests\BehaviourTree.Demo.Tests.csproj", "{6B0577B2-CB7A-D40A-61BC-6C95ACD1560C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviourTree.SourceGenerators", "BehaviourTree.SourceGenerators\BehaviourTree.SourceGenerators.csproj", "{688FDBA8-018A-082D-3CD6-81313D1565E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{0E73126D-3B25-4DD8-9D41-A72C1AC1BD44}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E73126D-3B25-4DD8-9D41-A72C1AC1BD44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E73126D-3B25-4DD8-9D41-A72C1AC1BD44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B0577B2-CB7A-D40A-61BC-6C95ACD1560C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B0577B2-CB7A-D40A-61BC-6C95ACD1560C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B0577B2-CB7A-D40A-61BC-6C95ACD1560C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B0577B2-CB7A-D40A-61BC-6C95ACD1560C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{688FDBA8-018A-082D-3CD6-81313D1565E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{688FDBA8-018A-082D-3CD6-81313D1565E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{688FDBA8-018A-082D-3CD6-81313D1565E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{688FDBA8-018A-082D-3CD6-81313D1565E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
