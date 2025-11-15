@@ -228,7 +228,11 @@ namespace BehaviourTree.Demo.GameEngine
             {
                 try
                 {
+#if NETCOREAPP || NETSTANDARD2_1_OR_GREATER
                     _pool.Return(_items, clearArray: RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+#else
+                    _pool.Return(_items, clearArray: !typeof(T).IsValueType);
+#endif
                 }
                 catch
                 {
@@ -267,7 +271,11 @@ namespace BehaviourTree.Demo.GameEngine
                 {
                     try
                     {
+#if NETCOREAPP || NETSTANDARD2_1_OR_GREATER
                         _pool.Return(toReturn, clearArray: RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+#else
+                        _pool.Return(toReturn, clearArray: !typeof(T).IsValueType);
+#endif
                     }
                     catch
                     {
