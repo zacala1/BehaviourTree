@@ -43,6 +43,10 @@ namespace BehaviourTree.Demo.Systems
             {
                 positionComponent.Position.Y = _boardSize.Height;
             }
+
+            // Update entity's components (necessary because they are structs)
+            node.Entity.AddComponent(positionComponent);
+            node.Entity.AddComponent(movementComponent);
         }
     }
 }

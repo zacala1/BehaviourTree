@@ -92,8 +92,8 @@ namespace BehaviourTree.Tests
             // Act - First tick
             selector.Tick(new MockContext());
 
-            // Verify reset was called on failed child
-            Assert.That(mock1.ResetCallCount, Is.EqualTo(1), "Failed child should be reset before re-evaluation");
+            // Verify failed children maintain state (not reset) for reactive re-evaluation
+            Assert.That(mock1.ResetCallCount, Is.EqualTo(0), "Failed child maintains state for next tick");
             Assert.That(mock2.ResetCallCount, Is.EqualTo(0), "Successful child doesn't need reset on first tick");
 
             // Act - Second tick (reactive behavior)

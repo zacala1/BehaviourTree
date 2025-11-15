@@ -32,7 +32,7 @@ namespace BehaviourTree.Demo.Systems
 
         protected override void UpdateNode(HealthNode node, long ellapsedMilliseconds)
         {
-            var healthComponent = node.HealthComponent;
+            ref var healthComponent = ref node.HealthComponent;
 
             var previousHealth = healthComponent.Health;
             healthComponent.ReduceBy(_delta / HpLossFrequencyInMilliseconds);
@@ -41,6 +41,9 @@ namespace BehaviourTree.Demo.Systems
             {
                 Engine.PublishEvent(new HealthReachedZero(node.Entity.Id));
             }
+
+            // Update entity's component (necessary because it is a struct)
+            node.Entity.AddComponent(healthComponent);
         }
     }
 }

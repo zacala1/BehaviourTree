@@ -116,7 +116,7 @@ namespace BehaviourTree.Tests
             Assert.That(behaviours[0].InitializeCallCount, Is.EqualTo(1));
             Assert.That(behaviours[0].UpdateCallCount, Is.EqualTo(2));
             Assert.That(behaviours[0].TerminateCallCount, Is.EqualTo(2));
-            Assert.That(behaviours[0].ResetCallCount, Is.EqualTo(1));
+            Assert.That(behaviours[0].ResetCallCount, Is.EqualTo(0), "Succeeding child maintains state");
 
             for (int i = 1; i < 4; i++)
             {
@@ -125,13 +125,13 @@ namespace BehaviourTree.Tests
                 Assert.That(mockBehaviour.InitializeCallCount, Is.EqualTo(1));
                 Assert.That(mockBehaviour.UpdateCallCount, Is.EqualTo(1));
                 Assert.That(mockBehaviour.TerminateCallCount, Is.EqualTo(1));
-                Assert.That(mockBehaviour.ResetCallCount, Is.EqualTo(1));
+                Assert.That(mockBehaviour.ResetCallCount, Is.EqualTo(1), "Skipped children are reset");
             }
 
             Assert.That(behaviours[4].InitializeCallCount, Is.EqualTo(1));
             Assert.That(behaviours[4].UpdateCallCount, Is.EqualTo(1));
             Assert.That(behaviours[4].TerminateCallCount, Is.EqualTo(0));
-            Assert.That(behaviours[4].ResetCallCount, Is.EqualTo(1));
+            Assert.That(behaviours[4].ResetCallCount, Is.EqualTo(1), "Skipped child is reset");
 
             for (int i = 5; i < behaviours.Length; i++)
             {
