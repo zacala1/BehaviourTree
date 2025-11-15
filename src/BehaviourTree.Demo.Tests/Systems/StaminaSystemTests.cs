@@ -40,7 +40,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert - Stamina should still be 50 (no increase yet)
             var stamina = entity.GetComponent<StaminaComponent>();
-            Assert.AreEqual(50, stamina.Stamina);
+            Assert.AreEqual(50, stamina!.Stamina);
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert - Stamina should be increased
             var stamina = entity.GetComponent<StaminaComponent>();
-            Assert.IsTrue(stamina.Stamina > 50);
+            Assert.IsTrue(stamina!.Stamina > 50);
         }
 
         [Test]
@@ -85,7 +85,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert
             var stamina = entity.GetComponent<StaminaComponent>();
-            Assert.AreEqual(52, stamina.Stamina);
+            Assert.AreEqual(52, stamina!.Stamina);
         }
 
         [Test]
@@ -107,7 +107,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert - Should be capped at max (100)
             var stamina = entity.GetComponent<StaminaComponent>();
-            Assert.AreEqual(100, stamina.Stamina);
+            Assert.AreEqual(100, stamina!.Stamina);
         }
 
         [Test]
@@ -139,9 +139,9 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(100); // Delta = 100ms
 
             // Assert
-            Assert.AreEqual(52, entity1.GetComponent<StaminaComponent>().Stamina);
-            Assert.AreEqual(52, entity2.GetComponent<StaminaComponent>().Stamina);
-            Assert.AreEqual(52, entity3.GetComponent<StaminaComponent>().Stamina);
+            Assert.AreEqual(52, entity1.GetComponent<StaminaComponent>()!.Stamina);
+            Assert.AreEqual(52, entity2.GetComponent<StaminaComponent>()!.Stamina);
+            Assert.AreEqual(52, entity3.GetComponent<StaminaComponent>()!.Stamina);
         }
 
         [Test]

@@ -39,7 +39,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert - Health should still be 100 (no reduction yet)
             var health = entity.GetComponent<HealthComponent>();
-            Assert.AreEqual(100, health.Health);
+            Assert.AreEqual(100, health!.Health);
         }
 
         [Test]
@@ -60,7 +60,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert - Health should be reduced
             var health = entity.GetComponent<HealthComponent>();
-            Assert.IsTrue(health.Health < 100);
+            Assert.IsTrue(health!.Health < 100);
         }
 
         [Test]
@@ -80,7 +80,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert
             var health = entity.GetComponent<HealthComponent>();
-            Assert.AreEqual(98, health.Health);
+            Assert.AreEqual(98, health!.Health);
         }
 
         [Test]
@@ -151,9 +151,9 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(600); // Delta = 600ms
 
             // Assert
-            Assert.AreEqual(98, entity1.GetComponent<HealthComponent>().Health);
-            Assert.AreEqual(98, entity2.GetComponent<HealthComponent>().Health);
-            Assert.AreEqual(98, entity3.GetComponent<HealthComponent>().Health);
+            Assert.AreEqual(98, entity1.GetComponent<HealthComponent>()!.Health);
+            Assert.AreEqual(98, entity2.GetComponent<HealthComponent>()!.Health);
+            Assert.AreEqual(98, entity3.GetComponent<HealthComponent>()!.Health);
         }
 
         [Test]

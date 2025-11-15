@@ -75,7 +75,7 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
 
             // Assert
             var component = entity.GetComponent<HealthComponent>();
-            Assert.AreEqual(200, component.MaxHealth);
+            Assert.AreEqual(200, component!.MaxHealth);
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
 
             // Assert
             Assert.IsNotNull(retrieved);
-            Assert.AreEqual(100, retrieved.MaxHealth);
+            Assert.AreEqual(100, retrieved!.MaxHealth);
         }
 
         [Test]

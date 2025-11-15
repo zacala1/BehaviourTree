@@ -49,7 +49,7 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
 
             // Assert
             Assert.IsNotNull(retrievedEntity);
-            Assert.AreEqual(entity.Id, retrievedEntity.Id);
+            Assert.AreEqual(entity.Id, retrievedEntity!.Id);
         }
 
         [Test]

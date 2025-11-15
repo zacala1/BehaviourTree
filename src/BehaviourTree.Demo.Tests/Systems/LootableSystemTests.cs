@@ -61,7 +61,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             // Assert
             var retrievedEntity = engine.GetEntityById(entity.Id);
             Assert.IsNotNull(retrievedEntity);
-            Assert.AreEqual(5, retrievedEntity.GetComponent<LootableComponent>().Quantity);
+            Assert.AreEqual(5, retrievedEntity!.GetComponent<LootableComponent>()!.Quantity);
         }
 
         [Test]

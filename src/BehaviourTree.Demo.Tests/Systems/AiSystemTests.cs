@@ -92,9 +92,9 @@ namespace BehaviourTree.Demo.SystemTests.Systems
 
             // Assert
             Assert.IsNotNull(testBehaviour.LastContext);
-            Assert.AreEqual(entity, testBehaviour.LastContext.Agent);
-            Assert.AreEqual(engine, testBehaviour.LastContext.Engine);
-            Assert.AreEqual(500, testBehaviour.LastContext.TimeStampInMilliseconds);
+            Assert.AreEqual(entity, testBehaviour.LastContext!.Agent);
+            Assert.AreEqual(engine, testBehaviour.LastContext!.Engine);
+            Assert.AreEqual(500, testBehaviour.LastContext!.TimeStampInMilliseconds);
         }
 
         [Test]
@@ -125,7 +125,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             Assert.IsNotNull(context3);
 
             // Each update should have correct timestamp
-            Assert.AreEqual(300, context3.TimeStampInMilliseconds);
+            Assert.AreEqual(300, context3!.TimeStampInMilliseconds);
         }
 
         [Test]
