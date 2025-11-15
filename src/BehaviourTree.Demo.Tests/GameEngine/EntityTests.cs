@@ -196,7 +196,7 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
 
             // Assert
             Assert.IsNotNull(addedComponent);
-            Assert.IsType<HealthComponent>(addedComponent);
+            Assert.IsInstanceOf<HealthComponent>(addedComponent);
         }
 
         [Test]
@@ -213,7 +213,7 @@ namespace BehaviourTree.Demo.SystemTests.GameEngine
 
             // Assert
             Assert.IsNotNull(removedComponent);
-            Assert.IsType<HealthComponent>(removedComponent);
+            Assert.IsInstanceOf<HealthComponent>(removedComponent);
         }
 
         [Test]

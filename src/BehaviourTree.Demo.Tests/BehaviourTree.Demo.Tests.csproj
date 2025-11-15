@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net6.0;net48</TargetFrameworks>
+    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <LangVersion>latest</LangVersion>
@@ -20,15 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BehaviourTree.Demo\BehaviourTree.Demo.csproj" />
-  </ItemGroup>
-
-  <!-- .NET Framework specific -->
-  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <PackageReference Include="System.Memory" Version="4.5.5" />
-    <PackageReference Include="System.Buffers" Version="4.5.1" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
   </ItemGroup>
 
 </Project>

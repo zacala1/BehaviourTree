@@ -136,7 +136,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             var aiSystem = new AiSystem(engine);
             var entity = engine.NewEntity();
 
-            var successBehaviour = new TestBehaviour(BehaviourStatus.Success);
+            var successBehaviour = new TestBehaviour(BehaviourStatus.Succeeded);
             entity.AddComponent(new BTBehaviourComponent(successBehaviour));
 
             // Act
@@ -144,7 +144,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(100);
 
             // Assert
-            Assert.AreEqual(BehaviourStatus.Success, successBehaviour.LastStatus);
+            Assert.AreEqual(BehaviourStatus.Succeeded, successBehaviour.LastStatus);
         }
 
         [Test]
@@ -155,7 +155,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             var aiSystem = new AiSystem(engine);
             var entity = engine.NewEntity();
 
-            var failedBehaviour = new TestBehaviour(BehaviourStatus.Failure);
+            var failedBehaviour = new TestBehaviour(BehaviourStatus.Failed);
             entity.AddComponent(new BTBehaviourComponent(failedBehaviour));
 
             // Act
@@ -163,7 +163,7 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             engine.Update(100);
 
             // Assert
-            Assert.AreEqual(BehaviourStatus.Failure, failedBehaviour.LastStatus);
+            Assert.AreEqual(BehaviourStatus.Failed, failedBehaviour.LastStatus);
         }
 
         [Test]
