@@ -14,6 +14,20 @@ namespace BehaviourTree.Tests
     [TestFixture]
     internal sealed class EventTests
     {
+        [SetUp]
+        public void SetUp()
+        {
+            // Enable events for observer tests
+            BehaviourTreeConfig.EnableEvents = true;
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            // Reset to defaults after each test
+            BehaviourTreeConfig.ResetToDefaults();
+        }
+
         /// <summary>
         /// Helper class to capture events from behavior nodes.
         /// </summary>

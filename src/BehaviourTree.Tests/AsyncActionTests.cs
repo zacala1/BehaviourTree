@@ -187,7 +187,16 @@ namespace BehaviourTree.Tests
                         cancellationRequested = true;
                         token.ThrowIfCancellationRequested();
                     }
-                    await Task.Delay(10, token);
+
+                    // Use non-cancellable delay to ensure token check happens after cancellation
+                    await Task.Delay(10);
+
+                    // Check again after delay to catch cancellation
+                    if (token.IsCancellationRequested)
+                    {
+                        cancellationRequested = true;
+                        token.ThrowIfCancellationRequested();
+                    }
                 }
                 return BehaviourStatus.Succeeded;
             });
@@ -196,7 +205,7 @@ namespace BehaviourTree.Tests
             asyncAction.Tick(new MockContext());
             Thread.Sleep(20); // Let it start
             asyncAction.Reset(); // Cancel
-            Thread.Sleep(50);
+            Thread.Sleep(50); // Wait for cancellation to be detected
 
             // Assert
             Assert.That(cancellationRequested, Is.True, "Cancellation token should be signaled");

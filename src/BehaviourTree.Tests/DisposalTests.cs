@@ -17,6 +17,20 @@ namespace BehaviourTree.Tests
     [TestFixture]
     internal sealed class DisposalTests
     {
+        [SetUp]
+        public void SetUp()
+        {
+            // Enable events for observer tests
+            BehaviourTreeConfig.EnableEvents = true;
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            // Reset to defaults after each test
+            BehaviourTreeConfig.ResetToDefaults();
+        }
+
         private class TestContext { }
 
         private class TestObserver : IBehaviourTreeObserver
