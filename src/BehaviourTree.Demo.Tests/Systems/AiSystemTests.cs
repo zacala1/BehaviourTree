@@ -265,7 +265,8 @@ namespace BehaviourTree.Demo.SystemTests.Systems
             public BehaviourStatus Tick(BtContext context)
             {
                 WasExecuted = true;
-                LastContext = context;
+                // Create a copy of the context since it will be reset when returned to pool
+                LastContext = new BtContext(context.Agent, context.Engine, context.TimeStampInMilliseconds);
                 LastTimestamp = context.TimeStampInMilliseconds;
                 LastStatus = _returnStatus;
                 return _returnStatus;
