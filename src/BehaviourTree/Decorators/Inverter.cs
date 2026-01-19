@@ -2,23 +2,24 @@
 {
     /// <summary>
     /// Inverts the child's success and failure status.
+    /// Success becomes failure, failure becomes success, running unchanged.
     /// </summary>
-    /// <typeparam name="TContext">The context type.</typeparam>
+    /// <typeparam name="TContext">Type of context used during execution</typeparam>
     public sealed partial class Inverter<TContext> : DecoratorBehaviour<TContext>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Inverter{TContext}"/> class.
+        /// Creates an inverter decorator with default name.
         /// </summary>
-        /// <param name="child">The child behavior.</param>
+        /// <param name="child">Child node to invert</param>
         public Inverter(IBehaviour<TContext> child) : this("Inverter", child)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Inverter{TContext}"/> class.
+        /// Creates an inverter decorator with specified name.
         /// </summary>
-        /// <param name="name">The name of the decorator.</param>
-        /// <param name="child">The child behavior.</param>
+        /// <param name="name">Node name for debugging</param>
+        /// <param name="child">Child node to invert</param>
         public Inverter(string name, IBehaviour<TContext> child) : base(name, child)
         {
         }

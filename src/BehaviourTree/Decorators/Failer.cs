@@ -2,23 +2,24 @@
 {
     /// <summary>
     /// Always returns failure when the child completes.
+    /// Useful for forcing failure in selectors to try next option.
     /// </summary>
-    /// <typeparam name="TContext">The context type.</typeparam>
+    /// <typeparam name="TContext">Type of context used during execution</typeparam>
     public sealed partial class Failer<TContext> : DecoratorBehaviour<TContext>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Failer{TContext}"/> class.
+        /// Creates a failer decorator with default name.
         /// </summary>
-        /// <param name="child">The child behavior.</param>
+        /// <param name="child">Child node to always fail</param>
         public Failer(IBehaviour<TContext> child) : this("Failer", child)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Failer{TContext}"/> class.
+        /// Creates a failer decorator with specified name.
         /// </summary>
-        /// <param name="name">The name of the decorator.</param>
-        /// <param name="child">The child behavior.</param>
+        /// <param name="name">Node name for debugging</param>
+        /// <param name="child">Child node to always fail</param>
         public Failer(string name, IBehaviour<TContext> child) : base(name, child)
         {
         }

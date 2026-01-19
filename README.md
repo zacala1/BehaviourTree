@@ -18,6 +18,7 @@ This library is based on [Eraclys/BehaviourTree](https://github.com/Eraclys/Beha
 
 ```
 Install-Package BehaviourTree
+Install-Package BehaviourTree.Graph  # Optional: visualization support
 ```
 
 ## Features
@@ -32,6 +33,7 @@ Install-Package BehaviourTree
 - **Observer Pattern**: Memory-leak-free event monitoring system
 - **Thread-Safe**: Safe for concurrent access where needed
 - **Well-Tested**: Extensive test coverage
+- **Graph Visualization**: PlantUML and Dan Abad format export (separate package)
 
 ## Quick Start
 
@@ -313,7 +315,7 @@ builder.RandomSelector("try-random-door")
 ```
 
 #### SimpleParallel
-Two-child parallel with simple policies (legacy, use Parallel for new code).
+Optimized two-child parallel with simple policies. For more than 2 children, use Parallel.
 
 ### Decorator Nodes
 
@@ -419,6 +421,55 @@ Embeds another behavior tree as a child node.
 var subTree = BuildSubTree();
 builder.Subtree("sub-behavior", subTree)
 ```
+
+## Graph Visualization
+
+The `BehaviourTree.Graph` package provides tree visualization in multiple formats.
+
+### PlantUML Format
+
+```csharp
+using BehaviourTree.Graph;
+
+var tree = FluentBuilder.Create<MyContext>()
+    .Selector("Root")
+        .Condition("HasTarget", ctx => ctx.Target != null)
+        .Do("Attack", ctx => Attack(ctx))
+    .End()
+    .Build();
+
+// Generate PlantUML mindmap
+string plantuml = BehaviourTreeGraph.Format(tree, BehaviourTreeGraph.FormatOptions.PlantUML);
+// Output:
+// @startmindmap
+// * **[?]** Root '1'
+// ** **(?)** HasTarget '2'
+// ** **(!)** Attack '3'
+// @endmindmap
+```
+
+### Dan Abad Format
+
+A compact text-based tree notation:
+
+```csharp
+string danAbad = BehaviourTreeGraph.Format(tree, BehaviourTreeGraph.FormatOptions.DanAbad);
+// Output:
+// ? Root
+// |    (HasTarget)
+// |    [Attack]
+```
+
+### Format Symbols
+
+| Symbol | PlantUML | Dan Abad | Description |
+|--------|----------|----------|-------------|
+| Selector | `[?]` | `?` | Try children until one succeeds |
+| Sequence | `[->]` | `->` | Execute children in order |
+| Parallel | `[=N/M]` | `=N` | Execute N of M children |
+| Condition | `(?)` | `(name)` | Boolean check |
+| Action | `(!)` | `[name]` | Execute action |
+| Inverter | `<!>` | `// Invert` | Invert result |
 
 ## Advanced Examples
 
