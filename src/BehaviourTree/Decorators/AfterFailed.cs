@@ -35,12 +35,20 @@ namespace BehaviourTree.Decorators
             _action = action;
         }
 
+        /// <summary>Called on first tick to initialize state.</summary>
+        [System.Diagnostics.DebuggerStepThrough]
+        protected override void OnInitialize(TContext context)
+        {
+            childStatus = BehaviourStatus.Ready;
+            callbackExecuted = false;
+        }
+
         /// <summary>Core update logic for this node.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
-            if (childStatus != BehaviourStatus.Failed &&
-                childStatus != BehaviourStatus.Succeeded)
+            // Always tick child until it completes (returns non-Running status)
+            if (childStatus == BehaviourStatus.Ready || childStatus == BehaviourStatus.Running)
             {
                 childStatus = Child.Tick(context);
             }

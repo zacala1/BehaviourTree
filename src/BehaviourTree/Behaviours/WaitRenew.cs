@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace BehaviourTree.Behaviours
 {
@@ -9,9 +9,11 @@ namespace BehaviourTree.Behaviours
     /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
     public sealed partial class WaitRenew<TContext> : BaseBehaviour<TContext>
     {
+        private static readonly bool ContextImplementsIClock = typeof(IClock).IsAssignableFrom(typeof(TContext));
+
         private readonly Func<TContext, long> _getWaitTimeInMilliseconds;
         private long _waitTimeInMilliseconds;
-        private long? _initialTimestamp;
+        private long _initialTimestamp = -1;
 
         /// <summary>
         /// Gets the current wait time in milliseconds.
@@ -43,7 +45,7 @@ namespace BehaviourTree.Behaviours
         {
             var currentTimeStamp = GetCurrentTimestamp(context);
 
-            if (_initialTimestamp == null)
+            if (_initialTimestamp < 0)
             {
                 _initialTimestamp = currentTimeStamp;
             }
@@ -59,15 +61,13 @@ namespace BehaviourTree.Behaviours
         }
 
         [System.Diagnostics.DebuggerStepThrough]
-        private long GetCurrentTimestamp(TContext context)
+        private static long GetCurrentTimestamp(TContext context)
         {
-            // Try to get timestamp from context if it implements IClock (backward compatibility)
-            if (context is IClock clock)
+            if (ContextImplementsIClock)
             {
-                return clock.GetTimeStampInMilliseconds();
+                return ((IClock)context!).GetTimeStampInMilliseconds();
             }
 
-            // Otherwise use global TimeProvider
             return TimeProvider.GetTimestampInMilliseconds();
         }
 
@@ -89,7 +89,7 @@ namespace BehaviourTree.Behaviours
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {
-            _initialTimestamp = null;
+            _initialTimestamp = -1;
         }
     }
 }

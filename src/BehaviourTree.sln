@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviourTree.Demo.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviourTree.SourceGenerators", "BehaviourTree.SourceGenerators\BehaviourTree.SourceGenerators.csproj", "{688FDBA8-018A-082D-3CD6-81313D1565E4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviourTree.Graph", "BehaviourTree.Graph\BehaviourTree.Graph.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviourTree.Graph.Tests", "BehaviourTree.Graph.Tests\BehaviourTree.Graph.Tests.csproj", "{B2C3D4E5-F678-9012-ABCD-EF2345678901}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{688FDBA8-018A-082D-3CD6-81313D1565E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{688FDBA8-018A-082D-3CD6-81313D1565E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{688FDBA8-018A-082D-3CD6-81313D1565E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2C3D4E5-F678-9012-ABCD-EF2345678901}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2C3D4E5-F678-9012-ABCD-EF2345678901}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2C3D4E5-F678-9012-ABCD-EF2345678901}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2C3D4E5-F678-9012-ABCD-EF2345678901}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

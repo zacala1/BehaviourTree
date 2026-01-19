@@ -1,26 +1,13 @@
-﻿using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace BehaviourTree.Composites
 {
     /// <summary>
-    /// Cache-aligned state for Selector node to improve cache hit rate.
-    /// </summary>
-    [StructLayout(LayoutKind.Explicit, Size = 64)]
-    internal struct CacheAlignedSelectorState
-    {
-        [FieldOffset(0)]
-        public int CurrentChildIndex;
-    }
-
-    /// <summary>
     /// Executes children in order until one succeeds or all fail.
-    /// OPTIMIZED: Cache-aligned state and aggressive inlining for minimal overhead.
     /// </summary>
     public partial class Selector<TContext> : CompositeBehaviour<TContext>
     {
-        // CACHE OPTIMIZATION: Align hot field to cache line
-        private CacheAlignedSelectorState _state;
+        private int _currentChildIndex;
 
         /// <summary>
         /// Creates a selector node with default name and variable number of children.
@@ -51,30 +38,24 @@ namespace BehaviourTree.Composites
 
         /// <summary>
         /// Executes children sequentially. Returns Failed if all fail, Success/Running otherwise.
-        /// OPTIMIZED: Cache-aligned state, aggressive inlining, and direct array access.
         /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override BehaviourStatus Update(TContext context)
         {
-            // OPTIMIZATION: Use direct array access for better performance
             var children = Children;
             var count = children.Length;
 
-            // OPTIMIZATION: Local copy of index for better register allocation
-            ref var currentIndex = ref _state.CurrentChildIndex;
-
-            while (currentIndex < count)
+            while (_currentChildIndex < count)
             {
-                var childStatus = children[currentIndex].Tick(context);
+                var childStatus = children[_currentChildIndex].Tick(context);
 
-                // OPTIMIZATION: Early return for common success/running case
                 if (childStatus != BehaviourStatus.Failed)
                 {
                     return childStatus;
                 }
 
-                currentIndex++;
+                _currentChildIndex++;
             }
 
             return BehaviourStatus.Failed;
@@ -87,7 +68,7 @@ namespace BehaviourTree.Composites
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void DoReset(BehaviourStatus status)
         {
-            _state.CurrentChildIndex = 0;
+            _currentChildIndex = 0;
             base.DoReset(status);
         }
     }

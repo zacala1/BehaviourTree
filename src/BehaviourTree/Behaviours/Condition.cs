@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+using System;
 
 namespace BehaviourTree.Behaviours
 {
@@ -38,19 +37,7 @@ namespace BehaviourTree.Behaviours
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
-#if DEBUG
-            var timer = Stopwatch.StartNew();
-#endif
-            var status = _predicate(context) ? BehaviourStatus.Succeeded : BehaviourStatus.Failed;
-#if DEBUG
-            // Log slow condition evaluations (over 100ms)
-            if (timer.ElapsedMilliseconds >= 100)
-            {
-                Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.ffff}] Slow Condition Node. id={Id}, name={Name}, context={typeof(TContext).Name}, status={status}, time={timer.ElapsedMilliseconds}ms");
-            }
-            timer.Stop();
-#endif
-            return status;
+            return _predicate(context) ? BehaviourStatus.Succeeded : BehaviourStatus.Failed;
         }
     }
 }

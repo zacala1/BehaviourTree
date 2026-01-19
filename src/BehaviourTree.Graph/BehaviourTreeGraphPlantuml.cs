@@ -1,4 +1,4 @@
-﻿using BehaviourTree.Behaviours;
+using BehaviourTree.Behaviours;
 using BehaviourTree.Composites;
 using BehaviourTree.Decorators;
 using System;
@@ -7,29 +7,30 @@ using System.Text;
 namespace BehaviourTree.Graph
 {
     /// <summary>
-    /// Generates behavior tree visualizations in Dan Abad's text format.
-    /// See: https://github.com/0xabad/behavior_tree/
+    /// Generates behavior tree visualizations in PlantUML mindmap format.
+    /// See: https://plantuml.com/mindmap-diagram
     /// </summary>
-    public static class BehaviourTreeGraphDanAbad
+    public static class BehaviourTreeGraphPlantuml
     {
         /// <summary>
-        /// Generates a behavior tree in Dan Abad's text format.
-        /// See: https://github.com/0xabad/behavior_tree/
-        /// Note: This format doesn't fully support decorators.
+        /// Generates a PlantUML mindmap diagram from a behavior tree.
+        /// See: https://plantuml.com/mindmap-diagram
         /// </summary>
         /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
         /// <param name="behaviour">Behavior tree to format</param>
-        /// <returns>Formatted string representation in Dan Abad format</returns>
+        /// <returns>PlantUML mindmap markup string</returns>
         public static string Format<TContext>(IBehaviour<TContext> behaviour)
         {
             StringBuilder formatted = new StringBuilder();
             RenderBehaviourTree(formatted, 0, behaviour);
+            formatted.Insert(0, "@startmindmap\n");
+            formatted.AppendLine("@endmindmap");
             return formatted.ToString();
         }
 
         private static void RenderBehaviourTree<TContext>(StringBuilder text, int depth, IBehaviour<TContext> behaviour)
         {
-            // Use pattern matching instead of dynamic dispatch
+            // Use pattern matching instead of dynamic dispatch for better performance
             switch (behaviour)
             {
                 case CompositeBehaviour<TContext> composite:
@@ -71,22 +72,16 @@ namespace BehaviourTree.Graph
         private static void RenderInternal<TContext>(StringBuilder text, int depth, IBehaviour<TContext> obj)
         {
             var indentation = GetIndentation(depth);
-            var name = GetMarksign(obj);
-            var nodeExpression = $"{indentation}{name}";
+            var marksign = GetMarksign(obj);
+            var name = GetName(obj);
+            var nodeExpression = $"{indentation} **{marksign}** //{name}'{obj.Id}'//";
             text.AppendLine(nodeExpression);
         }
 
         private static string GetIndentation(int depth)
         {
-            // OPTIMIZATION: Use StringBuilder instead of LINQ for better performance
-            if (depth == 0) return string.Empty;
-
-            var sb = new StringBuilder(depth * 5); // "|    " is 5 characters
-            for (int i = 0; i < depth; i++)
-            {
-                sb.Append("|    ");
-            }
-            return sb.ToString();
+            // OPTIMIZATION: Use string constructor instead of LINQ for better performance
+            return new string('*', depth + 1);
         }
 
         private static string GetMarksign<TContext>(IBehaviour<TContext> obj)
@@ -94,62 +89,80 @@ namespace BehaviourTree.Graph
             // Use pattern matching with C# switch expression
             return obj switch
             {
-                // Selector family (all rendered as "?")
-                ActiveSelector<TContext> => "?",
-                RandomSelector<TContext> => "?",
-                PrioritySelector<TContext> => "?",
-                Selector<TContext> => "?",
+                // Active (Reactive) nodes
+                ActiveSelector<TContext> => "[?A]",
+                ActiveSequence<TContext> => "[->A]",
 
-                // Sequence family (all rendered as "->")
-                ActiveSequence<TContext> => "->",
-                RandomSequence<TContext> => "->",
-                PrioritySequence<TContext> => "->",
-                Sequence<TContext> => "->",
+                // Random nodes
+                RandomSelector<TContext> => "[?R]",
+                RandomSequence<TContext> => "[->R]",
+
+                // Priority nodes
+                PrioritySelector<TContext> => "[?P]",
+                PrioritySequence<TContext> => "[->P]",
+
+                // Standard composites
+                Selector<TContext> => "[?]",
+                Sequence<TContext> => "[->]",
 
                 // Parallel nodes
-                Parallel<TContext> parallel => $"={parallel.SuccessRequired}",
-                SimpleParallel<TContext> simple => $"={simple.Children.Length}",
+                Parallel<TContext> parallel => $"[={parallel.SuccessRequired}/{parallel.Children.Length}]",
+                SimpleParallel<TContext> => "[=2]",
 
                 // Leaf nodes
-                Condition<TContext> => $"({GetName(obj)})",
-                ActionBehaviour<TContext> => $"[{GetName(obj)}]",
-                AsyncAction<TContext> => $"[{GetName(obj)}:async]",
-                Wait<TContext> => $"[{GetName(obj)}:wait]",
-                WaitRenew<TContext> => $"[{GetName(obj)}:wait]",
+                Condition<TContext> => "(?)",
+                ActionBehaviour<TContext> => "(!)",
+                AsyncAction<TContext> => "(!A)",
 
-                // Decorator nodes (0xabad format doesn't fully support these)
-                DecoratorBehaviour<TContext> => $"?  // {GetDecoratorInfo(obj)}",
+                // Wait nodes
+                Wait<TContext> => "(~)",
+                WaitRenew<TContext> => "(~R)",
 
-                // Fallback - use Source Generator metadata
+                // Decorator nodes - delegate to GetDecoratorSymbol
+                DecoratorBehaviour<TContext> => $"<{GetDecoratorSymbol(obj)}>",
+
+                // Fallback for unknown types - use Source Generator metadata
                 _ => $"[{(obj is IBehaviourMetadata metadata ? metadata.TypeName : obj.GetType().Name)}]"
             };
         }
 
-        private static string GetDecoratorInfo<TContext>(IBehaviour<TContext> obj)
+        private static string GetDecoratorSymbol<TContext>(IBehaviour<TContext> obj)
         {
             // OPTIMIZATION: Use Source Generator metadata to avoid reflection
             var typeName = (obj is IBehaviourMetadata metadata) ? metadata.TypeName : obj.GetType().Name;
 
             // Handle types with IClock constraint using runtime type checking
-            if (typeName.StartsWith("TimeLimiter")) return "TimeLimit";
-            if (typeName.StartsWith("RateLimiter")) return "RateLimit";
-            if (typeName.StartsWith("UntilSuccessWithinTimeout")) return "UntilSuccessWithinTimeout";
+            if (typeName.StartsWith("TimeLimiter")) return "TL";
+            if (typeName.StartsWith("RateLimiter")) return "RL";
+            if (typeName.StartsWith("UntilSuccessWithinTimeout")) return "UST";
 
             return obj switch
             {
-                Retry<TContext> retry => $"Retry({retry.RetryCount})",
-                Repeater<TContext> repeater => $"Repeat({repeater.RepeatCount})",
-                Inverter<TContext> => "Invert",
-                Cooldown<TContext> cooldown => $"Cooldown({cooldown.CooldownTimeInMilliseconds}ms)",
-                CooldownRenew<TContext> => "Cooldown(dynamic)",
-                UntilSuccess<TContext> => "UntilSuccess",
-                UntilFailed<TContext> => "UntilFailed",
-                Succeeder<TContext> => "AlwaysSucceed",
-                Failer<TContext> => "AlwaysFail",
-                AutoReset<TContext> => "AutoReset",
-                AfterSuccess<TContext> => "AfterSuccess",
-                AfterFailed<TContext> => "AfterFailed",
-                Random<TContext> random => $"Random({random.Threshold:F2})",
+                // Retry/Repeat
+                Retry<TContext> retry => $"Retry:{retry.RetryCount}",
+                Repeater<TContext> repeater => $"Repeat:{repeater.RepeatCount}",
+
+                // Logic inverters/transformers
+                Inverter<TContext> => "!",
+                Succeeder<TContext> => "✓",
+                Failer<TContext> => "✗",
+
+                // Time-based decorators
+                Cooldown<TContext> cooldown => $"CD:{cooldown.CooldownTimeInMilliseconds}ms",
+
+                // Until decorators
+                UntilSuccess<TContext> => "US",
+                UntilFailed<TContext> => "UF",
+
+                // After decorators
+                AfterSuccess<TContext> => "→S",
+                AfterFailed<TContext> => "→F",
+
+                // Other decorators
+                AutoReset<TContext> => "AR",
+                Random<TContext> random => $"Rnd:{random.Threshold:F2}",
+
+                // Fallback
                 _ => typeName
             };
         }

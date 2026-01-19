@@ -28,7 +28,6 @@ namespace BehaviourTree.Composites
                 throw new ArgumentNullException(nameof(children));
             }
 
-            // OPTIMIZATION: Use foreach instead of LINQ for better performance
             for (int i = 0; i < children.Length; i++)
             {
                 if (children[i] == null)
@@ -48,14 +47,13 @@ namespace BehaviourTree.Composites
         {
             if (disposing)
             {
-                // Dispose all children first
-                foreach (var child in Children)
+                var children = Children;
+                for (int i = 0; i < children.Length; i++)
                 {
-                    child?.Dispose();
+                    children[i]?.Dispose();
                 }
             }
 
-            // IMPORTANT: Call base to clear observers
             base.Dispose(disposing);
         }
 
@@ -80,9 +78,10 @@ namespace BehaviourTree.Composites
         [System.Diagnostics.DebuggerStepThrough]
         private void ResetChildren()
         {
-            foreach (var child in Children)
+            var children = Children;
+            for (int i = 0; i < children.Length; i++)
             {
-                child.Reset();
+                children[i].Reset();
             }
         }
     }

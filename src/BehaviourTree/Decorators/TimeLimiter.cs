@@ -8,9 +8,11 @@ namespace BehaviourTree.Decorators
     /// <typeparam name="TContext">Context type that implements IClock for time tracking</typeparam>
     public sealed partial class TimeLimiter<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
     {
+        private const long UninitializedTimestamp = -1;
+
         private readonly Func<TContext, long>? _getTimeLimitInMilliseconds;
         private long _timeLimitInMilliseconds;
-        private long? _initialTimestamp;
+        private long _initialTimestamp = UninitializedTimestamp;
 
         /// <summary>
         /// Gets the time limit in milliseconds.
@@ -70,7 +72,7 @@ namespace BehaviourTree.Decorators
         {
             var currentTimeStamp = context.GetTimeStampInMilliseconds();
 
-            if (_initialTimestamp == null)
+            if (_initialTimestamp == UninitializedTimestamp)
             {
                 _initialTimestamp = currentTimeStamp;
             }
@@ -103,7 +105,7 @@ namespace BehaviourTree.Decorators
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
-            _initialTimestamp = null;
+            _initialTimestamp = UninitializedTimestamp;
             base.OnTerminate(status);
         }
 
@@ -113,7 +115,7 @@ namespace BehaviourTree.Decorators
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {
-            _initialTimestamp = null;
+            _initialTimestamp = UninitializedTimestamp;
             base.DoReset(status);
         }
     }

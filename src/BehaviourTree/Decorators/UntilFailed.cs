@@ -92,7 +92,7 @@ namespace BehaviourTree.Decorators
             if (childStatus == BehaviourStatus.Succeeded)
             {
                 _counter--;
-                if (_counter <= 0 && Countdown > 0)
+                if (_counter < 0 && Countdown > 0)
                 {
                     return BehaviourStatus.Failed;
                 }

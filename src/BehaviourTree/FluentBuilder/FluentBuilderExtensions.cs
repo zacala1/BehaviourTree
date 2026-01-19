@@ -617,11 +617,11 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
-        /// Creates a <see cref="CooldownRenew{TContext}"/> node.
+        /// Creates a Cooldown node with dynamic cooldown time.
         /// </summary>
         /// <param name="builder">Behavior tree builder</param>
         /// <param name="name">The display name of the node</param>
-        /// <param name="getCooldownTimeInMilliseconds">Delegate to renew the cooldown time (milliseconds)</param>
+        /// <param name="getCooldownTimeInMilliseconds">Delegate to get the cooldown time (milliseconds)</param>
         /// <typeparam name="TContext">Context used in the behavior tree</typeparam>
         /// <returns>The applied behavior tree builder</returns>
         /// <remarks>
@@ -637,7 +637,7 @@ namespace BehaviourTree.FluentBuilder
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (name is null) throw new ArgumentNullException(nameof(name));
             if (getCooldownTimeInMilliseconds is null) throw new ArgumentNullException(nameof(getCooldownTimeInMilliseconds));
-            return builder.PushDecorate(child => new CooldownRenew<TContext>(name, child, getCooldownTimeInMilliseconds));
+            return builder.PushDecorate(child => new Cooldown<TContext>(name, child, getCooldownTimeInMilliseconds));
         }
 
         /// <summary>

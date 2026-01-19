@@ -306,8 +306,8 @@ namespace BehaviourTree
                 status: status,
                 eventType: eventType,
                 elapsedMilliseconds: elapsedMs,
-                parentId: null, // Can be set by composite nodes if needed
-                depth: 0 // Can be set during tree construction if needed
+                parentId: -1,
+                depth: 0
             );
 
             IBehaviourTreeObserver[] observersCopy;

@@ -1,4 +1,4 @@
-﻿namespace BehaviourTree.Composites
+namespace BehaviourTree.Composites
 {
     /// <summary>
     /// Sequence that shuffles child execution order randomly on each reset.
@@ -8,6 +8,7 @@
     public sealed partial class RandomSequence<TContext> : Sequence<TContext>
     {
         private readonly IRandomProvider _randomProvider;
+        private readonly int[] _shuffledIndices;
 
         /// <summary>
         /// Creates a random sequence node with default name.
@@ -28,27 +29,35 @@
         public RandomSequence(string name, IBehaviour<TContext>[] children, IRandomProvider? randomProvider = null) : base(name, children)
         {
             _randomProvider = randomProvider ?? RandomProvider.Default;
-            _shuffledChildren = Children.Shuffle(_randomProvider);
+            _shuffledIndices = new int[children.Length];
+            InitializeAndShuffleIndices();
         }
 
-        private IBehaviour<TContext>[] _shuffledChildren;
+        private void InitializeAndShuffleIndices()
+        {
+            for (int i = 0; i < _shuffledIndices.Length; i++)
+            {
+                _shuffledIndices[i] = i;
+            }
+            _shuffledIndices.ShuffleInPlace(_randomProvider);
+        }
 
         /// <summary>
-        /// Returns the child at the specified index from the shuffled children array.
+        /// Returns the child at the specified index from the shuffled order.
         /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override IBehaviour<TContext> GetChild(int index)
         {
-            return _shuffledChildren[index];
+            return Children[_shuffledIndices[index]];
         }
 
         /// <summary>
-        /// Re-shuffles the children when the node is reset.
+        /// Re-shuffles the indices when the node is reset.
         /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {
-            _shuffledChildren = Children.Shuffle(_randomProvider);
+            _shuffledIndices.ShuffleInPlace(_randomProvider);
             base.DoReset(status);
         }
     }

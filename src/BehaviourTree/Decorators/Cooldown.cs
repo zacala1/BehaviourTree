@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace BehaviourTree.Decorators
 {
@@ -9,6 +9,8 @@ namespace BehaviourTree.Decorators
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
     public sealed partial class Cooldown<TContext> : DecoratorBehaviour<TContext>
     {
+        private static readonly bool ContextImplementsIClock = typeof(IClock).IsAssignableFrom(typeof(TContext));
+
         private readonly Func<TContext, long>? _getCooldownTimeInMilliseconds;
         private long _cooldownTimeInMilliseconds;
         private long _cooldownStartedTimestamp;
@@ -109,15 +111,13 @@ namespace BehaviourTree.Decorators
         }
 
         [System.Diagnostics.DebuggerStepThrough]
-        private long GetCurrentTimestamp(TContext context)
+        private static long GetCurrentTimestamp(TContext context)
         {
-            // Try to get timestamp from context if it implements IClock (backward compatibility)
-            if (context is IClock clock)
+            if (ContextImplementsIClock)
             {
-                return clock.GetTimeStampInMilliseconds();
+                return ((IClock)context!).GetTimeStampInMilliseconds();
             }
 
-            // Otherwise use global TimeProvider
             return TimeProvider.GetTimestampInMilliseconds();
         }
 

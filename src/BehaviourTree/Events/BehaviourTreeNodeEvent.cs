@@ -5,7 +5,7 @@ namespace BehaviourTree.Events
     /// Provides comprehensive data for debugging and monitoring including
     /// node identity, execution time, and tree hierarchy information.
     /// </summary>
-    public class BehaviourTreeNodeEvent
+    public readonly struct BehaviourTreeNodeEvent
     {
         /// <summary>
         /// Unique identifier for the behavior node.
@@ -39,9 +39,9 @@ namespace BehaviourTree.Events
         public long ElapsedMilliseconds { get; }
 
         /// <summary>
-        /// Parent node ID if this node has a parent, null for root nodes.
+        /// Parent node ID if this node has a parent, -1 for root nodes.
         /// </summary>
-        public int? ParentId { get; }
+        public int ParentId { get; }
 
         /// <summary>
         /// Depth of this node in the tree hierarchy (0 for root, 1 for immediate children, etc.).
@@ -57,7 +57,7 @@ namespace BehaviourTree.Events
         /// <param name="status">Current status of the node</param>
         /// <param name="eventType">Type of lifecycle event</param>
         /// <param name="elapsedMilliseconds">Time elapsed during execution</param>
-        /// <param name="parentId">Parent node ID if applicable</param>
+        /// <param name="parentId">Parent node ID if applicable, -1 for root</param>
         /// <param name="depth">Depth of this node in the tree hierarchy</param>
         public BehaviourTreeNodeEvent(
             int nodeId,
@@ -66,7 +66,7 @@ namespace BehaviourTree.Events
             BehaviourStatus status,
             BehaviourTreeNodeInfoEventType eventType,
             long elapsedMilliseconds = 0,
-            int? parentId = null,
+            int parentId = -1,
             int depth = 0)
         {
             NodeId = nodeId;

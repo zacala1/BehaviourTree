@@ -522,10 +522,13 @@ All composite and decorator nodes have fluent builder extensions:
 - **Tick Performance**: Conditional Stopwatch creation (only when observers exist or in DEBUG)
 - **Type Name Caching**: Cached GetType().Name in constructors to avoid reflection overhead
 - **Observer Array Caching**: Lazy regeneration of observer arrays only when changed
-- **Composite Node Optimization**: Direct array access with cached length (5-10% improvement)
+- **Composite Node Optimization**: Direct array access with cached length
 - **Lock Optimization**: Observer notification outside locks to prevent deadlocks
 - **Thread-Safe Random**: Lock synchronization for System.Random
-- **Optimized Nullable Arithmetic**: Improved time-based decorator performance
+- **IClock Check Caching**: Static type check at class load time instead of per-tick runtime check
+- **In-Place Shuffle**: RandomSequence/RandomSelector use index array shuffling (no allocation on reset)
+- **Struct Event**: BehaviourTreeNodeEvent changed from class to readonly struct (zero heap allocation)
+- **Sentinel Values**: Time-based nodes use sentinel values instead of nullable long (no boxing)
 
 ### Documentation
 - All comments translated to English

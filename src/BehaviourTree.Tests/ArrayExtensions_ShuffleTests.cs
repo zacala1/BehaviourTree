@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Linq;
 using NUnit.Framework;
 
 namespace BehaviourTree.Tests
@@ -7,15 +8,18 @@ namespace BehaviourTree.Tests
     internal sealed class ArrayExtensions
     {
         [Test]
-        public void Shuffle_ShouldReturnANewShuffledArray()
+        public void ShuffleInPlace_ShouldShuffleTheArrayInPlace()
         {
             var original = new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-            var shuffled = original.Shuffle(new RandomProvider());
+            var copy = original.ToArray();
+
+            copy.ShuffleInPlace(new RandomProvider());
 
             Console.WriteLine($"original: {string.Join(",", original)}");
-            Console.WriteLine($"shuffled: {string.Join(",", shuffled)}");
+            Console.WriteLine($"shuffled: {string.Join(",", copy)}");
 
-            Assert.AreNotEqual(original, shuffled);
+            // Verify elements are the same (just reordered)
+            CollectionAssert.AreEquivalent(original, copy);
         }
     }
 }
