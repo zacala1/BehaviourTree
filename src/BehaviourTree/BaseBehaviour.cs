@@ -1,4 +1,3 @@
-﻿using BehaviourTree.Events;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -8,7 +7,7 @@ namespace BehaviourTree
 {
     /// <summary>
     /// Generic base class for behavior tree nodes that work with a specific context type.
-    /// Handles the tick lifecycle: Initialize -> Update -> Terminate, and provides observer notifications.
+    /// Handles the tick lifecycle: Initialize -> Update -> Terminate.
     /// </summary>
     /// <typeparam name="TContext">Type of context object used during execution</typeparam>
     public abstract class BaseBehaviour<TContext> : BaseBehaviour, IBehaviour<TContext>
@@ -30,7 +29,6 @@ namespace BehaviourTree
         /// <summary>
         /// Executes one iteration of this behavior node's lifecycle.
         /// First tick calls Initialize, subsequent ticks call Update, and completion calls Terminate.
-        /// OPTIMIZED: Only measures elapsed time when observers are attached or in DEBUG mode.
         /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         public BehaviourStatus Tick(TContext context)
@@ -39,42 +37,20 @@ namespace BehaviourTree
             if (Status == BehaviourStatus.Ready)
             {
                 OnInitialize(context);
-                NotifyObservers(BehaviourTreeNodeInfoEventType.Initialize, Status, 0);
             }
 
-            // OPTIMIZATION: Only create Stopwatch if timing is needed
-            // Timing is needed when:
-            // 1. Observers are attached (to provide timing info in events)
-            // 2. DetailedTiming is enabled globally (for profiling)
-            // 3. In DEBUG mode (for slow node detection)
-            bool needsTiming = (BehaviourTreeConfig.EnableEvents && HasObservers)
-                || BehaviourTreeConfig.EnableDetailedTiming
 #if DEBUG
-                || true  // Always time in DEBUG for slow node detection
+            var timer = Stopwatch.StartNew();
 #endif
-                ;
-
-            Stopwatch? timer = null;
-            long elapsedMs = 0;
-
-            if (needsTiming)
-            {
-                timer = Stopwatch.StartNew();
-            }
 
             Status = Update(context);
 
-            if (needsTiming)
-            {
-                elapsedMs = timer!.ElapsedMilliseconds;
-                timer.Stop();
-            }
-
-            NotifyObservers(BehaviourTreeNodeInfoEventType.Update, Status, elapsedMs);
-
 #if DEBUG
-            // Warn about slow nodes in debug mode (if warnings enabled)
-            if (BehaviourTreeConfig.EnableSlowNodeWarnings && elapsedMs >= DEBUG_SLOW_NODE_THRESHOLD_MS)
+            var elapsedMs = timer.ElapsedMilliseconds;
+            timer.Stop();
+
+            // Warn about slow nodes in debug mode
+            if (elapsedMs >= DEBUG_SLOW_NODE_THRESHOLD_MS)
             {
                 Debug.WriteLine($"[{DateTime.Now:yyyy/MM/dd/HH:mm:ss.ffff}] Behavior Node is hanging. id={Id}, name={Name}, status={Status}, time={elapsedMs}ms");
             }
@@ -89,7 +65,6 @@ namespace BehaviourTree
             if (Status != BehaviourStatus.Running)
             {
                 OnTerminate(Status);
-                NotifyObservers(BehaviourTreeNodeInfoEventType.Terminate, Status, elapsedMs);
             }
 
             return Status;
@@ -107,7 +82,6 @@ namespace BehaviourTree
             }
 
             DoReset(Status);
-            NotifyObservers(BehaviourTreeNodeInfoEventType.Reset, Status, 0);
             Status = BehaviourStatus.Ready;
         }
 
@@ -153,34 +127,23 @@ namespace BehaviourTree
 
         [FieldOffset(4)]
         public int Id;
-
-        [FieldOffset(8)]
-        public volatile int ObserverArrayDirty;  // 0 = clean, 1 = dirty (lock-free flag)
     }
 
     /// <summary>
     /// Non-generic base class for all behavior tree nodes.
-    /// Provides core functionality including unique IDs, status tracking, and observer pattern support.
-    /// OPTIMIZED: Caches type name and observer array to minimize allocations during tick.
+    /// Provides core functionality including unique IDs, status tracking, and cached type metadata.
     /// OPTIMIZED: Cache-aligned hot fields to improve CPU cache hit rate.
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("Node: Id = {Id}, Name = {Name}, Status = {Status}")]
-    public abstract class BaseBehaviour : IDisposable
+    public abstract class BaseBehaviour
     {
         private static long BehaviorCounter = 0;
 
         // CACHE OPTIMIZATION: Hot fields in cache-aligned struct (64-byte aligned)
         private CacheAlignedNodeState _state;
 
-        // Cold fields (not accessed in hot path)
-        private readonly System.Collections.Generic.List<IBehaviourTreeObserver> _observers = new System.Collections.Generic.List<IBehaviourTreeObserver>();
-        private readonly object _observerLock = new object();
-
-        // OPTIMIZATION: Cache type name to avoid repeated reflection calls during NotifyObservers
+        // OPTIMIZATION: Cache type name to avoid repeated reflection calls
         private readonly string _cachedTypeName;
-
-        // OPTIMIZATION: Cache observer array to avoid ToArray() allocations on every notification
-        private IBehaviourTreeObserver[]? _cachedObserverArray;
 
         /// <summary>
         /// Unique identifier for this behavior node, auto-incremented across all instances.
@@ -212,6 +175,15 @@ namespace BehaviourTree
         }
 
         /// <summary>
+        /// Cached type name for efficient access during debugging and visualization.
+        /// </summary>
+        public string TypeName
+        {
+            [System.Diagnostics.DebuggerStepThrough]
+            get => _cachedTypeName;
+        }
+
+        /// <summary>
         /// Initializes a new behavior node with the specified name.
         /// </summary>
         /// <param name="name">Human-readable name for this node</param>
@@ -223,175 +195,16 @@ namespace BehaviourTree
             _state = new CacheAlignedNodeState
             {
                 Id = (int)Interlocked.Increment(ref BehaviorCounter),
-                Status = BehaviourStatus.Ready,
-                ObserverArrayDirty = 0
+                Status = BehaviourStatus.Ready
             };
 
             Name = name;
 
             // OPTIMIZATION: Use Source Generator metadata to avoid reflection
-            // Falls back to reflection only if metadata not available (shouldn't happen in normal usage)
+            // Falls back to reflection only if metadata not available
             _cachedTypeName = (this is IBehaviourMetadata metadata)
                 ? metadata.TypeName
                 : GetType().Name;
         }
-
-        /// <summary>
-        /// Returns true if there are any observers attached to this node.
-        /// Used for performance optimization to skip timing when not needed.
-        /// </summary>
-        protected bool HasObservers
-        {
-            get { return _observers.Count > 0; }
-        }
-
-        /// <summary>
-        /// Attaches an observer to receive lifecycle event notifications from this behavior tree.
-        /// Thread-safe operation that prevents duplicate observers.
-        /// OPTIMIZED: Marks observer array cache as dirty for lazy regeneration using lock-free atomic operation.
-        /// </summary>
-        /// <param name="observer">The observer to attach</param>
-        public void AttachObserver(IBehaviourTreeObserver observer)
-        {
-            if (observer == null) throw new ArgumentNullException(nameof(observer));
-
-            lock (_observerLock)
-            {
-                if (!_observers.Contains(observer))
-                {
-                    _observers.Add(observer);
-                    Interlocked.Exchange(ref _state.ObserverArrayDirty, 1);  // LOCK-FREE: Mark cache as dirty
-                }
-            }
-        }
-
-        /// <summary>
-        /// Detaches a previously attached observer.
-        /// Thread-safe operation.
-        /// OPTIMIZED: Marks observer array cache as dirty for lazy regeneration using lock-free atomic operation.
-        /// </summary>
-        /// <param name="observer">The observer to detach</param>
-        public void DetachObserver(IBehaviourTreeObserver observer)
-        {
-            if (observer == null) return;
-
-            lock (_observerLock)
-            {
-                if (_observers.Remove(observer))
-                {
-                    Interlocked.Exchange(ref _state.ObserverArrayDirty, 1);  // LOCK-FREE: Mark cache as dirty
-                }
-            }
-        }
-
-        /// <summary>
-        /// Notifies all attached observers of a lifecycle event.
-        /// Exceptions in observers are caught and logged to prevent disrupting tree execution.
-        /// OPTIMIZED: Uses cached type name and cached observer array to minimize allocations.
-        /// </summary>
-        [System.Diagnostics.DebuggerStepThrough]
-        protected void NotifyObservers(BehaviourTreeNodeInfoEventType eventType, BehaviourStatus status, long elapsedMs)
-        {
-            // OPTIMIZATION 1: Global event system disabled - zero overhead (fastest path)
-            if (!BehaviourTreeConfig.EnableEvents) return;
-
-            // OPTIMIZATION 2: Early exit for performance when no observers
-            if (_observers.Count == 0) return;
-
-            // OPTIMIZATION: Use cached type name instead of GetType().Name
-            var nodeEvent = new BehaviourTreeNodeEvent(
-                nodeId: Id,
-                nodeName: Name,
-                nodeType: _cachedTypeName,
-                status: status,
-                eventType: eventType,
-                elapsedMilliseconds: elapsedMs,
-                parentId: -1,
-                depth: 0
-            );
-
-            IBehaviourTreeObserver[] observersCopy;
-
-            lock (_observerLock)
-            {
-                // OPTIMIZATION: Regenerate cached array only when observers changed (lock-free dirty check)
-                if (_state.ObserverArrayDirty == 1 || _cachedObserverArray == null)
-                {
-                    _cachedObserverArray = _observers.ToArray();
-                    Interlocked.Exchange(ref _state.ObserverArrayDirty, 0);  // LOCK-FREE: Mark cache as clean
-                }
-
-                // Use cached array (no allocation unless observers changed)
-                observersCopy = _cachedObserverArray;
-            }
-
-            // OPTIMIZATION: Notify outside of lock to prevent deadlocks and improve concurrency
-            for (int i = 0; i < observersCopy.Length; i++)
-            {
-                var observer = observersCopy[i];
-                try
-                {
-                    switch (eventType)
-                    {
-                        case BehaviourTreeNodeInfoEventType.Initialize:
-                            observer.OnNodeInitialize(nodeEvent);
-                            break;
-                        case BehaviourTreeNodeInfoEventType.Update:
-                            observer.OnNodeUpdate(nodeEvent);
-                            break;
-                        case BehaviourTreeNodeInfoEventType.Terminate:
-                            observer.OnNodeTerminate(nodeEvent);
-                            break;
-                        case BehaviourTreeNodeInfoEventType.Reset:
-                            observer.OnNodeReset(nodeEvent);
-                            break;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // Prevent observer exceptions from disrupting tree execution
-                    Debug.WriteLine($"Observer error in {observer.GetType().Name}: {ex.Message}");
-                }
-            }
-        }
-
-        #region IDisposable
-
-        private bool disposed;
-
-        /// <summary>
-        /// Disposes resources held by this behavior node.
-        /// Clears all attached observers to prevent memory leaks.
-        /// </summary>
-        /// <param name="disposing">True if disposing managed resources</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposed)
-            {
-                if (disposing)
-                {
-                    // Clear observers to prevent memory leaks
-                    lock (_observerLock)
-                    {
-                        _observers.Clear();
-                        _cachedObserverArray = null;
-                        Interlocked.Exchange(ref _state.ObserverArrayDirty, 0);
-                    }
-                }
-
-                disposed = true;
-            }
-        }
-
-        /// <summary>
-        /// Disposes this behavior node and releases all resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        #endregion IDisposable
     }
 }

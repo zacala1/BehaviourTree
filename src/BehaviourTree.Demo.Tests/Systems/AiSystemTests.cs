@@ -3,7 +3,6 @@ using BehaviourTree.Demo.Components;
 using BehaviourTree.Demo.GameEngine;
 using BehaviourTree.Demo.Nodes;
 using BehaviourTree.Demo.Systems;
-using BehaviourTree.Events;
 using NUnit.Framework;
 
 namespace BehaviourTree.Demo.SystemTests.Systems
@@ -279,12 +278,6 @@ namespace BehaviourTree.Demo.SystemTests.Systems
                 LastTimestamp = 0;
                 LastStatus = BehaviourStatus.Ready;
             }
-
-            public void AttachObserver(IBehaviourTreeObserver observer) { }
-
-            public void DetachObserver(IBehaviourTreeObserver observer) { }
-
-            public void Dispose() { }
         }
     }
 }

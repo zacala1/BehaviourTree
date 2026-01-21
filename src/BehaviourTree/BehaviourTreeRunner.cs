@@ -105,7 +105,6 @@ namespace BehaviourTree
         public void Dispose()
         {
             Stop(); // Ensure token source is disposed
-            _behaviourTree.Dispose();
         }
     }
 }

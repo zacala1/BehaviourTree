@@ -23,22 +23,6 @@
         }
 
         /// <summary>
-        /// Disposes this decorator node and its child.
-        /// Ensures proper disposal chain by calling base.Dispose.
-        /// </summary>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                // Dispose child first
-                Child?.Dispose();
-            }
-
-            // IMPORTANT: Call base to clear observers
-            base.Dispose(disposing);
-        }
-
-        /// <summary>
         /// Called when this decorator node is reset. Resets the child node.
         /// </summary>
         [System.Diagnostics.DebuggerStepThrough]

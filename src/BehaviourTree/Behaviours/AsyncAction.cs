@@ -124,20 +124,6 @@ namespace BehaviourTree.Behaviours
         }
 
         /// <summary>
-        /// Disposes async resources (CancellationTokenSource and Task).
-        /// Ensures resources are cleaned up even if Reset is never called.
-        /// </summary>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                CleanupAsyncResources();
-            }
-
-            base.Dispose(disposing);
-        }
-
-        /// <summary>
         /// Cleans up CancellationTokenSource and Task resources.
         /// </summary>
         private void CleanupAsyncResources()

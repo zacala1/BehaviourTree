@@ -40,24 +40,6 @@ namespace BehaviourTree.Composites
         }
 
         /// <summary>
-        /// Disposes this composite node and all its children.
-        /// Ensures proper disposal chain by calling base.Dispose.
-        /// </summary>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                var children = Children;
-                for (int i = 0; i < children.Length; i++)
-                {
-                    children[i]?.Dispose();
-                }
-            }
-
-            base.Dispose(disposing);
-        }
-
-        /// <summary>
         /// Called when this composite node completes execution. Resets all children.
         /// </summary>
         [System.Diagnostics.DebuggerStepThrough]

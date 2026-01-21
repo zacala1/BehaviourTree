@@ -1,13 +1,10 @@
-using BehaviourTree.Events;
-using System;
-
 namespace BehaviourTree
 {
     /// <summary>
     /// Core interface for all behavior tree nodes.
-    /// Provides lifecycle management (Tick, Reset) and observer pattern support.
+    /// Provides lifecycle management (Tick, Reset).
     /// </summary>
-    public interface IBehaviour<in TContext> : IDisposable
+    public interface IBehaviour<in TContext>
     {
         /// <summary>
         /// Unique identifier for this behavior node.
@@ -35,18 +32,5 @@ namespace BehaviourTree
         /// Resets this behavior node back to Ready status.
         /// </summary>
         void Reset();
-
-        /// <summary>
-        /// Attaches an observer to receive lifecycle event notifications from this behavior tree.
-        /// The observer will be notified of Initialize, Update, Terminate, and Reset events.
-        /// </summary>
-        /// <param name="observer">The observer to attach</param>
-        void AttachObserver(IBehaviourTreeObserver observer);
-
-        /// <summary>
-        /// Detaches a previously attached observer.
-        /// </summary>
-        /// <param name="observer">The observer to detach</param>
-        void DetachObserver(IBehaviourTreeObserver observer);
     }
 }

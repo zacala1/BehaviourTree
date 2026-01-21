@@ -1,4 +1,8 @@
 {
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "allow": [
       "Bash(dotnet build:*)",
@@ -12,13 +16,10 @@
       "Bash(wc:*)",
       "Bash(find:*)",
       "Bash(curl:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []
-  },
-  "attribution": {
-    "commit": "",
-    "pr": ""
   }
 }
