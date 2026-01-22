@@ -5,7 +5,7 @@ A flexible, extensible C# behavior tree library with generic context support, fl
 ## Origin
 
 This library is based on [Eraclys/BehaviourTree](https://github.com/Eraclys/BehaviourTree). Enhancements include:
-- Instance-based observer pattern for memory-leak-free event monitoring
+- Efficient debugging API for UI visualization
 - Flexible time provider system (no forced IClock interface)
 - Reactive/Priority nodes for dynamic behavior
 - N-child Parallel node with flexible policies
@@ -30,7 +30,7 @@ Install-Package BehaviourTree.Graph  # Optional: visualization support
 - **Flexible Time Provider**: No forced IClock interface, backward compatible
 - **Reactive/Priority Nodes**: Dynamic behavior with re-evaluation
 - **Parallel Execution**: N-child parallel node with flexible success policies
-- **Observer Pattern**: Memory-leak-free event monitoring system
+- **Debugging API**: Efficient tree structure and active node tracking for UI visualization
 - **Thread-Safe**: Safe for concurrent access where needed
 - **Well-Tested**: Extensive test coverage
 - **Graph Visualization**: PlantUML and Dan Abad format export (separate package)
@@ -138,24 +138,34 @@ Every node returns one of four statuses:
 3. **Terminate**: Called when node completes (Success or Failure)
 4. **Reset**: Resets node back to Ready status
 
-### Observer Pattern
+### Debugging API
 
-Attach observers to monitor node execution without memory leaks:
+Efficiently track active nodes for UI visualization with minimal overhead:
 
 ```csharp
-public class MyObserver : IBehaviourTreeObserver
-{
-    public void OnNodeInitialize(BehaviourTreeNodeEvent nodeEvent) { }
-    public void OnNodeUpdate(BehaviourTreeNodeEvent nodeEvent) { }
-    public void OnNodeTerminate(BehaviourTreeNodeEvent nodeEvent) { }
-    public void OnNodeReset(BehaviourTreeNodeEvent nodeEvent) { }
-}
+using BehaviourTree.Debugging;
 
-var observer = new MyObserver();
-behaviourTree.AttachObserver(observer);
-// Later...
-behaviourTree.DetachObserver(observer);
+// 1. Build tree structure once at initialization (O(n) where n = total nodes)
+var structure = BehaviourTreeStructureBuilder.Build(behaviourTree);
+
+// 2. Each tick: Get only active leaf node IDs (O(running leaves) - typically 1-5)
+var activeLeafIds = behaviourTree.GetActiveLeafIds();
+
+// 3. Derive full active path from structure (no per-tick tree traversal needed)
+var allActiveNodeIds = structure.GetAllActiveNodeIds(activeLeafIds);
+
+// Access node info for UI display
+foreach (var nodeId in allActiveNodeIds)
+{
+    var nodeInfo = structure.Nodes[nodeId];
+    Console.WriteLine($"{nodeInfo.TypeName}: {nodeInfo.Name} (depth={nodeInfo.Depth})");
+}
 ```
+
+**Why this design?**
+- Traditional observer patterns fire O(executed nodes) events per tick
+- This API sends only O(running leaves) data - parent path is derived from pre-built structure
+- Structure is built once; per-tick overhead is minimal
 
 ## Time Provider Setup (Optional)
 
@@ -538,9 +548,14 @@ var networkOperation = FluentBuilder.Create<NetworkContext>()
 
 - `BehaviourStatus Tick(TContext context)`: Execute one iteration
 - `void Reset()`: Reset to Ready status
-- `void AttachObserver(IBehaviourTreeObserver observer)`: Attach observer
-- `void DetachObserver(IBehaviourTreeObserver observer)`: Detach observer
-- `void Dispose()`: Clean up resources
+
+### Debugging API
+
+- `BehaviourTreeStructureBuilder.Build(root)`: Build tree structure for visualization
+- `root.GetActiveLeafIds()`: Get IDs of currently running leaf nodes
+- `root.GetRunningNodes()`: Get snapshots of all running nodes in path
+- `structure.GetAllActiveNodeIds(leafIds)`: Derive full active path from leaf IDs
+- `structure.GetPathToNode(nodeId)`: Get path from root to specific node
 
 ### FluentBuilder Extensions
 
@@ -562,23 +577,21 @@ All composite and decorator nodes have fluent builder extensions:
 
 ### New Features
 - **Lambda-Based Builder Pattern**: Automatic IDE indentation and no manual `End()` calls
-- **Observer Pattern**: Instance-based event system replaces static events (no memory leaks)
-- **Enhanced Events**: `BehaviourTreeNodeEvent` includes elapsed time, node type, depth, parent ID
+- **Debugging API**: Efficient tree structure and active node tracking for UI visualization
 - **TimeProvider**: Flexible global time source, no IClock constraint required
 - **ActiveSelector/ActiveSequence**: Reactive nodes for dynamic priority switching
 - **Parallel Node**: N-child parallel with flexible policies (RequireAll, RequireOne, RequireN)
-- **Comprehensive Tests**: Added 200+ tests for all node types and edge cases
+- **Comprehensive Tests**: Added 370+ tests for all node types and edge cases
 
 ### Performance Improvements
-- **Tick Performance**: Conditional Stopwatch creation (only when observers exist or in DEBUG)
+- **Cache-Aligned State**: Hot fields in 64-byte aligned struct for CPU cache optimization
 - **Type Name Caching**: Cached GetType().Name in constructors to avoid reflection overhead
-- **Observer Array Caching**: Lazy regeneration of observer arrays only when changed
+- **Debugging API Efficiency**: O(running leaves) per tick instead of O(executed nodes)
 - **Composite Node Optimization**: Direct array access with cached length
-- **Lock Optimization**: Observer notification outside locks to prevent deadlocks
+- **Lock-Free Operations**: Interlocked operations for ID generation and token management
 - **Thread-Safe Random**: Lock synchronization for System.Random
 - **IClock Check Caching**: Static type check at class load time instead of per-tick runtime check
 - **In-Place Shuffle**: RandomSequence/RandomSelector use index array shuffling (no allocation on reset)
-- **Struct Event**: BehaviourTreeNodeEvent changed from class to readonly struct (zero heap allocation)
 - **Sentinel Values**: Time-based nodes use sentinel values instead of nullable long (no boxing)
 
 ### Documentation
@@ -599,7 +612,7 @@ Tests cover:
 - All composite nodes (Sequence, Selector, Parallel, etc.)
 - All decorator nodes (Retry, Repeat, Cooldown, etc.)
 - All leaf nodes (Action, Condition, Wait, AsyncAction)
-- Observer pattern functionality
+- Debugging API (structure building, active node tracking)
 - Edge cases (empty trees, null values, timeouts)
 - Thread safety scenarios
 
