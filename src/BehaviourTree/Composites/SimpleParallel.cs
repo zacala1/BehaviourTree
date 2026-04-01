@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace BehaviourTree.Composites
 {
@@ -13,7 +13,6 @@ namespace BehaviourTree.Composites
         private readonly IBehaviour<TContext> _second;
         private BehaviourStatus _firstStatus;
         private BehaviourStatus _secondStatus;
-        private readonly Func<TContext, BehaviourStatus> _behave;
 
         /// <summary>
         /// Policy determining when this parallel node succeeds or fails.
@@ -42,39 +41,6 @@ namespace BehaviourTree.Composites
             Policy = policy;
             _first = first;
             _second = second;
-            _behave = policy == SimpleParallelPolicy.BothMustSucceed ? (Func<TContext, BehaviourStatus>)BothMustSucceedBehaviour : OnlyOneMustSucceedBehaviour;
-        }
-
-        [System.Diagnostics.DebuggerStepThrough]
-        private BehaviourStatus OnlyOneMustSucceedBehaviour(TContext context)
-        {
-            if (_firstStatus == BehaviourStatus.Succeeded || _secondStatus == BehaviourStatus.Succeeded)
-            {
-                return BehaviourStatus.Succeeded;
-            }
-
-            if (_firstStatus == BehaviourStatus.Failed && _secondStatus == BehaviourStatus.Failed)
-            {
-                return BehaviourStatus.Failed;
-            }
-
-            return BehaviourStatus.Running;
-        }
-
-        [System.Diagnostics.DebuggerStepThrough]
-        private BehaviourStatus BothMustSucceedBehaviour(TContext context)
-        {
-            if (_firstStatus == BehaviourStatus.Succeeded && _secondStatus == BehaviourStatus.Succeeded)
-            {
-                return BehaviourStatus.Succeeded;
-            }
-
-            if (_firstStatus == BehaviourStatus.Failed || _secondStatus == BehaviourStatus.Failed)
-            {
-                return BehaviourStatus.Failed;
-            }
-
-            return BehaviourStatus.Running;
         }
 
         /// <summary>
@@ -101,7 +67,24 @@ namespace BehaviourTree.Composites
                 }
             }
 
-            return _behave(context);
+            if (Policy == SimpleParallelPolicy.BothMustSucceed)
+            {
+                if (_firstStatus == BehaviourStatus.Succeeded && _secondStatus == BehaviourStatus.Succeeded)
+                    return BehaviourStatus.Succeeded;
+
+                if (_firstStatus == BehaviourStatus.Failed || _secondStatus == BehaviourStatus.Failed)
+                    return BehaviourStatus.Failed;
+            }
+            else
+            {
+                if (_firstStatus == BehaviourStatus.Succeeded || _secondStatus == BehaviourStatus.Succeeded)
+                    return BehaviourStatus.Succeeded;
+
+                if (_firstStatus == BehaviourStatus.Failed && _secondStatus == BehaviourStatus.Failed)
+                    return BehaviourStatus.Failed;
+            }
+
+            return BehaviourStatus.Running;
         }
 
         /// <summary>

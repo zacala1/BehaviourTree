@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace BehaviourTree.Composites
 {
@@ -8,22 +7,12 @@ namespace BehaviourTree.Composites
     /// Parallel composite node that executes all children concurrently.
     /// Success/failure is determined by the specified policy.
     /// Supports any number of children (N >= 1).
-    /// OPTIMIZED: Cache-aligned status array and unsafe pointer operations for maximum performance.
     /// </summary>
     public sealed partial class Parallel<TContext> : CompositeBehaviour<TContext>
     {
         private readonly ParallelPolicy _policy;
         private readonly int _successRequired;
-
-        // CACHE OPTIMIZATION: Align status array to cache line boundary (64 bytes)
-        // This prevents false sharing when multiple threads access different elements
-        [StructLayout(LayoutKind.Sequential, Pack = 64)]
-        private struct CacheAlignedStatusArray
-        {
-            public BehaviourStatus[] Statuses;
-        }
-
-        private CacheAlignedStatusArray _alignedStatuses;
+        private readonly BehaviourStatus[] _statuses;
 
         /// <summary>
         /// Gets the policy used to determine success/failure of this parallel node.
@@ -65,10 +54,7 @@ namespace BehaviourTree.Composites
                         nameof(policy));
             }
 
-            _alignedStatuses = new CacheAlignedStatusArray
-            {
-                Statuses = new BehaviourStatus[children.Length]
-            };
+            _statuses = new BehaviourStatus[children.Length];
         }
 
         /// <summary>
@@ -95,95 +81,64 @@ namespace BehaviourTree.Composites
 
             _policy = ParallelPolicy.RequireN;
             _successRequired = successRequired == 0 ? 1 : successRequired;
-            _alignedStatuses = new CacheAlignedStatusArray
-            {
-                Statuses = new BehaviourStatus[children.Length]
-            };
+            _statuses = new BehaviourStatus[children.Length];
         }
 
         /// <summary>
         /// Executes all children in parallel and evaluates success policy.
-        /// OPTIMIZED: Cached array references, streamlined status counting, and unsafe pointer operations.
         /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override BehaviourStatus Update(TContext context)
         {
-            // OPTIMIZATION: Cache arrays and lengths
             var children = Children;
-            var statuses = _alignedStatuses.Statuses;
+            var statuses = _statuses;
             var count = children.Length;
 
-            // UNSAFE OPTIMIZATION: Use pointer operations to eliminate bounds checking
-            // This is safe because we control array allocation and access patterns
-            unsafe
+            int succeededCount = 0;
+            int failedCount = 0;
+
+            for (var i = 0; i < count; i++)
             {
-                fixed (BehaviourStatus* statusPtr = statuses)
+                var currentStatus = statuses[i];
+
+                // Only tick children that are Ready or Running
+                if (currentStatus == BehaviourStatus.Ready || currentStatus == BehaviourStatus.Running)
                 {
-                    int succeededCount = 0;
-                    int failedCount = 0;
-
-                    // Execute all children and collect their statuses
-                    // OPTIMIZATION: Direct pointer access eliminates bounds checking
-                    for (var i = 0; i < count; i++)
-                    {
-                        var currentStatus = statusPtr[i];
-
-                        // Only tick children that are Ready or Running
-                        if (currentStatus == BehaviourStatus.Ready || currentStatus == BehaviourStatus.Running)
-                        {
-                            statusPtr[i] = children[i].Tick(context);
-                            currentStatus = statusPtr[i];
-                        }
-
-                        // Count final statuses (OPTIMIZATION: Skip running count as it's not used)
-                        // OPTIMIZATION: Use branchless arithmetic where possible
-                        succeededCount += (currentStatus == BehaviourStatus.Succeeded) ? 1 : 0;
-                        failedCount += (currentStatus == BehaviourStatus.Failed) ? 1 : 0;
-                    }
-
-                    // Check if we've met the success condition
-                    if (succeededCount >= _successRequired)
-                    {
-                        return BehaviourStatus.Succeeded;
-                    }
-
-                    // Check if it's impossible to meet success condition
-                    int remainingChildren = count - failedCount - succeededCount;
-                    if (succeededCount + remainingChildren < _successRequired)
-                    {
-                        return BehaviourStatus.Failed;
-                    }
-
-                    // Still running
-                    return BehaviourStatus.Running;
+                    statuses[i] = children[i].Tick(context);
+                    currentStatus = statuses[i];
                 }
+
+                if (currentStatus == BehaviourStatus.Succeeded)
+                    succeededCount++;
+                else if (currentStatus == BehaviourStatus.Failed)
+                    failedCount++;
             }
+
+            // Check if we've met the success condition
+            if (succeededCount >= _successRequired)
+            {
+                return BehaviourStatus.Succeeded;
+            }
+
+            // Check if it's impossible to meet success condition
+            int remainingChildren = count - failedCount - succeededCount;
+            if (succeededCount + remainingChildren < _successRequired)
+            {
+                return BehaviourStatus.Failed;
+            }
+
+            return BehaviourStatus.Running;
         }
 
         /// <summary>
         /// Resets child status tracking when the node is reset.
-        /// OPTIMIZED: Uses unsafe pointer operations for fast memory clearing.
         /// </summary>
         [System.Diagnostics.DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void DoReset(BehaviourStatus status)
         {
-            var statuses = _alignedStatuses.Statuses;
-
-            // UNSAFE OPTIMIZATION: Fast memory clear using pointers
-            unsafe
-            {
-                fixed (BehaviourStatus* statusPtr = statuses)
-                {
-                    var count = statuses.Length;
-                    for (var i = 0; i < count; i++)
-                    {
-                        statusPtr[i] = BehaviourStatus.Ready;
-                    }
-                }
-            }
-
+            Array.Clear(_statuses, 0, _statuses.Length);
             base.DoReset(status);
         }
     }

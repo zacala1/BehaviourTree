@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace BehaviourTree
@@ -116,33 +115,16 @@ namespace BehaviourTree
     }
 
     /// <summary>
-    /// Cache-aligned hot fields for optimal CPU cache performance.
-    /// Aligned to 64-byte cache line to prevent false sharing.
-    /// </summary>
-    [StructLayout(LayoutKind.Explicit, Size = 64)]
-    internal struct CacheAlignedNodeState
-    {
-        [FieldOffset(0)]
-        public BehaviourStatus Status;
-
-        [FieldOffset(4)]
-        public int Id;
-    }
-
-    /// <summary>
     /// Non-generic base class for all behavior tree nodes.
     /// Provides core functionality including unique IDs, status tracking, and cached type metadata.
-    /// OPTIMIZED: Cache-aligned hot fields to improve CPU cache hit rate.
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("Node: Id = {Id}, Name = {Name}, Status = {Status}")]
     public abstract class BaseBehaviour
     {
-        private static long BehaviorCounter = 0;
+        private static int BehaviorCounter = 0;
 
-        // CACHE OPTIMIZATION: Hot fields in cache-aligned struct (64-byte aligned)
-        private CacheAlignedNodeState _state;
-
-        // OPTIMIZATION: Cache type name to avoid repeated reflection calls
+        private readonly int _id;
+        private BehaviourStatus _status;
         private readonly string _cachedTypeName;
 
         /// <summary>
@@ -151,7 +133,7 @@ namespace BehaviourTree
         public int Id
         {
             [System.Diagnostics.DebuggerStepThrough]
-            get => _state.Id;
+            get => _id;
         }
 
         /// <summary>
@@ -169,9 +151,9 @@ namespace BehaviourTree
         public BehaviourStatus Status
         {
             [System.Diagnostics.DebuggerStepThrough]
-            get => _state.Status;
+            get => _status;
             [System.Diagnostics.DebuggerStepThrough]
-            protected set => _state.Status = value;
+            protected set => _status = value;
         }
 
         /// <summary>
@@ -191,16 +173,12 @@ namespace BehaviourTree
         {
             if (name is null) throw new ArgumentNullException(nameof(name));
 
-            // Initialize cache-aligned state
-            _state = new CacheAlignedNodeState
-            {
-                Id = (int)Interlocked.Increment(ref BehaviorCounter),
-                Status = BehaviourStatus.Ready
-            };
+            _id = Interlocked.Increment(ref BehaviorCounter);
+            _status = BehaviourStatus.Ready;
 
             Name = name;
 
-            // OPTIMIZATION: Use Source Generator metadata to avoid reflection
+            // Use Source Generator metadata to avoid reflection
             // Falls back to reflection only if metadata not available
             _cachedTypeName = (this is IBehaviourMetadata metadata)
                 ? metadata.TypeName

@@ -85,6 +85,7 @@ namespace BehaviourTree.Decorators
 
                 if (_counter < _repeatCount)
                 {
+                    Child.Reset();
                     return BehaviourStatus.Running;
                 }
             }

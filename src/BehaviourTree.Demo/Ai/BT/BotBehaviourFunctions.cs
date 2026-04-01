@@ -1,7 +1,6 @@
 ﻿using BehaviourTree.Demo.Components;
 using BehaviourTree.Demo.Nodes;
 using BehaviourTree.Demo.UI;
-using System.Linq;
 using System.Numerics;
 
 namespace BehaviourTree.Demo.Ai.BT
@@ -62,22 +61,30 @@ namespace BehaviourTree.Demo.Ai.BT
 
         public static BehaviourStatus SetItemAsTarget(BtContext context, ItemTypes itemType)
         {
-            var position = context.Agent.GetComponent<PositionComponent>()!;
+            var agentPosition = context.Agent.GetComponent<PositionComponent>()!.Position;
 
-            var lootableNode = context.Engine
-                .GetNodes<ItemNode>()
-                .Where(x => x.ItemComponent.ItemType == itemType)
-                .OrderBy(x => Vector2.Distance(x.PositionComponent.Position, position.Position))
-                .FirstOrDefault();
+            ItemNode? closest = null;
+            var closestDistSq = float.MaxValue;
 
-            if (lootableNode == null)
+            foreach (var node in context.Engine.GetNodes<ItemNode>())
+            {
+                if (node.ItemComponent.ItemType != itemType)
+                    continue;
+
+                var distSq = Vector2.DistanceSquared(node.PositionComponent.Position, agentPosition);
+                if (distSq < closestDistSq)
+                {
+                    closestDistSq = distSq;
+                    closest = node;
+                }
+            }
+
+            if (closest == null)
             {
                 return BehaviourStatus.Failed;
             }
 
-            var targetComponent = new TargetEntityComponent { TargetId = lootableNode.Entity.Id };
-
-            context.Agent.AddComponent(targetComponent);
+            context.Agent.AddComponent(new TargetEntityComponent { TargetId = closest.Entity.Id });
 
             return BehaviourStatus.Succeeded;
         }
@@ -86,13 +93,7 @@ namespace BehaviourTree.Demo.Ai.BT
         {
             var movementComponent = context.Agent.GetComponent<MovementComponent>()!;
 
-            if (!context.Agent.HasComponent<TargetEntityComponent>())
-            {
-                movementComponent.Velocity = Vector2.Zero;
-                return BehaviourStatus.Failed;
-            }
-
-            if (!context.Agent.HasComponent<PositionComponent>() || !context.Agent.HasComponent<TargetEntityComponent>())
+            if (!context.Agent.HasComponent<TargetEntityComponent>() || !context.Agent.HasComponent<PositionComponent>())
             {
                 movementComponent.Velocity = Vector2.Zero;
                 return BehaviourStatus.Failed;
@@ -186,6 +187,22 @@ namespace BehaviourTree.Demo.Ai.BT
         {
             var staminaComponent = context.Agent.GetComponent<StaminaComponent>()!;
             return staminaComponent.Stamina < staminaComponent.MaxStamina / 3;
+        }
+
+        public static BehaviourStatus Rest(BtContext context)
+        {
+            // Stop moving
+            var movementComponent = new MovementComponent { Velocity = Vector2.Zero };
+            context.Agent.AddComponent(movementComponent);
+
+            // Stay in Running until stamina recovers above threshold
+            var staminaComponent = context.Agent.GetComponent<StaminaComponent>()!;
+            if (staminaComponent.Stamina < staminaComponent.MaxStamina / 2)
+            {
+                return BehaviourStatus.Running;
+            }
+
+            return BehaviourStatus.Succeeded;
         }
     }
 }

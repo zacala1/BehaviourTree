@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using BehaviourTree.Composites;
+using BehaviourTree.Decorators;
 
 namespace BehaviourTree.Debugging
 {
@@ -27,6 +30,66 @@ namespace BehaviourTree.Debugging
         {
             Nodes = nodes;
             RootId = rootId;
+        }
+
+        /// <summary>
+        /// Builds a BehaviourTreeStructure by traversing the tree from the root node.
+        /// </summary>
+        /// <typeparam name="TContext">Context type of the behavior tree</typeparam>
+        /// <param name="root">Root node of the behavior tree</param>
+        /// <returns>Complete structure representation of the tree</returns>
+        public static BehaviourTreeStructure Build<TContext>(IBehaviour<TContext> root)
+        {
+            if (root == null) throw new ArgumentNullException(nameof(root));
+
+            var nodes = new Dictionary<int, NodeInfo>();
+            BuildRecursive(root, -1, 0, nodes);
+            return new BehaviourTreeStructure(nodes, root.Id);
+        }
+
+        private static void BuildRecursive<TContext>(IBehaviour<TContext> node, int parentId, int depth, Dictionary<int, NodeInfo> nodes)
+        {
+            var childIds = Array.Empty<int>();
+            var isLeaf = true;
+
+            if (node is CompositeBehaviour<TContext> composite)
+            {
+                isLeaf = false;
+                childIds = new int[composite.Children.Length];
+                for (int i = 0; i < composite.Children.Length; i++)
+                {
+                    childIds[i] = composite.Children[i].Id;
+                }
+            }
+            else if (node is DecoratorBehaviour<TContext> decorator)
+            {
+                isLeaf = false;
+                childIds = new[] { decorator.Child.Id };
+            }
+
+            var typeName = (node is BaseBehaviour baseBehaviour) ? baseBehaviour.TypeName : node.GetType().Name;
+
+            nodes[node.Id] = new NodeInfo(
+                node.Id,
+                node.Name,
+                typeName,
+                parentId,
+                depth,
+                isLeaf,
+                childIds
+            );
+
+            if (node is CompositeBehaviour<TContext> comp)
+            {
+                foreach (var child in comp.Children)
+                {
+                    BuildRecursive(child, node.Id, depth + 1, nodes);
+                }
+            }
+            else if (node is DecoratorBehaviour<TContext> dec)
+            {
+                BuildRecursive(dec.Child, node.Id, depth + 1, nodes);
+            }
         }
 
         /// <summary>

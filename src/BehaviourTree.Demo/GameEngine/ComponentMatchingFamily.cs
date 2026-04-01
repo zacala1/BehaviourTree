@@ -17,6 +17,8 @@ namespace BehaviourTree.Demo.GameEngine
         private readonly Dictionary<int, Node> _entityNodeLookup = new Dictionary<int, Node>(DefaultNodeCapacity);
         private readonly Dictionary<Type, Action<Node, IComponent>> _componentSetters;
         private readonly Type[] _componentTypes;
+
+        public IReadOnlyList<Type> ComponentTypes => _componentTypes;
         private readonly Func<Node> _nodeFactory;
         private readonly FastRemovalCollection<Node> _nodes = new FastRemovalCollection<Node>(DefaultNodeCapacity);
 

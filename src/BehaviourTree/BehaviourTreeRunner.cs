@@ -60,18 +60,24 @@ namespace BehaviourTree
         {
             Stop();
 
-            // LOCK-FREE: Atomic token source creation
             var newTokenSource = new CancellationTokenSource();
             Interlocked.Exchange(ref _tokenSource, newTokenSource);
 
-            var status = await ExecuteCycle(newTokenSource.Token).ConfigureAwait(false);
-
-            while (!shouldStop(status) && !newTokenSource.IsCancellationRequested)
+            try
             {
-                status = await ExecuteCycle(newTokenSource.Token).ConfigureAwait(false);
-            }
+                var status = await ExecuteCycle(newTokenSource.Token).ConfigureAwait(false);
 
-            return status;
+                while (!shouldStop(status) && !newTokenSource.IsCancellationRequested)
+                {
+                    status = await ExecuteCycle(newTokenSource.Token).ConfigureAwait(false);
+                }
+
+                return status;
+            }
+            catch (OperationCanceledException)
+            {
+                return _behaviourTree.Status;
+            }
         }
 
         /// <summary>

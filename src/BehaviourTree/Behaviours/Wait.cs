@@ -5,13 +5,15 @@ namespace BehaviourTree.Behaviours
     /// <summary>
     /// Leaf node that waits for a specified duration before succeeding.
     /// Returns Running while waiting, then Success after the duration elapses.
+    /// Supports both fixed and dynamic (context-based) wait times.
     /// </summary>
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
     public sealed partial class Wait<TContext> : BaseBehaviour<TContext>
     {
         private static readonly bool ContextImplementsIClock = typeof(IClock).IsAssignableFrom(typeof(TContext));
 
-        private readonly long _waitTimeInMilliseconds;
+        private readonly Func<TContext, long>? _getWaitTimeInMilliseconds;
+        private long _waitTimeInMilliseconds;
         private long _initialTimestamp = -1;
 
         /// <summary>Gets the configured wait duration in milliseconds.</summary>
@@ -41,6 +43,40 @@ namespace BehaviourTree.Behaviours
             }
 
             _waitTimeInMilliseconds = waitTimeInMilliseconds;
+        }
+
+        /// <summary>
+        /// Creates a wait node with dynamic wait time from context.
+        /// Wait time is re-evaluated on each initialization.
+        /// </summary>
+        /// <param name="getWaitTimeInMilliseconds">Function to get wait time from context</param>
+        /// <exception cref="ArgumentNullException">Thrown when function is null</exception>
+        public Wait(Func<TContext, long> getWaitTimeInMilliseconds) : this("Wait", getWaitTimeInMilliseconds)
+        {
+        }
+
+        /// <summary>
+        /// Creates a wait node with dynamic wait time from context and specified name.
+        /// Wait time is re-evaluated on each initialization.
+        /// </summary>
+        /// <param name="name">Node name for debugging</param>
+        /// <param name="getWaitTimeInMilliseconds">Function to get wait time from context</param>
+        /// <exception cref="ArgumentNullException">Thrown when function is null</exception>
+        public Wait(string name, Func<TContext, long> getWaitTimeInMilliseconds) : base(name)
+        {
+            _getWaitTimeInMilliseconds = getWaitTimeInMilliseconds ?? throw new ArgumentNullException(nameof(getWaitTimeInMilliseconds));
+        }
+
+        /// <summary>
+        /// Called on first tick to initialize node state.
+        /// </summary>
+        [System.Diagnostics.DebuggerStepThrough]
+        protected override void OnInitialize(TContext context)
+        {
+            if (_getWaitTimeInMilliseconds != null)
+            {
+                _waitTimeInMilliseconds = _getWaitTimeInMilliseconds.Invoke(context);
+            }
         }
 
         /// <summary>

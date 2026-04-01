@@ -48,7 +48,7 @@ namespace BehaviourTree.Composites
 
             while (_currentChildIndex < count)
             {
-                var childStatus = children[_currentChildIndex].Tick(context);
+                var childStatus = GetChild(_currentChildIndex).Tick(context);
 
                 if (childStatus != BehaviourStatus.Failed)
                 {

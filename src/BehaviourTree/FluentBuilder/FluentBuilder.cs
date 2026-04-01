@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 
 namespace BehaviourTree.FluentBuilder
 {
@@ -133,7 +132,7 @@ namespace BehaviourTree.FluentBuilder
         /// </summary>
         /// <returns>Root behavior node of the tree</returns>
         /// <exception cref="InvalidOperationException">Thrown when tree is empty</exception>
-        /// <exception cref="InvalidExpressionException">Thrown when End() calls are missing</exception>
+        /// <exception cref="InvalidOperationException">Thrown when End() calls are missing</exception>
         public IBehaviour<TContext> Build()
         {
             if (_currentBehaviourBuilder == null)
@@ -143,7 +142,7 @@ namespace BehaviourTree.FluentBuilder
 
             if (_parentNodeStack.Count != 0)
             {
-                throw new InvalidExpressionException("Node stack remains. Please, check fluent syntax end");
+                throw new InvalidOperationException("Node stack remains. Please check fluent syntax - missing End() calls.");
             }
 
             return _currentBehaviourBuilder.Build();

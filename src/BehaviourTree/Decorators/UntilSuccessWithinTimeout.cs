@@ -1,14 +1,17 @@
-﻿using System;
+using System;
 
 namespace BehaviourTree.Decorators
 {
     /// <summary>
     /// Decorator that retries the child behavior until it succeeds or timeout is reached.
     /// Returns running while child fails, succeeds when child succeeds, and fails on timeout.
+    /// Uses IClock if context implements it, otherwise falls back to TimeProvider.
     /// </summary>
-    /// <typeparam name="TContext">Context type that implements IClock for time tracking</typeparam>
-    public sealed partial class UntilSuccessWithinTimeout<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
+    /// <typeparam name="TContext">Context type for time tracking</typeparam>
+    public sealed partial class UntilSuccessWithinTimeout<TContext> : DecoratorBehaviour<TContext>
     {
+        private static readonly bool ContextImplementsIClock = typeof(IClock).IsAssignableFrom(typeof(TContext));
+
         private readonly Func<TContext, long>? _getTimeoutInMilliseconds;
         private readonly Action<TContext>? _timeoutAction;
         private long _timeoutInMilliseconds;
@@ -76,7 +79,7 @@ namespace BehaviourTree.Decorators
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
-            var currentTimeStamp = context.GetTimeStampInMilliseconds();
+            var currentTimeStamp = GetCurrentTimestamp(context);
 
             if (_initialTimestamp == null)
             {
@@ -93,7 +96,22 @@ namespace BehaviourTree.Decorators
             }
 
             var childStatus = Child.Tick(context);
+            if (childStatus == BehaviourStatus.Failed)
+            {
+                Child.Reset();
+            }
             return (childStatus == BehaviourStatus.Succeeded) ? BehaviourStatus.Succeeded : BehaviourStatus.Running;
+        }
+
+        [System.Diagnostics.DebuggerStepThrough]
+        private static long GetCurrentTimestamp(TContext context)
+        {
+            if (ContextImplementsIClock)
+            {
+                return ((IClock)context!).GetTimeStampInMilliseconds();
+            }
+
+            return TimeProvider.GetTimestampInMilliseconds();
         }
 
         /// <summary>

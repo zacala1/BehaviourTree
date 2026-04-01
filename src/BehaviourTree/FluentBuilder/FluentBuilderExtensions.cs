@@ -568,6 +568,71 @@ namespace BehaviourTree.FluentBuilder
         }
 
         /// <summary>
+        /// Creates an <see cref="AsyncAction{TContext}"/> node with a cancellation condition.
+        /// </summary>
+        public static FluentBuilder<TContext> DoAsync<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name,
+            Func<TContext, CancellationToken, Task<BehaviourStatus>> action,
+            Func<TContext, bool> cancelCondition,
+            TimeSpan timeout = default)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (name is null) throw new ArgumentNullException(nameof(name));
+            if (action is null) throw new ArgumentNullException(nameof(action));
+            return builder.PushLeaf(() => new AsyncAction<TContext>(name, action, cancelCondition, timeout));
+        }
+
+        /// <summary>
+        /// Creates an <see cref="AsyncAction{TContext}"/> node with full configuration.
+        /// </summary>
+        public static FluentBuilder<TContext> DoAsync<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name,
+            Func<TContext, CancellationToken, Task<BehaviourStatus>> action,
+            Func<TContext, bool>? cancelCondition,
+            TimeSpan timeout,
+            CancellationToken externalToken)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (name is null) throw new ArgumentNullException(nameof(name));
+            if (action is null) throw new ArgumentNullException(nameof(action));
+            return builder.PushLeaf(() => new AsyncAction<TContext>(name, action, cancelCondition, timeout, externalToken));
+        }
+
+        /// <summary>
+        /// Creates an <see cref="AsyncCondition{TContext}"/> node.
+        /// Evaluates an asynchronous predicate. Returns Succeeded if true, Failed if false.
+        /// </summary>
+        public static FluentBuilder<TContext> ConditionAsync<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name,
+            Func<TContext, CancellationToken, Task<bool>> predicate,
+            TimeSpan timeout = default)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (name is null) throw new ArgumentNullException(nameof(name));
+            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
+            return builder.PushLeaf(() => new AsyncCondition<TContext>(name, predicate, timeout));
+        }
+
+        /// <summary>
+        /// Creates an <see cref="AsyncCondition{TContext}"/> node with a cancellation condition.
+        /// </summary>
+        public static FluentBuilder<TContext> ConditionAsync<TContext>(
+            this FluentBuilder<TContext> builder,
+            string name,
+            Func<TContext, CancellationToken, Task<bool>> predicate,
+            Func<TContext, bool>? cancelCondition,
+            TimeSpan timeout = default)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (name is null) throw new ArgumentNullException(nameof(name));
+            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
+            return builder.PushLeaf(() => new AsyncCondition<TContext>(name, predicate, cancelCondition, timeout));
+        }
+
+        /// <summary>
         /// Creates a <see cref="WaitRenew{TContext}"/> node.
         /// The Wait node is renewed by <paramref name="getWaitTimeInMilliseconds"/> during initialization.
         /// Returns <see cref="BehaviourStatus.Running"/> while waiting and <see cref="BehaviourStatus.Succeeded"/> after the wait completes.

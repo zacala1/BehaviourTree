@@ -32,11 +32,7 @@ namespace BehaviourTree.Demo.Systems
 
         protected override void UpdateNode(StaminaNode node, long ellapsedMilliseconds)
         {
-            ref var staminaComponent = ref node.StaminaComponent;
-            staminaComponent.IncreaseBy(_delta / StaminaGainFrequencyInMilliseconds);
-
-            // Update entity's component (necessary because it is a struct)
-            node.Entity.AddComponent(staminaComponent);
+            node.StaminaComponent.IncreaseBy(_delta / StaminaGainFrequencyInMilliseconds);
         }
     }
 }

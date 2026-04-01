@@ -3,22 +3,19 @@ using System;
 namespace BehaviourTree.Behaviours
 {
     /// <summary>
-    /// Behavior that waits for a specified duration, renewed on each initialization.
-    /// Returns running while waiting and succeeds when the wait time has elapsed.
+    /// Deprecated: Use <see cref="Wait{TContext}"/> with Func constructor instead.
+    /// Kept for backward compatibility.
     /// </summary>
     /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
+    [Obsolete("Use Wait<TContext> with Func<TContext, long> constructor instead.")]
     public sealed partial class WaitRenew<TContext> : BaseBehaviour<TContext>
     {
-        private static readonly bool ContextImplementsIClock = typeof(IClock).IsAssignableFrom(typeof(TContext));
-
-        private readonly Func<TContext, long> _getWaitTimeInMilliseconds;
-        private long _waitTimeInMilliseconds;
-        private long _initialTimestamp = -1;
+        private readonly Wait<TContext> _inner;
 
         /// <summary>
         /// Gets the current wait time in milliseconds.
         /// </summary>
-        public long WaitTimeInMilliseconds => _waitTimeInMilliseconds;
+        public long WaitTimeInMilliseconds => _inner.WaitTimeInMilliseconds;
 
         /// <summary>
         /// Creates a new WaitRenew behavior with a dynamic wait time.
@@ -36,60 +33,28 @@ namespace BehaviourTree.Behaviours
         /// <exception cref="ArgumentNullException">Thrown when getWaitTimeInMilliseconds is null</exception>
         public WaitRenew(string name, Func<TContext, long> getWaitTimeInMilliseconds) : base(name)
         {
-            _getWaitTimeInMilliseconds = getWaitTimeInMilliseconds ?? throw new ArgumentNullException(nameof(getWaitTimeInMilliseconds));
+            _inner = new Wait<TContext>(name, getWaitTimeInMilliseconds);
         }
 
         /// <summary>Core update logic for this node.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
-            var currentTimeStamp = GetCurrentTimestamp(context);
-
-            if (_initialTimestamp < 0)
-            {
-                _initialTimestamp = currentTimeStamp;
-            }
-
-            var elapsedMilliseconds = currentTimeStamp - _initialTimestamp;
-
-            if (elapsedMilliseconds >= _waitTimeInMilliseconds)
-            {
-                return BehaviourStatus.Succeeded;
-            }
-
-            return BehaviourStatus.Running;
-        }
-
-        [System.Diagnostics.DebuggerStepThrough]
-        private static long GetCurrentTimestamp(TContext context)
-        {
-            if (ContextImplementsIClock)
-            {
-                return ((IClock)context!).GetTimeStampInMilliseconds();
-            }
-
-            return TimeProvider.GetTimestampInMilliseconds();
-        }
-
-        /// <summary>Called on first tick to initialize node state.</summary>
-        [System.Diagnostics.DebuggerStepThrough]
-        protected override void OnInitialize(TContext context)
-        {
-            _waitTimeInMilliseconds = _getWaitTimeInMilliseconds.Invoke(context);
+            return _inner.Tick(context);
         }
 
         /// <summary>Called when node completes execution.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
-            DoReset(status);
+            _inner.Reset();
         }
 
         /// <summary>Resets node state for re-execution.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {
-            _initialTimestamp = -1;
+            _inner.Reset();
         }
     }
 }

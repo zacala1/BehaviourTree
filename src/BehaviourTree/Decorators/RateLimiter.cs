@@ -1,14 +1,17 @@
-﻿using System;
+using System;
 
 namespace BehaviourTree.Decorators
 {
     /// <summary>
     /// Decorator that caches child execution results for a specified interval.
     /// Returns cached result if called within the interval, otherwise executes child.
+    /// Uses IClock if context implements it, otherwise falls back to TimeProvider.
     /// </summary>
-    /// <typeparam name="TContext">Context type that implements IClock for time tracking</typeparam>
-    public sealed partial class RateLimiter<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
+    /// <typeparam name="TContext">Context type for time tracking</typeparam>
+    public sealed partial class RateLimiter<TContext> : DecoratorBehaviour<TContext>
     {
+        private static readonly bool ContextImplementsIClock = typeof(IClock).IsAssignableFrom(typeof(TContext));
+
         private readonly Func<TContext, long>? _getIntervalInMilliseconds;
         private long? _previousTimestamp;
         private BehaviourStatus _previousChildStatus;
@@ -70,7 +73,7 @@ namespace BehaviourTree.Decorators
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
-            var currentTimeStamp = context.GetTimeStampInMilliseconds();
+            var currentTimeStamp = GetCurrentTimestamp(context);
 
             // Check if we should execute the child (first run or interval elapsed)
             if (!_previousTimestamp.HasValue ||
@@ -85,6 +88,17 @@ namespace BehaviourTree.Decorators
             }
 
             return _previousChildStatus;
+        }
+
+        [System.Diagnostics.DebuggerStepThrough]
+        private static long GetCurrentTimestamp(TContext context)
+        {
+            if (ContextImplementsIClock)
+            {
+                return ((IClock)context!).GetTimeStampInMilliseconds();
+            }
+
+            return TimeProvider.GetTimestampInMilliseconds();
         }
 
         /// <summary>

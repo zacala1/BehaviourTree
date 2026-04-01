@@ -82,6 +82,7 @@ namespace BehaviourTree.Decorators
                 {
                     return BehaviourStatus.Failed;
                 }
+                Child.Reset();
             }
 
             return childStatus == BehaviourStatus.Succeeded ? BehaviourStatus.Succeeded : BehaviourStatus.Running;

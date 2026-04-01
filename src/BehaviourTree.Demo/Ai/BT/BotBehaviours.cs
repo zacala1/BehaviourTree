@@ -32,7 +32,10 @@ namespace BehaviourTree.Demo.Ai.BT
                     .Condition("Is health low?", BotBehaviourFunctions.IsHealthLow)
                     .Selector("Find and eat food")
                         .Do("Eat food from inventory", BotBehaviourFunctions.EatFoodFromInventory)
-                        .Subtree(FindAndPickupItem(ItemTypes.Food))
+                        .Sequence("Pick up food then eat")
+                            .Subtree(FindAndPickupItem(ItemTypes.Food))
+                            .Do("Eat food from inventory", BotBehaviourFunctions.EatFoodFromInventory)
+                        .End()
                     .End()
                 .End()
                 .Build();
@@ -40,10 +43,11 @@ namespace BehaviourTree.Demo.Ai.BT
 
         private static IBehaviour<BtContext> TiredBehaviour()
         {
+            // When stamina is low, stop moving and wait for natural regeneration
             return FluentBuilder.FluentBuilder.Create<BtContext>()
                 .Sequence("Low stamina")
                     .Condition("Is stamina low?", BotBehaviourFunctions.IsStaminaLow)
-                    .Subtree(FindAndPickupItem(ItemTypes.Food))
+                    .Do("Rest (stop and recover)", BotBehaviourFunctions.Rest)
                 .End()
                 .Build();
         }

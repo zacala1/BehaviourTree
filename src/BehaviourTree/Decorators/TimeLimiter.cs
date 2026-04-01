@@ -1,13 +1,15 @@
-﻿using System;
+using System;
 
 namespace BehaviourTree.Decorators
 {
     /// <summary>
     /// Decorator that limits child execution time, returning failure if time limit is exceeded.
+    /// Uses IClock if context implements it, otherwise falls back to TimeProvider.
     /// </summary>
-    /// <typeparam name="TContext">Context type that implements IClock for time tracking</typeparam>
-    public sealed partial class TimeLimiter<TContext> : DecoratorBehaviour<TContext> where TContext : IClock
+    /// <typeparam name="TContext">Context type for time tracking</typeparam>
+    public sealed partial class TimeLimiter<TContext> : DecoratorBehaviour<TContext>
     {
+        private static readonly bool ContextImplementsIClock = typeof(IClock).IsAssignableFrom(typeof(TContext));
         private const long UninitializedTimestamp = -1;
 
         private readonly Func<TContext, long>? _getTimeLimitInMilliseconds;
@@ -70,7 +72,7 @@ namespace BehaviourTree.Decorators
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
-            var currentTimeStamp = context.GetTimeStampInMilliseconds();
+            var currentTimeStamp = GetCurrentTimestamp(context);
 
             if (_initialTimestamp == UninitializedTimestamp)
             {
@@ -85,6 +87,17 @@ namespace BehaviourTree.Decorators
             }
 
             return Child.Tick(context);
+        }
+
+        [System.Diagnostics.DebuggerStepThrough]
+        private static long GetCurrentTimestamp(TContext context)
+        {
+            if (ContextImplementsIClock)
+            {
+                return ((IClock)context!).GetTimeStampInMilliseconds();
+            }
+
+            return TimeProvider.GetTimestampInMilliseconds();
         }
 
         /// <summary>

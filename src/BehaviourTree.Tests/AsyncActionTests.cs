@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using BehaviourTree.Behaviours;
@@ -15,7 +17,6 @@ namespace BehaviourTree.Tests
         [Test]
         public void AsyncAction_ReturnsRunning_OnFirstTick()
         {
-            // Arrange
             var taskStarted = false;
             var asyncAction = new AsyncAction<MockContext>("Test", async (ctx, token) =>
             {
@@ -24,61 +25,49 @@ namespace BehaviourTree.Tests
                 return BehaviourStatus.Succeeded;
             });
 
-            // Act
             var result = asyncAction.Tick(new MockContext());
 
-            // Assert
-            Assert.That(result, Is.EqualTo(BehaviourStatus.Running), "Should return Running while task executes");
-            Assert.That(taskStarted, Is.True, "Task should start immediately");
+            Assert.That(result, Is.EqualTo(BehaviourStatus.Running));
+            Assert.That(taskStarted, Is.True);
         }
 
         [Test]
         public void AsyncAction_ReturnsSuccess_WhenTaskCompletes()
         {
-            // Arrange
             var asyncAction = new AsyncAction<MockContext>("Test", async (ctx, token) =>
             {
                 await Task.Delay(10, token);
                 return BehaviourStatus.Succeeded;
             });
 
-            // Act - First tick starts the task
             var result1 = asyncAction.Tick(new MockContext());
             Assert.That(result1, Is.EqualTo(BehaviourStatus.Running));
 
-            // Wait for task to complete
             Thread.Sleep(50);
-
-            // Second tick should return completed status
             var result2 = asyncAction.Tick(new MockContext());
 
-            // Assert
             Assert.That(result2, Is.EqualTo(BehaviourStatus.Succeeded));
         }
 
         [Test]
         public void AsyncAction_ReturnsFailed_WhenTaskFails()
         {
-            // Arrange
             var asyncAction = new AsyncAction<MockContext>("Test", async (ctx, token) =>
             {
                 await Task.Delay(10, token);
                 return BehaviourStatus.Failed;
             });
 
-            // Act
-            var result1 = asyncAction.Tick(new MockContext());
+            asyncAction.Tick(new MockContext());
             Thread.Sleep(50);
-            var result2 = asyncAction.Tick(new MockContext());
+            var result = asyncAction.Tick(new MockContext());
 
-            // Assert
-            Assert.That(result2, Is.EqualTo(BehaviourStatus.Failed));
+            Assert.That(result, Is.EqualTo(BehaviourStatus.Failed));
         }
 
         [Test]
         public void AsyncAction_CanBeExecutedMultipleTimes()
         {
-            // Arrange
             var executionCount = 0;
             var asyncAction = new AsyncAction<MockContext>("Test", async (ctx, token) =>
             {
@@ -87,25 +76,21 @@ namespace BehaviourTree.Tests
                 return BehaviourStatus.Succeeded;
             });
 
-            // Act - First execution
             asyncAction.Tick(new MockContext());
             Thread.Sleep(50);
             asyncAction.Tick(new MockContext());
             asyncAction.Reset();
 
-            // Second execution
             asyncAction.Tick(new MockContext());
             Thread.Sleep(50);
             asyncAction.Tick(new MockContext());
 
-            // Assert
-            Assert.That(executionCount, Is.EqualTo(2), "Should execute twice");
+            Assert.That(executionCount, Is.EqualTo(2));
         }
 
         [Test]
         public void AsyncAction_CancelsPreviousTask_WhenReset()
         {
-            // Arrange
             var taskCancelled = false;
             var asyncAction = new AsyncAction<MockContext>("Test", async (ctx, token) =>
             {
@@ -121,40 +106,34 @@ namespace BehaviourTree.Tests
                 }
             });
 
-            // Act
             asyncAction.Tick(new MockContext());
-            Thread.Sleep(10); // Give task time to start
-            asyncAction.Reset(); // Should cancel the running task
-            Thread.Sleep(50); // Give cancellation time to propagate
+            Thread.Sleep(10);
+            asyncAction.Reset();
+            Thread.Sleep(50);
 
-            // Assert
-            Assert.That(taskCancelled, Is.True, "Task should be cancelled on reset");
+            Assert.That(taskCancelled, Is.True);
             Assert.That(asyncAction.Status, Is.EqualTo(BehaviourStatus.Ready));
         }
 
         [Test]
         public void AsyncAction_HandlesExceptions_ReturnsFailure()
         {
-            // Arrange
             var asyncAction = new AsyncAction<MockContext>("Test", async (ctx, token) =>
             {
                 await Task.Delay(10, token);
-                throw new System.Exception("Test exception");
+                throw new InvalidOperationException("Test exception");
             });
 
-            // Act
             asyncAction.Tick(new MockContext());
             Thread.Sleep(50);
             var result = asyncAction.Tick(new MockContext());
 
-            // Assert
-            Assert.That(result, Is.EqualTo(BehaviourStatus.Failed), "Should return Failed when exception occurs");
+            Assert.That(result, Is.EqualTo(BehaviourStatus.Failed));
         }
 
         [Test]
         public void AsyncAction_PassesContext_ToAsyncFunction()
         {
-            // Arrange
             MockContext? capturedContext = null;
             var expectedContext = new MockContext();
             var asyncAction = new AsyncAction<MockContext>("Test", async (ctx, token) =>
@@ -164,22 +143,18 @@ namespace BehaviourTree.Tests
                 return BehaviourStatus.Succeeded;
             });
 
-            // Act
             asyncAction.Tick(expectedContext);
             Thread.Sleep(50);
 
-            // Assert
-            Assert.That(capturedContext, Is.SameAs(expectedContext), "Context should be passed to async function");
+            Assert.That(capturedContext, Is.SameAs(expectedContext));
         }
 
         [Test]
         public void AsyncAction_SupportsCancellationToken()
         {
-            // Arrange
             var cancellationRequested = false;
             var asyncAction = new AsyncAction<MockContext>("Test", async (ctx, token) =>
             {
-                // Simulate long-running operation checking cancellation
                 for (int i = 0; i < 100; i++)
                 {
                     if (token.IsCancellationRequested)
@@ -187,11 +162,7 @@ namespace BehaviourTree.Tests
                         cancellationRequested = true;
                         token.ThrowIfCancellationRequested();
                     }
-
-                    // Use non-cancellable delay to ensure token check happens after cancellation
                     await Task.Delay(10);
-
-                    // Check again after delay to catch cancellation
                     if (token.IsCancellationRequested)
                     {
                         cancellationRequested = true;
@@ -201,27 +172,23 @@ namespace BehaviourTree.Tests
                 return BehaviourStatus.Succeeded;
             });
 
-            // Act
             asyncAction.Tick(new MockContext());
-            Thread.Sleep(20); // Let it start
-            asyncAction.Reset(); // Cancel
-            Thread.Sleep(50); // Wait for cancellation to be detected
+            Thread.Sleep(20);
+            asyncAction.Reset();
+            Thread.Sleep(50);
 
-            // Assert
-            Assert.That(cancellationRequested, Is.True, "Cancellation token should be signaled");
+            Assert.That(cancellationRequested, Is.True);
         }
 
         [Test]
         public void AsyncAction_ReturnsRunning_WhileTaskExecutes()
         {
-            // Arrange
             var asyncAction = new AsyncAction<MockContext>("Test", async (ctx, token) =>
             {
                 await Task.Delay(200, token);
                 return BehaviourStatus.Succeeded;
             });
 
-            // Act & Assert - Multiple ticks while running
             var result1 = asyncAction.Tick(new MockContext());
             Assert.That(result1, Is.EqualTo(BehaviourStatus.Running));
 
@@ -241,7 +208,6 @@ namespace BehaviourTree.Tests
         [Test]
         public void AsyncAction_DoesNotStartNewTask_WhileRunning()
         {
-            // Arrange
             var startCount = 0;
             var asyncAction = new AsyncAction<MockContext>("Test", async (ctx, token) =>
             {
@@ -250,48 +216,215 @@ namespace BehaviourTree.Tests
                 return BehaviourStatus.Succeeded;
             });
 
-            // Act - Multiple ticks
             asyncAction.Tick(new MockContext());
             asyncAction.Tick(new MockContext());
             asyncAction.Tick(new MockContext());
             Thread.Sleep(150);
 
-            // Assert
-            Assert.That(startCount, Is.EqualTo(1), "Should only start one task");
+            Assert.That(startCount, Is.EqualTo(1));
         }
 
         [Test]
         public void AsyncAction_NameProperty_IsSet()
         {
-            // Arrange & Act
             var asyncAction = new AsyncAction<MockContext>("TestName", async (ctx, token) =>
             {
                 await Task.CompletedTask;
                 return BehaviourStatus.Succeeded;
             });
 
-            // Assert
             Assert.That(asyncAction.Name, Is.EqualTo("TestName"));
         }
 
         [Test]
-        public void AsyncAction_QuickCompletion_SucceedsImmediately()
+        public void AsyncAction_QuickCompletion_SucceedsOnFirstTick()
         {
-            // Arrange - Task that completes synchronously
             var asyncAction = new AsyncAction<MockContext>("Test", (ctx, token) =>
             {
                 return Task.FromResult(BehaviourStatus.Succeeded);
             });
 
-            // Act
-            var result1 = asyncAction.Tick(new MockContext());
+            // Synchronously completed task should return result on the same tick
+            var result = asyncAction.Tick(new MockContext());
+            Assert.That(result, Is.EqualTo(BehaviourStatus.Succeeded));
+        }
 
-            // Small delay to ensure task completion is detected
+        [Test]
+        public void AsyncAction_QuickFailure_FailsOnFirstTick()
+        {
+            var asyncAction = new AsyncAction<MockContext>("Test", (ctx, token) =>
+            {
+                return Task.FromResult(BehaviourStatus.Failed);
+            });
+
+            var result = asyncAction.Tick(new MockContext());
+            Assert.That(result, Is.EqualTo(BehaviourStatus.Failed));
+        }
+
+        [Test]
+        public void AsyncAction_LastException_PopulatedOnFault()
+        {
+            var asyncAction = new AsyncAction<MockContext>("Test", async (ctx, token) =>
+            {
+                await Task.Delay(10, token);
+                throw new InvalidOperationException("Test fault");
+            });
+
+            asyncAction.Tick(new MockContext());
+            Thread.Sleep(50);
+            asyncAction.Tick(new MockContext());
+
+            Assert.That(asyncAction.LastException, Is.Not.Null);
+            Assert.That(asyncAction.LastException, Is.TypeOf<InvalidOperationException>());
+            Assert.That(asyncAction.LastException!.Message, Is.EqualTo("Test fault"));
+        }
+
+        [Test]
+        public void AsyncAction_LastException_NullOnSuccess()
+        {
+            var asyncAction = new AsyncAction<MockContext>("Test", (ctx, token) =>
+            {
+                return Task.FromResult(BehaviourStatus.Succeeded);
+            });
+
+            asyncAction.Tick(new MockContext());
+
+            Assert.That(asyncAction.LastException, Is.Null);
+        }
+
+        [Test]
+        public void AsyncAction_LastException_PopulatedOnSyncThrow()
+        {
+            var asyncAction = new AsyncAction<MockContext>("Test", (Func<MockContext, CancellationToken, Task<BehaviourStatus>>)((ctx, token) =>
+            {
+                throw new ArgumentException("Sync throw");
+            }));
+
+            var result = asyncAction.Tick(new MockContext());
+
+            Assert.That(result, Is.EqualTo(BehaviourStatus.Failed));
+            Assert.That(asyncAction.LastException, Is.TypeOf<ArgumentException>());
+        }
+
+        [Test]
+        public void AsyncAction_WasCancelled_TrueOnCancelCondition()
+        {
+            var shouldCancel = false;
+            var asyncAction = new AsyncAction<MockContext>("Test",
+                async (ctx, token) =>
+                {
+                    await Task.Delay(1000, token);
+                    return BehaviourStatus.Succeeded;
+                },
+                ctx => shouldCancel);
+
+            asyncAction.Tick(new MockContext());
+            shouldCancel = true;
+            var result = asyncAction.Tick(new MockContext());
+
+            Assert.That(result, Is.EqualTo(BehaviourStatus.Failed));
+            Assert.That(asyncAction.WasCancelled, Is.True);
+        }
+
+        [Test]
+        public void AsyncAction_WasCancelled_TrueOnTimeout()
+        {
+            var asyncAction = new AsyncAction<MockContext>("Test",
+                async (ctx, token) =>
+                {
+                    await Task.Delay(5000, token);
+                    return BehaviourStatus.Succeeded;
+                },
+                TimeSpan.FromMilliseconds(20));
+
+            asyncAction.Tick(new MockContext());
+            Thread.Sleep(50);
+            var result = asyncAction.Tick(new MockContext());
+
+            Assert.That(result, Is.EqualTo(BehaviourStatus.Failed));
+            Assert.That(asyncAction.WasCancelled, Is.True);
+        }
+
+        [Test]
+        public void AsyncAction_WasCancelled_FalseOnNormalFailure()
+        {
+            var asyncAction = new AsyncAction<MockContext>("Test", (ctx, token) =>
+            {
+                return Task.FromResult(BehaviourStatus.Failed);
+            });
+
+            asyncAction.Tick(new MockContext());
+
+            Assert.That(asyncAction.WasCancelled, Is.False);
+        }
+
+        [Test]
+        public void AsyncAction_WasCancelled_ResetOnReuse()
+        {
+            var shouldCancel = false;
+            var asyncAction = new AsyncAction<MockContext>("Test",
+                async (ctx, token) =>
+                {
+                    await Task.Delay(1000, token);
+                    return BehaviourStatus.Succeeded;
+                },
+                ctx => shouldCancel);
+
+            // First: cancel
+            asyncAction.Tick(new MockContext());
+            shouldCancel = true;
+            asyncAction.Tick(new MockContext());
+            Assert.That(asyncAction.WasCancelled, Is.True);
+
+            // Reset and reuse - WasCancelled resets on next initialization (Tick)
+            asyncAction.Reset();
+            shouldCancel = false;
+            asyncAction.Tick(new MockContext()); // OnInitialize resets WasCancelled
+            Assert.That(asyncAction.WasCancelled, Is.False);
+        }
+
+        [Test]
+        public void AsyncAction_ExternalToken_CancelsAction()
+        {
+            using var externalCts = new CancellationTokenSource();
+            var asyncAction = new AsyncAction<MockContext>("Test",
+                async (ctx, token) =>
+                {
+                    await Task.Delay(5000, token);
+                    return BehaviourStatus.Succeeded;
+                },
+                null,
+                default,
+                externalCts.Token);
+
+            asyncAction.Tick(new MockContext());
+            externalCts.Cancel();
+            Thread.Sleep(50);
+            var result = asyncAction.Tick(new MockContext());
+
+            Assert.That(result, Is.EqualTo(BehaviourStatus.Failed));
+            Assert.That(asyncAction.WasCancelled, Is.True);
+        }
+
+        [Test]
+        public void AsyncAction_CleanupDoesNotBlock()
+        {
+            var asyncAction = new AsyncAction<MockContext>("Test", async (ctx, token) =>
+            {
+                await Task.Delay(10000, token);
+                return BehaviourStatus.Succeeded;
+            });
+
+            asyncAction.Tick(new MockContext());
             Thread.Sleep(10);
-            var result2 = asyncAction.Tick(new MockContext());
 
-            // Assert
-            Assert.That(result2, Is.EqualTo(BehaviourStatus.Succeeded));
+            var sw = Stopwatch.StartNew();
+            asyncAction.Reset();
+            sw.Stop();
+
+            // Reset should NOT block - must complete in under 50ms (was 100ms+ before)
+            Assert.That(sw.ElapsedMilliseconds, Is.LessThan(50),
+                "Reset should not block waiting for task completion");
         }
     }
 }

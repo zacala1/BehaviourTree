@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace BehaviourTree.Decorators
 {
@@ -9,8 +9,8 @@ namespace BehaviourTree.Decorators
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
     public sealed partial class AfterSuccess<TContext> : DecoratorBehaviour<TContext>
     {
-        private BehaviourStatus childStatus;
-        private bool callbackExecuted;
+        private BehaviourStatus _childStatus;
+        private bool _callbackExecuted;
         private readonly Action<TContext> _action;
 
         /// <summary>
@@ -39,23 +39,22 @@ namespace BehaviourTree.Decorators
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnInitialize(TContext context)
         {
-            childStatus = BehaviourStatus.Ready;
-            callbackExecuted = false;
+            _childStatus = BehaviourStatus.Ready;
+            _callbackExecuted = false;
         }
 
         /// <summary>Core update logic for this node.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override BehaviourStatus Update(TContext context)
         {
-            // Always tick child until it completes (returns non-Running status)
-            if (childStatus == BehaviourStatus.Ready || childStatus == BehaviourStatus.Running)
+            if (_childStatus == BehaviourStatus.Ready || _childStatus == BehaviourStatus.Running)
             {
-                childStatus = Child.Tick(context);
+                _childStatus = Child.Tick(context);
             }
 
-            if (childStatus == BehaviourStatus.Succeeded && !callbackExecuted)
+            if (_childStatus == BehaviourStatus.Succeeded && !_callbackExecuted)
             {
-                callbackExecuted = true;
+                _callbackExecuted = true;
                 try
                 {
                     _action.Invoke(context);
@@ -66,24 +65,22 @@ namespace BehaviourTree.Decorators
                 }
             }
 
-            return childStatus;
+            return _childStatus;
         }
 
         /// <summary>Called when node completes execution.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void OnTerminate(BehaviourStatus status)
         {
-            // Don't reset callbackExecuted here - it should only reset on DoReset
-            // This prevents the callback from executing multiple times on consecutive ticks
-            childStatus = BehaviourStatus.Ready;
+            _childStatus = BehaviourStatus.Ready;
         }
 
         /// <summary>Resets node state for re-execution.</summary>
         [System.Diagnostics.DebuggerStepThrough]
         protected override void DoReset(BehaviourStatus status)
         {
-            childStatus = BehaviourStatus.Ready;
-            callbackExecuted = false;
+            _childStatus = BehaviourStatus.Ready;
+            _callbackExecuted = false;
             base.DoReset(status);
         }
     }

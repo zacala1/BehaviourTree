@@ -4,7 +4,8 @@ namespace BehaviourTree.Decorators
 {
     /// <summary>
     /// Decorator that probabilistically executes the child behavior based on a threshold.
-    /// Executes child if random value is greater than or equal to threshold, otherwise returns failure.
+    /// Executes child if random value is less than threshold, otherwise returns failure.
+    /// A threshold of 0.8 means 80% chance of execution.
     /// </summary>
     /// <typeparam name="TContext">Context type used in the behavior tree</typeparam>
     public sealed partial class Random<TContext> : DecoratorBehaviour<TContext>
@@ -55,7 +56,7 @@ namespace BehaviourTree.Decorators
         {
             var randomValue = _randomProvider.NextRandomDouble();
 
-            if (randomValue >= Threshold)
+            if (randomValue < Threshold)
             {
                 return Child.Tick(context);
             }
