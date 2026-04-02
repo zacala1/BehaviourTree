@@ -98,8 +98,8 @@ namespace BehaviourTree.Serialization
         {
             if (node is Composites.CompositeBehaviour<TContext> composite)
             {
-                var list = new List<IBehaviour<TContext>>(composite.Children.Length);
-                foreach (var child in composite.Children)
+                var list = new List<IBehaviour<TContext>>(composite.ChildNodes.Count);
+                foreach (var child in composite.ChildNodes)
                     list.Add(child);
                 return list;
             }

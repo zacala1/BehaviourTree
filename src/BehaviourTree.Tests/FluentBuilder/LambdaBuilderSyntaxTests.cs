@@ -43,7 +43,7 @@ namespace BehaviourTree.Tests.FluentBuilder
             Assert.That(sut, Is.InstanceOf<Sequence<TestContext>>());
 
             var sequence = sut as Sequence<TestContext>;
-            Assert.That(sequence!.Children.Length, Is.EqualTo(3));
+            Assert.That(sequence!.ChildNodes.Count, Is.EqualTo(3));
             Assert.That(sequence.Name, Is.EqualTo("root"));
         }
 
@@ -63,7 +63,7 @@ namespace BehaviourTree.Tests.FluentBuilder
             Assert.That(sut, Is.InstanceOf<Selector<TestContext>>());
 
             var selector = sut as Selector<TestContext>;
-            Assert.That(selector!.Children.Length, Is.EqualTo(3));
+            Assert.That(selector!.ChildNodes.Count, Is.EqualTo(3));
             Assert.That(selector.Name, Is.EqualTo("root"));
         }
 
@@ -86,12 +86,12 @@ namespace BehaviourTree.Tests.FluentBuilder
             Assert.That(sut, Is.Not.Null);
             var rootSequence = sut as Sequence<TestContext>;
             Assert.That(rootSequence, Is.Not.Null);
-            Assert.That(rootSequence!.Children.Length, Is.EqualTo(3));
+            Assert.That(rootSequence!.ChildNodes.Count, Is.EqualTo(3));
 
-            var selector = rootSequence.Children[1] as Selector<TestContext>;
+            var selector = rootSequence.ChildNodes[1] as Selector<TestContext>;
             Assert.That(selector, Is.Not.Null);
             Assert.That(selector!.Name, Is.EqualTo("combat"));
-            Assert.That(selector.Children.Length, Is.EqualTo(2));
+            Assert.That(selector.ChildNodes.Count, Is.EqualTo(2));
         }
 
         [Test]
@@ -109,7 +109,7 @@ namespace BehaviourTree.Tests.FluentBuilder
             Assert.That(sut, Is.InstanceOf<ActiveSequence<TestContext>>());
 
             var activeSeq = sut as ActiveSequence<TestContext>;
-            Assert.That(activeSeq!.Children.Length, Is.EqualTo(2));
+            Assert.That(activeSeq!.ChildNodes.Count, Is.EqualTo(2));
         }
 
         [Test]
@@ -127,7 +127,7 @@ namespace BehaviourTree.Tests.FluentBuilder
             Assert.That(sut, Is.InstanceOf<ActiveSelector<TestContext>>());
 
             var activeSel = sut as ActiveSelector<TestContext>;
-            Assert.That(activeSel!.Children.Length, Is.EqualTo(2));
+            Assert.That(activeSel!.ChildNodes.Count, Is.EqualTo(2));
         }
 
         [Test]
@@ -146,7 +146,7 @@ namespace BehaviourTree.Tests.FluentBuilder
             Assert.That(sut, Is.InstanceOf<Parallel<TestContext>>());
 
             var parallel = sut as Parallel<TestContext>;
-            Assert.That(parallel!.Children.Length, Is.EqualTo(3));
+            Assert.That(parallel!.ChildNodes.Count, Is.EqualTo(3));
             Assert.That(parallel.Policy, Is.EqualTo(ParallelPolicy.RequireAll));
         }
 
@@ -263,11 +263,11 @@ namespace BehaviourTree.Tests.FluentBuilder
 
             Assert.That(sut, Is.Not.Null);
             var rootSeq = sut as Sequence<TestContext>;
-            Assert.That(rootSeq!.Children.Length, Is.EqualTo(3));
+            Assert.That(rootSeq!.ChildNodes.Count, Is.EqualTo(3));
 
-            var selector = rootSeq.Children[1] as Selector<TestContext>;
+            var selector = rootSeq.ChildNodes[1] as Selector<TestContext>;
             Assert.That(selector, Is.Not.Null);
-            Assert.That(selector!.Children.Length, Is.EqualTo(2));
+            Assert.That(selector!.ChildNodes.Count, Is.EqualTo(2));
         }
 
         [Test]
@@ -290,12 +290,12 @@ namespace BehaviourTree.Tests.FluentBuilder
             var level1 = sut as Sequence<TestContext>;
             Assert.That(level1, Is.Not.Null);
 
-            var level2 = level1!.Children[0] as Selector<TestContext>;
+            var level2 = level1!.ChildNodes[0] as Selector<TestContext>;
             Assert.That(level2, Is.Not.Null);
 
-            var level3 = level2!.Children[0] as Sequence<TestContext>;
+            var level3 = level2!.ChildNodes[0] as Sequence<TestContext>;
             Assert.That(level3, Is.Not.Null);
-            Assert.That(level3!.Children.Length, Is.EqualTo(1));
+            Assert.That(level3!.ChildNodes.Count, Is.EqualTo(1));
         }
     }
 }

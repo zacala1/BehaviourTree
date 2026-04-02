@@ -9,7 +9,7 @@ namespace BehaviourTree.Behaviours
     /// Supports timeout, cancellation conditions, and external cancellation tokens.
     /// </summary>
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
-    public partial class AsyncAction<TContext> : BaseBehaviour<TContext>
+    public partial class AsyncAction<TContext> : BaseBehaviour<TContext>, IDisposable
     {
         private readonly Func<TContext, CancellationToken, Task<BehaviourStatus>> _action;
         private readonly TimeSpan _timeout;
@@ -234,6 +234,14 @@ namespace BehaviourTree.Behaviours
             _cts?.Dispose();
             _cts = null;
             _task = null;
+        }
+
+        /// <summary>
+        /// Disposes the async action, cancelling any running task.
+        /// </summary>
+        public void Dispose()
+        {
+            CleanupAsyncResources();
         }
     }
 }

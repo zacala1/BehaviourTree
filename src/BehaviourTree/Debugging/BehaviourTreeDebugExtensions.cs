@@ -53,7 +53,7 @@ namespace BehaviourTree.Debugging
             // Check if this is a composite with children
             if (node is CompositeBehaviour<TContext> composite)
             {
-                foreach (var child in composite.Children)
+                foreach (var child in composite.ChildNodes)
                 {
                     CollectActiveLeafIds(child, result);
                 }
@@ -90,7 +90,7 @@ namespace BehaviourTree.Debugging
             // Check if this is a composite with children
             if (node is CompositeBehaviour<TContext> composite)
             {
-                foreach (var child in composite.Children)
+                foreach (var child in composite.ChildNodes)
                 {
                     CollectRunningNodes(child, result);
                 }

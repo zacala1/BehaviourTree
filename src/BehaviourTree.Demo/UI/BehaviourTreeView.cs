@@ -40,7 +40,7 @@ namespace BehaviourTree.Demo.UI
                 case CompositeBehaviour<BtContext> composite:
                     RenderInternal(graphics, depth, composite);
                     var childDepth = depth + 1;
-                    foreach (var child in composite.Children)
+                    foreach (var child in composite.ChildNodes)
                     {
                         RenderBehaviourTree(graphics, childDepth, child);
                     }

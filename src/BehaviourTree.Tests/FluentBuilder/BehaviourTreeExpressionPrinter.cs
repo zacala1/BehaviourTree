@@ -44,7 +44,7 @@ namespace BehaviourTree.Tests.FluentBuilder
             var expression = InternalGetExpression(obj, depth);
             var childDepth = depth + 1;
 
-            foreach (var child in obj.Children)
+            foreach (var child in obj.ChildNodes)
             {
                 expression += GetExpression(child, childDepth);
             }

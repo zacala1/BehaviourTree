@@ -7,6 +7,7 @@ namespace BehaviourTree
     /// <summary>
     /// Generic base class for behavior tree nodes that work with a specific context type.
     /// Handles the tick lifecycle: Initialize -> Update -> Terminate.
+    /// This class is not thread-safe. A tree instance must only be ticked from a single thread.
     /// </summary>
     /// <typeparam name="TContext">Type of context object used during execution</typeparam>
     public abstract class BaseBehaviour<TContext> : BaseBehaviour, IBehaviour<TContext>
@@ -57,7 +58,7 @@ namespace BehaviourTree
 
             if (Status == BehaviourStatus.Ready)
             {
-                throw new InvalidOperationException("Ready status should not be returned by Behaviour Update Method");
+                throw new InvalidOperationException($"Ready status should not be returned by Update(). Node: id={Id}, name={Name}, type={TypeName}");
             }
 
             // Terminate when complete

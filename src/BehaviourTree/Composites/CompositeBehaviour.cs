@@ -1,24 +1,33 @@
 using System;
+using System.Collections.Generic;
 
 namespace BehaviourTree.Composites
 {
     /// <summary>
     /// Base class for composite behavior nodes that contain multiple child nodes.
     /// Composites control the execution flow of their children (e.g., Sequence, Selector).
+    /// This class is not thread-safe. All access must be from a single thread.
     /// </summary>
     /// <typeparam name="TContext">Type of context used during execution</typeparam>
     public abstract class CompositeBehaviour<TContext> : BaseBehaviour<TContext>
     {
+        private readonly IBehaviour<TContext>[] _children;
+
         /// <summary>
-        /// Array of child behavior nodes that this composite will execute.
+        /// Gets the child behavior nodes as a read-only list.
         /// </summary>
-        public readonly IBehaviour<TContext>[] Children;
+        public IReadOnlyList<IBehaviour<TContext>> ChildNodes => _children;
+
+        /// <summary>
+        /// Internal array access for subclasses. Do not expose publicly.
+        /// </summary>
+        protected IBehaviour<TContext>[] Children => _children;
 
         /// <summary>
         /// Creates a composite behavior node with the specified children.
         /// </summary>
         /// <param name="name">Node name for debugging</param>
-        /// <param name="children">Array of child nodes (can be empty for graceful handling)</param>
+        /// <param name="children">Array of child nodes</param>
         /// <exception cref="ArgumentNullException">Thrown when children is null</exception>
         /// <exception cref="ArgumentException">Thrown when children contains null elements</exception>
         protected CompositeBehaviour(string name, IBehaviour<TContext>[] children) : base(name)
@@ -32,11 +41,11 @@ namespace BehaviourTree.Composites
             {
                 if (children[i] == null)
                 {
-                    throw new ArgumentException("Children cannot contain null elements", nameof(children));
+                    throw new ArgumentException($"Children[{i}] cannot be null", nameof(children));
                 }
             }
 
-            Children = children;
+            _children = children;
         }
 
         /// <summary>
@@ -60,7 +69,7 @@ namespace BehaviourTree.Composites
         [System.Diagnostics.DebuggerStepThrough]
         private void ResetChildren()
         {
-            var children = Children;
+            var children = _children;
             for (int i = 0; i < children.Length; i++)
             {
                 children[i].Reset();

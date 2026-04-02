@@ -52,7 +52,7 @@ namespace BehaviourTree.Graph
             RenderInternal(text, depth, obj);
 
             var childDepth = depth + 1;
-            foreach (var child in obj.Children)
+            foreach (var child in obj.ChildNodes)
             {
                 RenderBehaviourTree(text, childDepth, child);
             }
@@ -106,7 +106,7 @@ namespace BehaviourTree.Graph
                 Sequence<TContext> => "[->]",
 
                 // Parallel nodes
-                Parallel<TContext> parallel => $"[={parallel.SuccessRequired}/{parallel.Children.Length}]",
+                Parallel<TContext> parallel => $"[={parallel.SuccessRequired}/{parallel.ChildNodes.Count}]",
                 SimpleParallel<TContext> => "[=2]",
 
                 // Leaf nodes

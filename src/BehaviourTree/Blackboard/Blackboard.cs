@@ -55,7 +55,10 @@ namespace BehaviourTree.Blackboard
 
             if (_data.TryGetValue(key, out var value))
             {
-                return (T)value!;
+                if (value is T typed)
+                    return typed;
+                throw new InvalidCastException(
+                    $"Blackboard key '{key}' is {value?.GetType().Name ?? "null"}, requested {typeof(T).Name}");
             }
 
             if (_parent != null)
@@ -72,8 +75,13 @@ namespace BehaviourTree.Blackboard
 
             if (_data.TryGetValue(key, out var obj))
             {
-                value = (T)obj!;
-                return true;
+                if (obj is T typed)
+                {
+                    value = typed;
+                    return true;
+                }
+                value = default!;
+                return false;
             }
 
             if (_parent != null)

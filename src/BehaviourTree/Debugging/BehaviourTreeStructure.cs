@@ -55,10 +55,10 @@ namespace BehaviourTree.Debugging
             if (node is CompositeBehaviour<TContext> composite)
             {
                 isLeaf = false;
-                childIds = new int[composite.Children.Length];
-                for (int i = 0; i < composite.Children.Length; i++)
+                childIds = new int[composite.ChildNodes.Count];
+                for (int i = 0; i < composite.ChildNodes.Count; i++)
                 {
-                    childIds[i] = composite.Children[i].Id;
+                    childIds[i] = composite.ChildNodes[i].Id;
                 }
             }
             else if (node is DecoratorBehaviour<TContext> decorator)
@@ -81,7 +81,7 @@ namespace BehaviourTree.Debugging
 
             if (node is CompositeBehaviour<TContext> comp)
             {
-                foreach (var child in comp.Children)
+                foreach (var child in comp.ChildNodes)
                 {
                     BuildRecursive(child, node.Id, depth + 1, nodes);
                 }

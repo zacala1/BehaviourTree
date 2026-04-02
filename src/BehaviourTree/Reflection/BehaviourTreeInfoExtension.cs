@@ -49,7 +49,7 @@ namespace BehaviourTree.Reflection
                     else treeInfo.ChildrenTreeInfos.Add(compositeNodeInfo);
 
                     var childDepth = depth + 1;
-                    foreach (var compositeChild in composite.Children)
+                    foreach (var compositeChild in composite.ChildNodes)
                     {
                         InternalGetInfos(ref compositeNodeInfo, childDepth, compositeChild);
                     }
@@ -164,7 +164,7 @@ namespace BehaviourTree.Reflection
             switch (source)
             {
                 case CompositeBehaviour<TContext> composite:
-                    foreach (var child in composite.Children)
+                    foreach (var child in composite.ChildNodes)
                     {
                         var foundValue = child.TryGetFirst(predicate, out found);
                         if (found) return foundValue;

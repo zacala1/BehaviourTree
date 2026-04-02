@@ -65,10 +65,10 @@ namespace BehaviourTree.Debugging
         {
             if (node is CompositeBehaviour<TContext> composite)
             {
-                var ids = new int[composite.Children.Length];
-                for (int i = 0; i < composite.Children.Length; i++)
+                var ids = new int[composite.ChildNodes.Count];
+                for (int i = 0; i < composite.ChildNodes.Count; i++)
                 {
-                    ids[i] = composite.Children[i].Id;
+                    ids[i] = composite.ChildNodes[i].Id;
                 }
                 return ids;
             }
@@ -85,7 +85,7 @@ namespace BehaviourTree.Debugging
         {
             if (node is CompositeBehaviour<TContext> composite)
             {
-                return composite.Children;
+                return composite.ChildNodes;
             }
 
             if (node is DecoratorBehaviour<TContext> decorator)
